@@ -1,26 +1,167 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Surfaces ───────────────────────────────────────────── */
+  --bg-primary:        #0d1117;
+  --bg-mobile-body:    #040405;
+  --bg-secondary:      #010409;
+  --bg-tertiary:       #151b23;
+  --bg-hover:          #15191f;
+  --bg-button:         #212830;
+  --bg-hover-2:        #262c36;
+  --bg-mobile-primary: #16191c;
+  --bg-input:          #0a0a0a;
+  --bg-chart-empty:    #161b22;
+
+  /* ── Text ───────────────────────────────────────────────── */
+  --text-primary:   #f0f6fc;
+  --text-secondary: #858c95;
+  --accent-icon:    #9198a1;
+  --text-link:      #4493f8;
+
+  /* ── Accents ────────────────────────────────────────────── */
+  --accent-green:  #238636;
+  --accent-blue:   #0969da;
+  --accent-coral:  #f78166;
+
+  /* ── Borders ────────────────────────────────────────────── */
+  --border:        #2f353d;
+  --border-input:  #262626;
+
+  /* ── Tag chips ──────────────────────────────────────────── */
+  --tag-bg:        #388bfd1a;
+  --tag-color:     #4493f8;
+  --tag-hover-bg:  #1f6feb;
+
+  /* ── Contribution scale (dark) ──────────────────────────── */
+  --chart-1: #0e4429;
+  --chart-2: #006d32;
+  --chart-3: #26a641;
+  --chart-4: #39d353;
+
+  /* ── Radii ──────────────────────────────────────────────── */
+  --radius-card:  6px;
+  --radius-tag:   2px;
+  --radius-pill:  9999px;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --content-max:  1216px;
+  --sidebar-w:    296px;
+  --main-w:       895px;
+  --col-gap:      24px;
+}
+
+/* ── Light theme (GitHub light palette) ─────────────────────
+   Overrides only the raw token vars; every `bg-bg / text-fg / …`
+   utility resolves through these, so the whole site re-themes.
+   The chess board keeps its own dark squares in both themes. */
+html[data-theme="light"] {
+  --bg-primary:        #ffffff;
+  --bg-mobile-body:    #ffffff;
+  --bg-secondary:      #ffffff;
+  --bg-tertiary:       #f6f8fa;
+  --bg-hover:          #f6f8fa;
+  --bg-button:         #f6f8fa;
+  --bg-hover-2:        #eaeef2;
+  --bg-mobile-primary: #f6f8fa;
+  --bg-input:          #ffffff;
+  --bg-chart-empty:    #ebedf0;
+
+  --text-primary:   #1f2328;
+  --text-secondary: #59636e;
+  --accent-icon:    #59636e;
+  --text-link:      #0969da;
+
+  --accent-green:  #1f883d;
+  --accent-blue:   #0969da;
+  --accent-coral:  #ec6547;
+
+  --border:        #d1d9e0;
+  --border-input:  #d1d9e0;
+
+  --tag-bg:        #ddf4ff;
+  --tag-color:     #0969da;
+  --tag-hover-bg:  #54aeff;
+
+  /* GitHub light contribution scale */
+  --chart-1: #9be9a8;
+  --chart-2: #40c463;
+  --chart-3: #30a14e;
+  --chart-4: #216e39;
+
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg:            var(--bg-primary);
+  --color-bg-mobile:     var(--bg-mobile-body);
+  --color-header:        var(--bg-secondary);
+  --color-surface:       var(--bg-tertiary);
+  --color-card-hover:    var(--bg-hover);
+  --color-btn:           var(--bg-button);
+  --color-btn-hover:     var(--bg-hover-2);
+  --color-band:          var(--bg-mobile-primary);
+  --color-input:         var(--bg-input);
+  --color-input-border:  var(--border-input);
+  --color-fg:            var(--text-primary);
+  --color-muted:         var(--text-secondary);
+  --color-icon:          var(--accent-icon);
+  --color-link:          var(--text-link);
+  --color-green:         var(--accent-green);
+  --color-blue:          var(--accent-blue);
+  --color-coral:         var(--accent-coral);
+  --color-border:        var(--border);
+  --color-tag:           var(--tag-color);
+  --color-tag-bg:        var(--tag-bg);
+
+  --radius-card: 6px;
+  --radius-tag:  2px;
+
+  --font-sans: -apple-system, system-ui, "Segoe UI", "Noto Sans", Helvetica, Arial,
+               sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html { color-scheme: dark; scroll-behavior: smooth; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@media (max-width: 767px) { body { background: var(--bg-mobile-body); } }
+
+::selection { background: var(--accent-blue); color: #fff; }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important; scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Reusable card primitive */
+.gh-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  background: transparent;
+}
+@media (max-width: 767px) {
+  .gh-card.band {
+    border-left: 0; border-right: 0; border-radius: 0;
+    background: var(--bg-mobile-primary);
+  }
 }

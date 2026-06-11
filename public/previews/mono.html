@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiet Monochrome — Kevin Marin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#ffffff; --ink:#1a1a1a; --muted:#6b6b6b; --rule:#e6e6e6; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:120px 28px 100px}
+  h1{font-weight:600;font-size:30px;letter-spacing:-.01em;margin-bottom:26px}
+  p{margin-bottom:20px;color:#262626}
+  a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;text-decoration-color:#bbb}
+  a:hover{text-decoration-color:var(--ink)}
+  .muted{color:var(--muted)}
+  h2{font-weight:600;font-size:15px;font-family:"Inter",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:44px 0 14px}
+  ul{list-style:none}
+  li{padding:12px 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;gap:20px;align-items:baseline}
+  li .t{font-weight:500}
+  li .d{font-size:15px;color:var(--muted);font-family:"Inter",sans-serif;text-align:right;flex-shrink:0}
+  li .desc{display:block;font-size:16px;color:var(--muted);margin-top:2px;font-weight:400}
+  .skills{font-size:17px;color:#333}
+  .skills b{font-family:"Inter",sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;display:inline-block;width:92px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Kevin Marin</h1>
+    <p>I'm an <a href="#">entry-level data scientist and software engineer</a>, finishing a B.A. in Data Science at <a href="#">Claremont McKenna College</a> (Class of 2026). I build AI/ML tools end-to-end in Python and ship real products.</p>
+    <p>My favorite project is <a href="#">MetricPath</a> — an AI health CLI that runs a logistic mortality-risk model trained on NHANES data behind a conversational LLM intake, and runs fully local for privacy. I've also built a <a href="#">PageRank search engine</a> from scratch and shipped a <a href="#">live site</a> for a sports-care startup.</p>
+    <p class="muted">I'm looking for new-grad roles in data science, ML/AI, analytics, and software engineering.</p>
+
+    <h2>Selected work</h2>
+    <ul>
+      <li><span><span class="t">MetricPath</span><span class="desc">AI health CLI · NHANES risk model · runs local</span></span><span class="d">Python · LLMs</span></li>
+      <li><span><span class="t">PageRank Search Engine</span><span class="desc">PageRank from scratch over a real corpus</span></span><span class="d">8★ · NumPy</span></li>
+      <li><span><span class="t">13th Care</span><span class="desc">Athlete-first site, shipped on Vercel</span></span><span class="d">live · freelance</span></li>
+      <li><span><span class="t">redditbot</span><span class="desc">Sentiment bot, ~1,000 comments</span></span><span class="d">PRAW · NLP</span></li>
+    </ul>
+
+    <h2>Skills</h2>
+    <p class="skills"><b>Languages</b> Python · SQL · TypeScript · JavaScript<br/>
+    <b>Data / ML</b> pandas · NumPy · scikit-learn · Jupyter<br/>
+    <b>AI / LLM</b> Anthropic · OpenAI · Ollama · MCP<br/>
+    <b>Eng</b> Flask · Docker · PostgreSQL · Git</p>
+
+    <h2>Elsewhere</h2>
+    <p class="muted">You can find me on <a href="#">GitHub</a> and <a href="#">LinkedIn</a>, read my <a href="#">résumé</a>, or <a href="#">reach out</a>.</p>
+  </div>
+</body>
+</html>

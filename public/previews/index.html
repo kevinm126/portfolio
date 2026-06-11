@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pick a design — Kevin Marin portfolio</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0e0e10;color:#e8e8ea;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;line-height:1.5;padding:48px 32px 80px}
+  .head{max-width:1200px;margin:0 auto 28px}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .sub{color:#9a9aa2;margin-top:8px;font-size:15px;max-width:680px}
+  .grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .card{background:#161618;border:1px solid #262629;border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s, transform .15s}
+  .card:hover{border-color:#5b6cff;transform:translateY(-2px)}
+  .card img{width:100%;display:block;border-bottom:1px solid #262629;background:#fff}
+  .meta{padding:16px 18px}
+  .meta .n{font-size:12px;color:#7c7c85;font-family:ui-monospace,monospace}
+  .meta h2{font-size:18px;font-weight:600;margin:2px 0 4px}
+  .meta p{font-size:14px;color:#9a9aa2}
+  .open{display:inline-block;margin-top:10px;font-size:13px;color:#8ea0ff;font-weight:600}
+  .foot{max-width:1200px;margin:30px auto 0;color:#7c7c85;font-size:14px}
+  @media(max-width:780px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Pick a design direction</h1>
+    <p class="sub">Four options, all built with your real content. Click any to open it full-screen. Tell me the number (or mix two) and I'll build it into the real site.</p>
+  </div>
+  <div class="grid">
+    <a class="card" href="editorial.html">
+      <img src="editorial.png" alt="Editorial" />
+      <div class="meta"><div class="n">OPTION 1</div><h2>Editorial (Swiss)</h2><p>Warm paper, big grotesk type, one clay accent, hairline rows. The clearest break from the AI-template look; reads senior.</p><span class="open">Open full ↗</span></div>
+    </a>
+    <a class="card" href="dashboard.html">
+      <img src="dashboard.png" alt="Analyst Dashboard" />
+      <div class="meta"><div class="n">OPTION 2</div><h2>Analyst Dashboard</h2><p>Light sidebar, teal/slate, KPI tiles + a Project | Stack | Outcome table. Most "data person" — sharp for DS/Analyst/BI.</p><span class="open">Open full ↗</span></div>
+    </a>
+    <a class="card" href="mono.html">
+      <img src="mono.png" alt="Quiet Monochrome" />
+      <div class="meta"><div class="n">OPTION 3</div><h2>Quiet Monochrome</h2><p>White, serif, prose, narrow column. Maximum restraint, quiet-confidence energy (leerob.io style).</p><span class="open">Open full ↗</span></div>
+    </a>
+    <a class="card" href="dark.html">
+      <img src="dark.png" alt="De-slopped Dark" />
+      <div class="meta"><div class="n">OPTION 4</div><h2>De-slopped Dark</h2><p>Neutral near-black, amber accent, minimal. Keeps a dark theme but kills every AI tell (no gradient/3D/typewriter).</p><span class="open">Open full ↗</span></div>
+    </a>
+  </div>
+  <div class="foot">The current live site (the one we're replacing) is at <b>/</b>. These previews live at <b>/previews/</b>.</div>
+</body>
+</html>

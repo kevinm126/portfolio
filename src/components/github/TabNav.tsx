@@ -1,0 +1,110 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Home, Code2, Mail, BookOpen, MoreHorizontal, type LucideProps } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type TabId = "welcome" | "portfolio" | "research" | "chess" | "contact";
+
+function PawnIcon(props: LucideProps) {
+  const { size = 16, ...rest } = props;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...rest}>
+      <path d="M12 2a3.2 3.2 0 0 0-1.9 5.78c-.9.5-1.5 1.45-1.5 2.55 0 1.02.52 1.92 1.3 2.46-.5 1.5-1.4 3-2.7 4.21-.5.46-.2 1.24.48 1.24h8.64c.68 0 .98-.78.48-1.24-1.3-1.2-2.2-2.7-2.7-4.2a2.98 2.98 0 0 0 1.3-2.47c0-1.1-.6-2.05-1.5-2.55A3.2 3.2 0 0 0 12 2ZM6.5 20.5c0-.55.45-1 1-1h9c.55 0 1 .45 1 1v.5c0 .55-.45 1-1 1h-9c-.55 0-1-.45-1-1v-.5Z" />
+    </svg>
+  );
+}
+
+type Tab = { id: TabId; label: string; href: string; Icon: React.ComponentType<LucideProps> };
+
+const TABS: Tab[] = [
+  { id: "welcome", label: "Welcome", href: "/", Icon: Home },
+  { id: "portfolio", label: "Portfolio", href: "/portfolio", Icon: Code2 },
+  { id: "research", label: "Research", href: "/research", Icon: BookOpen },
+  { id: "chess", label: "Chess", href: "/chess", Icon: PawnIcon },
+  { id: "contact", label: "Get in Touch", href: "/contact", Icon: Mail },
+];
+
+export function TabNav({ active }: { active: TabId }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", h);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  const overflow = TABS.slice(2); // Research + Chess + Contact collapse on small screens
+  const overflowActive = overflow.some((t) => t.id === active);
+
+  return (
+    <nav className="flex items-stretch">
+      {TABS.map((t, i) => (
+        <Link
+          key={t.id}
+          href={t.href}
+          className={cn(
+            "relative items-center gap-2 px-3 pb-3 pt-1 text-sm transition-colors",
+            i >= 2 ? "hidden min-[808px]:flex" : "flex",
+            active === t.id ? "font-semibold text-fg" : "text-muted hover:text-fg"
+          )}
+        >
+          <t.Icon size={16} className="text-icon" />
+          <span>{t.label}</span>
+          {active === t.id && (
+            <span className="absolute inset-x-2 -bottom-px h-[2px] rounded bg-coral" />
+          )}
+        </Link>
+      ))}
+
+      {/* overflow menu (small screens) */}
+      <div ref={ref} className="relative flex min-[808px]:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="More tabs"
+          aria-haspopup="true"
+          aria-expanded={open}
+          className={cn(
+            "relative flex items-center px-3 pb-3 pt-1 text-sm",
+            overflowActive ? "text-fg" : "text-muted hover:text-fg"
+          )}
+        >
+          <MoreHorizontal size={18} />
+          {overflowActive && (
+            <span className="absolute inset-x-2 -bottom-px h-[2px] rounded bg-coral" />
+          )}
+        </button>
+        {open && (
+          <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-md border border-border bg-surface py-1 shadow-2xl">
+            {overflow.map((t) => (
+              <Link
+                key={t.id}
+                href={t.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 text-sm hover:bg-btn",
+                  active === t.id ? "font-semibold text-fg" : "text-muted"
+                )}
+              >
+                <t.Icon size={16} className="text-icon" />
+                {t.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+}

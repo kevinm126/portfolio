@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>De-slopped Dark — Kevin Marin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0c; --panel:#types; --ink:#ececec; --muted:#8c8c90; --line:#1e1e21; --accent:#d9a441;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1060px;margin:0 auto;padding:36px 44px 80px}
+  header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .name{font-family:"Space Grotesk";font-weight:600;font-size:17px}
+  .name b{color:var(--accent)}
+  nav{font-family:"JetBrains Mono";font-size:13px;color:var(--muted);display:flex;gap:22px}
+  nav a{color:var(--muted);text-decoration:none}
+  nav a.on{color:var(--ink)}
+  .hero{padding:84px 0 64px}
+  .tag{font-family:"JetBrains Mono";font-size:12px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
+  h1{font-family:"Space Grotesk";font-weight:500;font-size:clamp(38px,5vw,62px);line-height:1.04;letter-spacing:-.03em;max-width:880px}
+  .lede{margin-top:22px;color:var(--muted);font-size:18px;max-width:560px;line-height:1.6}
+  .status{margin-top:26px;font-family:"JetBrains Mono";font-size:13px;color:var(--muted)}
+  .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle}
+  .lab{font-family:"JetBrains Mono";font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:44px 0 6px;border-top:1px solid var(--line)}
+  .row{display:grid;grid-template-columns:34px 1fr 190px 110px;gap:18px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line)}
+  .row .idx{font-family:"JetBrains Mono";font-size:13px;color:var(--muted)}
+  .row h3{font-family:"Space Grotesk";font-weight:600;font-size:19px}
+  .row p{color:var(--muted);font-size:14px;margin-top:4px;max-width:520px}
+  .row .stack{font-family:"JetBrains Mono";font-size:11.5px;color:var(--muted);line-height:1.7}
+  .row .out{font-family:"JetBrains Mono";font-weight:500;font-size:13px;color:var(--accent);text-align:right}
+  .skills{display:grid;grid-template-columns:repeat(2,1fr);gap:0 48px;padding-top:8px}
+  .srow{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .srow .sl{font-family:"JetBrains Mono";font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+  .srow .si{font-size:14px;color:var(--ink)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="name"><b>&lt;</b>KM<b>/&gt;</b></div>
+      <nav><a class="on">Work</a><a>About</a><a>Skills</a><a>Contact</a></nav>
+    </header>
+
+    <section class="hero">
+      <div class="tag">Data Scientist · Software Engineer</div>
+      <h1>I build AI/ML tools end-to-end in Python, and ship real products.</h1>
+      <p class="lede">NHANES-trained risk models, multi-provider LLMs, and deployed web apps — privacy-first by design. B.A. Data Science, Claremont McKenna '26.</p>
+      <div class="status"><span class="dot"></span>Available for new-grad DS &amp; SWE roles</div>
+    </section>
+
+    <div class="lab">Selected work</div>
+    <div class="row"><div class="idx">01</div><div><h3>MetricPath</h3><p>AI health CLI: conversational LLM intake → a logistic mortality-risk model trained on NHANES. Runs fully local.</p></div><div class="stack">Python · LLMs<br/>Logistic Reg · NHANES</div><div class="out">flagship</div></div>
+    <div class="row"><div class="idx">02</div><div><h3>PageRank Search Engine</h3><p>PageRank from scratch (power iteration) over a real web-link graph.</p></div><div class="stack">Python · NumPy<br/>Linear Algebra</div><div class="out">8★</div></div>
+    <div class="row"><div class="idx">03</div><div><h3>13th Care</h3><p>Athlete-first site for a sports-care startup, shipped on Vercel with security headers.</p></div><div class="stack">HTML · CSS<br/>JS · Vercel</div><div class="out">live</div></div>
+
+    <div class="lab">Skills</div>
+    <div class="skills">
+      <div class="srow"><div class="sl">Languages</div><div class="si">Python · SQL · TypeScript</div></div>
+      <div class="srow"><div class="sl">Data / ML</div><div class="si">pandas · NumPy · scikit-learn</div></div>
+      <div class="srow"><div class="sl">AI / LLM</div><div class="si">Anthropic · OpenAI · Ollama · MCP</div></div>
+      <div class="srow"><div class="sl">Eng</div><div class="si">Flask · Docker · PostgreSQL · Git</div></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Analyst Dashboard — Kevin Marin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f8fafc; --surface:#ffffff; --ink:#0f172a; --slate:#475569; --muted:#94a3b8;
+    --line:#e2e8f0; --teal:#0d9488; --teal-soft:#ccfbf1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+  /* sidebar */
+  aside{background:var(--surface);border-right:1px solid var(--line);padding:26px 20px;display:flex;flex-direction:column;gap:22px}
+  .me{display:flex;gap:12px;align-items:center}
+  .mono-badge{width:42px;height:42px;border-radius:10px;background:var(--teal);color:#fff;font-family:"JetBrains Mono";font-weight:600;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .me h2{font-size:15px;font-weight:600}.me span{font-size:12px;color:var(--muted)}
+  nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--slate);font-size:14px;text-decoration:none}
+  nav a.on{background:var(--teal-soft);color:var(--teal);font-weight:600}
+  .soc{margin-top:auto;font-family:"JetBrains Mono";font-size:12px;color:var(--muted);line-height:2}
+  .soc a{color:var(--slate);text-decoration:none}
+  /* main */
+  main{padding:34px 40px}
+  .h1{font-size:30px;font-weight:700;letter-spacing:-.02em}
+  .sub{color:var(--slate);margin-top:6px;max-width:620px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 32px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .kpi .v{font-family:"JetBrains Mono";font-weight:600;font-size:22px;color:var(--teal)}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:4px}
+  .seclabel{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:6px 0 12px}
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:13px 16px;font-size:14px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);background:#f1f5f9}
+  td b{font-weight:600}
+  td .stk{font-family:"JetBrains Mono";font-size:12px;color:var(--slate)}
+  td .out{color:var(--teal);font-weight:600;font-size:13px}
+  tr:last-child td{border-bottom:none}
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+  .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .cell h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:8px}
+  .cell p{font-size:13px;color:var(--slate);line-height:1.7}
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="me"><div class="mono-badge">KM</div><div><h2>Kevin Marin</h2><span>Data Scientist</span></div></div>
+      <nav>
+        <a class="on">Overview</a><a>Projects</a><a>Skills</a><a>Experience</a><a>Contact</a>
+      </nav>
+      <div class="soc"><a>GitHub</a> · <a>LinkedIn</a><br/><a>Résumé</a> · <a>Email</a></div>
+    </aside>
+    <main>
+      <div class="h1">Kevin Marin — Data Scientist &amp; Software Engineer</div>
+      <div class="sub">I build AI/ML tools end-to-end in Python and ship real products, from NHANES-trained risk models to deployed web apps.</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="v">0.91</div><div class="l">model ROC-AUC (NHANES)</div></div>
+        <div class="kpi"><div class="v">8★</div><div class="l">PageRank engine</div></div>
+        <div class="kpi"><div class="v">~1,000</div><div class="l">comments classified</div></div>
+        <div class="kpi"><div class="v">3</div><div class="l">LLM providers integrated</div></div>
+      </div>
+
+      <div class="seclabel">Featured Projects</div>
+      <table>
+        <tr><th>Project</th><th>Stack</th><th>Outcome</th></tr>
+        <tr><td><b>MetricPath</b><div class="stk">AI health CLI · flagship</div></td><td class="stk">Python · LLMs · Logistic Regression · NHANES</td><td><span class="out">Local-first risk model + lifestyle report</span></td></tr>
+        <tr><td><b>PageRank Search Engine</b></td><td class="stk">Python · NumPy · Linear Algebra · IR</td><td><span class="out">PageRank from scratch · 8★</span></td></tr>
+        <tr><td><b>13th Care</b><div class="stk">freelance</div></td><td class="stk">HTML · CSS · JavaScript · Vercel</td><td><span class="out">Live, shipped to a client</span></td></tr>
+        <tr><td><b>redditbot</b></td><td class="stk">Python · PRAW · TextBlob · NLP</td><td><span class="out">~1,000 comments by sentiment</span></td></tr>
+      </table>
+
+      <div class="seclabel" style="margin-top:30px">Skills</div>
+      <div class="board">
+        <div class="cell"><h4>Languages</h4><p>Python · SQL · TypeScript · JavaScript</p></div>
+        <div class="cell"><h4>Data / ML</h4><p>pandas · NumPy · scikit-learn · Jupyter</p></div>
+        <div class="cell"><h4>AI / LLM</h4><p>Anthropic · OpenAI · Ollama · MCP</p></div>
+        <div class="cell"><h4>Engineering</h4><p>Flask · Docker · PostgreSQL · Git</p></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
