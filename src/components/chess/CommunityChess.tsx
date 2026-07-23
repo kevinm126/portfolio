@@ -39,9 +39,14 @@ export default function CommunityChess() {
 
   const isAdmin = adminKey.length > 0;
 
-  const applySnapshot = useCallback((data: Snapshot, prevFen?: string) => {
+  // Fen of the last applied snapshot, so a stale selection can be cleared
+  // without reading `snap` inside stable callbacks.
+  const appliedFen = useRef<string | null>(null);
+
+  const applySnapshot = useCallback((data: Snapshot) => {
+    if (appliedFen.current && appliedFen.current !== data.fen) setSelected(null);
+    appliedFen.current = data.fen;
     setSnap(data);
-    if (prevFen && prevFen !== data.fen) setSelected(null);
   }, []);
 
   const load = useCallback(async () => {
@@ -49,14 +54,11 @@ export default function CommunityChess() {
     try {
       const res = await fetch("/api/chess", { cache: "no-store" });
       const data = (await res.json()) as Snapshot;
-      setSnap((prev) => {
-        if (prev && prev.fen !== data.fen) setSelected(null);
-        return data;
-      });
+      applySnapshot(data);
     } catch {
       /* transient — next poll will retry */
     }
-  }, []);
+  }, [applySnapshot]);
 
   // Pick up the admin key from ?admin=… once, then strip it from the URL.
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function CommunityChess() {
         url.searchParams.delete("admin");
         window.history.replaceState({}, "", url.pathname + url.search + url.hash);
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-hydration read; during render it would mismatch the server HTML
       setAdminKey(localStorage.getItem("chessAdminKey") || "");
     } catch {
       /* ignore */
@@ -76,6 +79,7 @@ export default function CommunityChess() {
 
   // Initial load + polling + refresh on focus.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load() is async; state updates only after the fetch resolves
     load();
     const id = setInterval(load, 5000);
     const onFocus = () => load();
@@ -119,9 +123,9 @@ export default function CommunityChess() {
         const data = await res.json();
         if (!res.ok) {
           setError(data.error || "Move rejected.");
-          if (data.fen) applySnapshot(data as Snapshot, prevFen);
+          if (data.fen) applySnapshot(data as Snapshot);
         } else {
-          applySnapshot(data as Snapshot, prevFen);
+          applySnapshot(data as Snapshot);
         }
       } catch {
         setError("Network error — try again.");

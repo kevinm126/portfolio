@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
 
 export type Theme = "light" | "dark";
 
@@ -8,22 +8,23 @@ type ThemeContextValue = { theme: Theme; toggleTheme: () => void; setTheme: (t: 
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-/** Read the theme the no-FOUC script already applied to <html>. */
-function readInitialTheme(): Theme {
+/** Read the theme from <html data-theme>, set by the no-FOUC inline script. */
+function readTheme(): Theme {
   if (typeof document === "undefined") return "dark";
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+/** <html data-theme> is the source of truth; re-render whenever it changes. */
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
+}
 
-  // Sync React state with whatever the inline script set, after mount.
-  useEffect(() => {
-    setThemeState(readInitialTheme());
-  }, []);
+export function Providers({ children }: { children: React.ReactNode }) {
+  const theme = useSyncExternalStore(subscribeToTheme, readTheme, () => "dark" as const);
 
   const apply = useCallback((t: Theme) => {
-    setThemeState(t);
     document.documentElement.dataset.theme = t;
     try {
       localStorage.setItem("theme", t);
@@ -33,7 +34,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    apply(readInitialTheme() === "light" ? "dark" : "light");
+    apply(readTheme() === "light" ? "dark" : "light");
   }, [apply]);
 
   return (

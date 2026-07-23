@@ -63,8 +63,8 @@ function pickBotMove(fen: string, level: BotLevel) {
 }
 
 export default function ChessGame() {
-  const gameRef = useRef(new Chess());
-  const game = gameRef.current;
+  // Lazily-created stable instance; mutated in place, with `fen` state driving re-renders.
+  const [game] = useState(() => new Chess());
   const [fen, setFen] = useState(game.fen());
   const [selected, setSelected] = useState<Square | null>(null);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);

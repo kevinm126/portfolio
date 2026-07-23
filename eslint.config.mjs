@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local tool state; .claude can hold full repo copies (worktrees).
+    ".claude/**",
+    ".gstack/**",
+    "public/**",
   ]),
 ]);
 
