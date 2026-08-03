@@ -495,8 +495,8 @@ export const WHY_CALLBACKS: Record<string, string[]> = {
 
 /* ── the cable (the choice) ────────────────────────────────────────── */
 
-/** Where the wall jack lives; the cable runs there from the desk. */
-export const CABLE_JACK = { x: 866, y: FLOOR_Y - 26 } as const;
+/** Where the wall jack lives — on the wall, above the visual floor line. */
+export const CABLE_JACK = { x: 866, y: 408 } as const;
 /** Generous click target around the jack while the window is live. */
 export const CABLE_HIT = { x: CABLE_JACK.x - 34, y: CABLE_JACK.y - 30, w: 68, h: 60 } as const;
 /** The pull window opens this far into the compose (0..1). */

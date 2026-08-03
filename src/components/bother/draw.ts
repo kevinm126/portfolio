@@ -88,6 +88,24 @@ const PANTS = "#2c3038";
 const SHOE = "#15171c";
 const ACCENT = "#d9483b"; // the tie — and the meltdown
 
+/**
+ * Where the wall visually meets the floor. The physics ground (FLOOR_Y)
+ * stays put — everything walks and lands well below this line, standing
+ * on a visible floor plane, which is most of what makes the reference
+ * rooms read as 3D.
+ */
+const WALL_BASE = 424;
+/** Lighter lids for the oblique top faces of furniture. */
+const DESK_TOP_LIT = "#f6ecc0";
+
+/** Soft grounding shadow. Alpha and size are the caller's depth cue. */
+function shadow(ctx: CanvasRenderingContext2D, x: number, y: number, rx: number, alpha = 0.1) {
+  ctx.fillStyle = `rgba(21,23,28,${alpha})`;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, rx * 0.22, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 /* ── tiny helpers ─────────────────────────────────────────────────── */
 function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
@@ -685,28 +703,47 @@ function drawRoom(ctx: CanvasRenderingContext2D) {
   // bare canvas edge.
   const PAD = 12;
   ctx.fillStyle = WALL;
-  ctx.fillRect(-PAD, -PAD, VIEW_W + PAD * 2, FLOOR_Y + PAD);
+  ctx.fillRect(-PAD, -PAD, VIEW_W + PAD * 2, WALL_BASE + PAD);
   ctx.fillStyle = WALL_TOP;
   ctx.fillRect(-PAD, -PAD, VIEW_W + PAD * 2, CEIL_Y - 14 + PAD);
+
+  // recessed ceiling panels — a hint of the ceiling as a plane
+  for (const px of [560, 742]) {
+    ctx.beginPath();
+    ctx.moveTo(px, 6);
+    ctx.lineTo(px + 118, 6);
+    ctx.lineTo(px + 100, 26);
+    ctx.lineTo(px - 18, 26);
+    ctx.closePath();
+    ctx.fillStyle = "#f7f3ea";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(21,23,28,0.45)";
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+  }
+
+  // baseboard along the visual wall line
   ctx.fillStyle = BASEBOARD;
-  ctx.fillRect(0, FLOOR_Y - 12, VIEW_W, 12);
+  ctx.fillRect(-PAD, WALL_BASE - 11, VIEW_W + PAD * 2, 11);
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(0, FLOOR_Y - 12);
-  ctx.lineTo(VIEW_W, FLOOR_Y - 12);
+  ctx.moveTo(-PAD, WALL_BASE - 11);
+  ctx.lineTo(VIEW_W + PAD, WALL_BASE - 11);
   ctx.stroke();
 
-  // the floor is a flat field of dusty pink — the reference rooms have no
-  // tile pattern, just colour meeting colour
+  // the floor: a deep flat field of dusty pink, most of the depth illusion
   ctx.fillStyle = FLOOR;
-  ctx.fillRect(-12, FLOOR_Y, VIEW_W + 24, VIEW_H - FLOOR_Y + 12);
+  ctx.fillRect(-PAD, WALL_BASE, VIEW_W + PAD * 2, VIEW_H - WALL_BASE + PAD);
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-12, FLOOR_Y);
-  ctx.lineTo(VIEW_W + 12, FLOOR_Y);
+  ctx.moveTo(-PAD, WALL_BASE);
+  ctx.lineTo(VIEW_W + PAD, WALL_BASE);
   ctx.stroke();
+  // contact shading where the wall meets the floor
+  ctx.fillStyle = "rgba(21,23,28,0.05)";
+  ctx.fillRect(-PAD, WALL_BASE, VIEW_W + PAD * 2, 7);
 }
 
 /** The printer he crashes out on. Pure decor — until something hits it. */
@@ -714,10 +751,18 @@ function drawPrinter(ctx: CanvasRenderingContext2D) {
   const x = 272,
     w = 96,
     top = FLOOR_Y - 96;
+  shadow(ctx, x + w / 2 + 6, FLOOR_Y + 6, w * 0.68, 0.09);
   // body
   rr(ctx, x, top + 14, w, 82, 5);
   inked(ctx, "#b9bec6", 2.6);
-  // scanner lid
+  // scanner lid, with its top face showing
+  ctx.beginPath();
+  ctx.moveTo(x - 4, top);
+  ctx.lineTo(x + 9, top - 8);
+  ctx.lineTo(x + w + 17, top - 8);
+  ctx.lineTo(x + w + 4, top);
+  ctx.closePath();
+  inked(ctx, "#cfd4da", 2.2);
   rr(ctx, x - 4, top, w + 8, 16, 4);
   inked(ctx, "#9aa0a8", 2.4);
   // control panel with one sad button
@@ -739,27 +784,33 @@ function drawPrinter(ctx: CanvasRenderingContext2D) {
   inked(ctx, METAL, 1.6);
 }
 
-/** Ambient defeat: paper cups and crumpled drafts nobody picks up. */
+/**
+ * Ambient defeat: paper cups and crumpled drafts nobody picks up. They sit
+ * at varied floor depths — lower on screen is closer, and slightly larger.
+ */
 function drawClutter(ctx: CanvasRenderingContext2D) {
-  // cups: one by the printer, one under the desk's far end
-  for (const [cx, cy] of [
-    [392, FLOOR_Y - 6],
-    [826, FLOOR_Y - 6],
+  // cups: one behind the walk line, one well in front of the desk
+  for (const [cx, cy, sc] of [
+    [392, FLOOR_Y - 18, 0.9],
+    [820, FLOOR_Y + 38, 1.25],
   ] as const) {
+    shadow(ctx, cx, cy + 2, 10 * sc, 0.08);
     ctx.beginPath();
-    ctx.moveTo(cx - 6, cy - 14);
-    ctx.lineTo(cx + 6, cy - 14);
-    ctx.lineTo(cx + 4.5, cy);
-    ctx.lineTo(cx - 4.5, cy);
+    ctx.moveTo(cx - 6 * sc, cy - 15 * sc);
+    ctx.lineTo(cx + 6 * sc, cy - 15 * sc);
+    ctx.lineTo(cx + 4.5 * sc, cy);
+    ctx.lineTo(cx - 4.5 * sc, cy);
     ctx.closePath();
     inked(ctx, PAPER, 2);
   }
-  // crumpled paper balls
+  // crumpled paper balls, scattered across the depth of the floor
   for (const [bx, by, r] of [
-    [420, FLOOR_Y - 5, 6],
-    [252, FLOOR_Y - 4, 5],
-    [448, FLOOR_Y - 4, 4.5],
+    [430, FLOOR_Y + 30, 7.5],
+    [244, FLOOR_Y + 52, 8],
+    [462, FLOOR_Y - 20, 4.5],
+    [660, FLOOR_Y + 55, 8.5],
   ] as const) {
+    shadow(ctx, bx, by + r * 0.8, r * 1.5, 0.08);
     ctx.beginPath();
     ctx.moveTo(bx - r, by);
     for (let i = 1; i <= 7; i++) {
@@ -977,6 +1028,15 @@ function drawCabinet(ctx: CanvasRenderingContext2D) {
   const x = 120,
     w = 92,
     top = FLOOR_Y - 130;
+  shadow(ctx, x + w / 2 + 6, FLOOR_Y + 6, w * 0.72, 0.09);
+  // top face
+  ctx.beginPath();
+  ctx.moveTo(x, top);
+  ctx.lineTo(x + 14, top - 9);
+  ctx.lineTo(x + w + 14, top - 9);
+  ctx.lineTo(x + w, top);
+  ctx.closePath();
+  inked(ctx, "#e6e2d8", 2.4);
   rr(ctx, x, top, w, 130, 4);
   inked(ctx, SHADE, 2.8);
   ctx.strokeStyle = INK;
@@ -997,6 +1057,7 @@ function drawCabinet(ctx: CanvasRenderingContext2D) {
 function drawPlant(ctx: CanvasRenderingContext2D, t = 0, wob = 0) {
   const x = 906,
     y = FLOOR_Y;
+  shadow(ctx, x, y + 5, 34, 0.09);
   const sway = wob > 0.01 ? Math.sin(t * 17) * wob * 0.12 : 0;
   for (const [dx, dy, rx, ry, rot] of [
     [-16, -60, 9, 28, -0.5],
@@ -1055,10 +1116,18 @@ function drawLight(ctx: CanvasRenderingContext2D, s: RenderState) {
 /** Side-view office chair, drawn behind Kev. Dark gray, like the reference. */
 function drawChair(ctx: CanvasRenderingContext2D) {
   const x = SEAT_X;
+  shadow(ctx, x - 2, FLOOR_Y + 6, 58, 0.1);
   // backrest
   rr(ctx, x - 46, CHAIR_SEAT_Y - 82, 17, 88, 8);
   inked(ctx, "#565b64", 2.6);
-  // seat
+  // seat, its cushion top just visible
+  ctx.beginPath();
+  ctx.moveTo(x - 44, CHAIR_SEAT_Y - 4);
+  ctx.lineTo(x - 36, CHAIR_SEAT_Y - 9);
+  ctx.lineTo(x + 46, CHAIR_SEAT_Y - 9);
+  ctx.lineTo(x + 38, CHAIR_SEAT_Y - 4);
+  ctx.closePath();
+  inked(ctx, "#7d838d", 2.2);
   rr(ctx, x - 44, CHAIR_SEAT_Y - 4, 82, 14, 6);
   inked(ctx, "#6a707a", 2.6);
   // post + base
@@ -1104,11 +1173,13 @@ function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
     return;
   }
 
+  // sags along the floor, then climbs the wall to the jack
   ctx.strokeStyle = INK;
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(startX, FLOOR_Y - 10);
-  ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 6, jx - 6, jy);
+  ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 4, jx - 14, FLOOR_Y - 24);
+  ctx.quadraticCurveTo(jx, WALL_BASE - 2, jx, jy + 12);
   ctx.stroke();
 
   if (s.cable.armed) {
@@ -1118,7 +1189,8 @@ function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
     ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(startX, FLOOR_Y - 10);
-    ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 6, jx - 6, jy);
+    ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 4, jx - 14, FLOOR_Y - 24);
+    ctx.quadraticCurveTo(jx, WALL_BASE - 2, jx, jy + 12);
     ctx.stroke();
     ctx.strokeStyle = INK;
     ctx.lineWidth = 2 + pulse * 1.5;
@@ -1128,9 +1200,11 @@ function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
 }
 
-/** The butter-yellow desk, seen side-on and facing right. */
+/** The butter-yellow desk, in a mild oblique — its top face is visible. */
 function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   const { x, w, top } = DESK;
+
+  shadow(ctx, x + w / 2 + 10, FLOOR_Y + 8, w * 0.56, 0.09);
 
   // drawer pedestal at the far end
   rr(ctx, x + w - 100, top + 16, 92, FLOOR_Y - top - 16, 4);
@@ -1143,7 +1217,15 @@ function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
   // Single-pedestal desk: no near leg, so his shins have clear room under it.
 
-  // desktop slab
+  // the top face, receding up-right — what sells the slab as a surface
+  ctx.beginPath();
+  ctx.moveTo(x - 8, top);
+  ctx.lineTo(x - 8 + 16, top - 10);
+  ctx.lineTo(x + w + 8 + 16, top - 10);
+  ctx.lineTo(x + w + 8, top);
+  ctx.closePath();
+  inked(ctx, DESK_TOP_LIT, 2.4);
+  // front edge of the slab
   rr(ctx, x - 8, top, w + 16, 20, 5);
   inked(ctx, DESK_TOP, 2.8);
 
@@ -1204,6 +1286,12 @@ function drawStapler(ctx: CanvasRenderingContext2D, p: Prop) {
 export function drawProps(ctx: CanvasRenderingContext2D, s: RenderState) {
   for (const p of s.props) {
     if (p.state === "broken") continue;
+    // grounding shadow — fades and shrinks with altitude while airborne
+    if (p.state === "flying" || (p.state === "resting" && p.y > DESK.top + 30)) {
+      const alt = Math.max(0, FLOOR_Y - p.y);
+      const k = Math.max(0.35, 1 - alt / 520);
+      shadow(ctx, p.x, FLOOR_Y + 4, 16 * k, 0.09 * k);
+    }
     if (p.kind === "mug") drawMug(ctx, p, s.t);
     else drawStapler(ctx, p);
   }
@@ -1468,6 +1556,18 @@ export function render(ctx: CanvasRenderingContext2D, s: RenderState) {
   if (p === "flying") drawStreaks(ctx, s.guy.x, s.guy.y, s.guy.vx, s.guy.vy);
   for (const pr of s.props)
     if (pr.state === "flying") drawStreaks(ctx, pr.x, pr.y, pr.vx, pr.vy);
+
+  // his shadow stays on the floor no matter where he is — the seated poses
+  // inherit the chair's
+  if (p === "grabbed" || p === "flying") {
+    const alt = Math.max(0, FLOOR_Y - s.guy.y);
+    const k = Math.max(0.3, 1 - alt / 620);
+    shadow(ctx, s.guy.x, FLOOR_Y + 5, 44 * k, 0.11 * k);
+  } else if (p === "dazed") {
+    shadow(ctx, s.guy.x + 10 * s.guy.facing, FLOOR_Y + 6, 74, 0.1);
+  } else if (p === "rising" || p === "returning" || p === "storming") {
+    shadow(ctx, s.guy.x, FLOOR_Y + 5, 42, 0.11);
+  }
 
   if (p === "working" || p === "typing" || p === "sent") drawSeated(ctx, s);
   else if (p === "sitting") drawSeated(ctx, s, s.transition);
