@@ -40,7 +40,7 @@ export function ContactForm() {
       </div>
 
       {state === "sent" ? (
-        <div className="flex flex-col items-center gap-3 py-10 text-center">
+        <div role="status" className="flex flex-col items-center gap-3 py-10 text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green/15 text-green">
             <Check />
           </span>
@@ -82,7 +82,7 @@ export function ContactForm() {
             <Send size={15} />
           </button>
           {state === "error" && (
-            <p className="text-sm text-muted">
+            <p role="alert" className="text-sm text-muted">
               Something went wrong. Email me directly at{" "}
               <a href={`mailto:${profile.email}`} className="text-link hover:underline">
                 {profile.email}

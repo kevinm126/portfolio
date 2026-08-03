@@ -30,14 +30,14 @@ function statusText(game: Chess): string {
   if (game.isCheckmate()) {
     // The side to move has been mated, so the other side won.
     return game.turn() === "w"
-      ? "Checkmate — Kevin (Black) wins"
+      ? "Checkmate — I win as Black"
       : "Checkmate — the community (White) wins";
   }
   if (game.isStalemate()) return "Draw — stalemate";
   if (game.isInsufficientMaterial()) return "Draw — insufficient material";
   if (game.isThreefoldRepetition()) return "Draw — threefold repetition";
   if (game.isDraw()) return "Draw";
-  const side = game.turn() === "w" ? "White (community)" : "Black (Kevin)";
+  const side = game.turn() === "w" ? "White (community)" : "Black (me)";
   return `${side} to move${game.inCheck() ? " — check" : ""}`;
 }
 
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
   // Admin: start a fresh game.
   if (data.action === "reset") {
     if (!isAdmin) {
-      return Response.json({ error: "Only Kevin can start a new game." }, { status: 403 });
+      return Response.json({ error: "Only I can start a new game — nice try though." }, { status: 403 });
     }
     store.chess = {
       fen: CHESS_START_FEN,
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
   // Black is Kevin's side and requires the admin key.
   if (turn === "b" && !isAdmin) {
     return Response.json(
-      { error: "It's Kevin's move — the board is locked until he replies.", ...snapshot() },
+      { error: "It's my move — the board is locked until I reply.", ...snapshot() },
       { status: 403 }
     );
   }

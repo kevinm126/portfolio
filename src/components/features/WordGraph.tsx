@@ -289,7 +289,7 @@ export function WordGraph({ initialWord = "KEVIN" }: { initialWord?: string }) {
             className="inline-flex h-8 items-center gap-1.5 rounded-md bg-green px-3 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
           >
             {sendState === "sent" ? <Check size={13} /> : <Send size={13} />}
-            {sendState === "sending" ? "Sending…" : sendState === "sent" ? "Sent!" : "Send to Kevin"}
+            {sendState === "sending" ? "Sending…" : sendState === "sent" ? "Sent!" : "Send to me"}
           </button>
         </div>
       </div>

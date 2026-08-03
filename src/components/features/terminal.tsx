@@ -24,7 +24,12 @@ const BANNER = String.raw`
 
 export function Terminal() {
   const router = useRouter();
-  const [lines, setLines] = useState<Line[]>([]);
+  const [lines, setLines] = useState<Line[]>(() => [
+    { kind: "sys", text: BANNER },
+    { kind: "sys", text: `Welcome to ${profile.name}'s portfolio terminal. v1.0` },
+    { kind: "sys", text: `Type 'help' to see commands, or 'gui' to return to the site.` },
+    { kind: "sys", text: "" },
+  ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [hIdx, setHIdx] = useState(-1);
@@ -34,15 +39,6 @@ export function Terminal() {
 
   const print = useCallback((text: string, kind: Line["kind"] = "out") => {
     setLines((l) => [...l, { kind, text }]);
-  }, []);
-
-  useEffect(() => {
-    setLines([
-      { kind: "sys", text: BANNER },
-      { kind: "sys", text: `Welcome to ${profile.name}'s portfolio terminal. v1.0` },
-      { kind: "sys", text: `Type 'help' to see commands, or 'gui' to return to the site.` },
-      { kind: "sys", text: "" },
-    ]);
   }, []);
 
   useEffect(() => {
@@ -204,7 +200,14 @@ export function Terminal() {
 
       <div className="flex-1 overflow-y-auto p-4 leading-relaxed">
         {lines.map((l, i) => (
-          <div key={i} className={`whitespace-pre-wrap ${color(l.kind)}`}>
+          <div
+            key={i}
+            className={`${
+              l.text === BANNER
+                ? "whitespace-pre text-[clamp(6.5px,2.3vw,14px)] leading-[1.15]"
+                : "whitespace-pre-wrap"
+            } ${color(l.kind)}`}
+          >
             {l.kind === "in" ? (
               <span>
                 <span className="text-green-400">visitor@{profile.initials.toLowerCase()}</span>

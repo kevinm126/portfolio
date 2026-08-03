@@ -5,7 +5,8 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
   const links = socials.filter((s) => s.icon !== "fileText");
   return (
-    <footer className="mt-auto px-4 pb-12 pt-16 sm:px-8">
+    // pb-28 clears the fixed Copilot launcher (h-12 + bottom-5) at every width
+    <footer className="mt-auto px-4 pb-28 pt-16 sm:px-8">
       <div className="mx-auto flex max-w-[1216px] flex-col items-center gap-4 border-t border-border pt-8 text-sm text-muted sm:flex-row sm:justify-between">
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
           {links.map((s) => (

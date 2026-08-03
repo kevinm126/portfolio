@@ -41,8 +41,6 @@
 
   /* ── Radii ──────────────────────────────────────────────── */
   --radius-card:  6px;
-  --radius-tag:   2px;
-  --radius-pill:  9999px;
 
   /* ── Layout ─────────────────────────────────────────────── */
   --content-max:  1216px;
@@ -115,7 +113,6 @@ html[data-theme="light"] {
   --color-tag-bg:        var(--tag-bg);
 
   --radius-card: 6px;
-  --radius-tag:  2px;
 
   --font-sans: -apple-system, system-ui, "Segoe UI", "Noto Sans", Helvetica, Arial,
                sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
@@ -150,6 +147,35 @@ body {
     animation-duration: .001ms !important; animation-iteration-count: 1 !important;
     transition-duration: .001ms !important; scroll-behavior: auto !important;
   }
+}
+
+/* ── Animated Luca-style avatar ─────────────────────────────────
+   Float + glow + rising bubbles. All three are pure CSS, so the
+   prefers-reduced-motion reset above neutralises them automatically.
+   The cursor parallax tilt is JS and guards on reduced-motion itself. */
+@keyframes avatarFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+@keyframes avatarGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(90,168,219,.30), 0 0 16px 1px rgba(90,168,219,.16); }
+  50%      { box-shadow: 0 0 0 2px rgba(90,168,219,.50), 0 0 28px 5px rgba(90,168,219,.32); }
+}
+@keyframes avatarBubble {
+  0%   { top: 84%; opacity: 0; transform: translateX(-50%) scale(.6); }
+  20%  { opacity: .6; }
+  100% { top: 14%; opacity: 0; transform: translateX(-50%) scale(1); }
+}
+.avatar-float  { animation: avatarFloat 5s ease-in-out infinite; }
+.avatar-clip   { animation: avatarGlow 4.4s ease-in-out infinite; }
+.avatar-bubble {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, .85);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: avatarBubble 6s ease-in infinite;
 }
 
 /* Reusable card primitive */

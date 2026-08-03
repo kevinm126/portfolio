@@ -10,13 +10,13 @@ const first = profile.name.split(" ")[0];
 
 const GREETING: Msg = {
   role: "assistant",
-  content: `Hi! I'm ${first}'s AI assistant — a Copilot-style helper grounded in his résumé. Ask me about his experience, skills, or projects.`,
+  content: `Hi! I'm ${first} — well, an AI version of me, grounded in my résumé. Ask me about my experience, skills, or projects.`,
 };
 const SUGGESTIONS = [
-  "What's his strongest skill?",
+  "What's your strongest skill?",
   "Tell me about MetricPath",
-  "Is he good with Python?",
-  "How do I contact him?",
+  "Are you good with Python?",
+  "How do I contact you?",
 ];
 
 function CopilotGlyph({ size = 20 }: { size?: number }) {
@@ -78,18 +78,24 @@ export function CopilotChat() {
       </button>
 
       {open && (
-        <div className="fixed bottom-20 right-5 z-50 flex h-[30rem] w-[calc(100vw-2.5rem)] max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-2xl">
+        <div className="fixed bottom-20 right-5 z-50 flex h-[30rem] max-h-[calc(100vh-6.5rem)] w-[calc(100vw-2.5rem)] max-w-sm flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-2xl">
           <header className="flex items-center gap-2 border-b border-border bg-surface px-4 py-3">
             <span className="text-fg">
               <CopilotGlyph size={20} />
             </span>
             <div>
               <p className="text-sm font-semibold text-fg">Copilot</p>
-              <p className="text-xs text-muted">Ask {first}&apos;s résumé</p>
+              <p className="text-xs text-muted">Ask my résumé</p>
             </div>
           </header>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
+          <div
+            ref={scrollRef}
+            role="log"
+            aria-live="polite"
+            aria-label="Conversation"
+            className="flex-1 space-y-3 overflow-y-auto p-4"
+          >
             {msgs.map((m, i) => (
               <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
                 <div
@@ -140,6 +146,7 @@ export function CopilotChat() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              aria-label="Ask about my work"
               placeholder="Ask about my work…"
               className="flex-1 rounded-md border border-border bg-input px-3 py-2 text-sm text-fg outline-none focus:border-link"
             />
@@ -147,7 +154,7 @@ export function CopilotChat() {
               type="submit"
               disabled={loading || !input.trim()}
               aria-label="Send"
-              className="flex h-9 w-9 items-center justify-center rounded-md bg-green text-white disabled:opacity-50"
+              className="flex h-10 w-10 items-center justify-center rounded-md bg-green text-white disabled:opacity-50"
             >
               <Send size={15} />
             </button>

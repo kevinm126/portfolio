@@ -91,8 +91,9 @@ export const profile = {
   location: "Open to relocation · Remote (US)",
   email: "kmarin1220@gmail.com",
   resumeUrl: "/resume.pdf",
-  // Add a square headshot at public/avatar.jpg to replace the monogram (optional).
-  avatar: "/avatar.svg",
+  // Luca-style 3D headshot (optimized 768px JPEG, ~90KB). The sidebar renders
+  // it animated; the header avatar menu uses it static. Fallback at /avatar.svg.
+  avatar: "/avatar-3d.jpg",
   githubUsername: "kevinm126",
   wakatimeUsername: "", // optional — add to light up the WakaTime widget with real data
   about: [
@@ -301,17 +302,19 @@ export const projects: Project[] = [
       "A containerized Flask application with Docker and CI, built as deployment practice for shipping Python web apps.",
     tags: ["Python", "Flask", "Docker", "CI"],
     repoUrl: "https://github.com/kevinm126/flask-on-docker",
+    metrics: [{ value: "end-to-end", label: "Dockerized deploy + CI" }],
   },
   {
     slug: "this-portfolio",
     title: "This Portfolio",
     blurb:
-      "The site you're on: a Next.js 16 clone of a GitHub profile — interactive chess, a contribution graph you can type into, a Copilot-style chatbot, a ⌘K command palette, light/dark themes, and a community correspondence chess board.",
+      "The site you're on: a Next.js 16 clone of a GitHub profile — interactive chess, a contribution graph you can type into, a Copilot-style chatbot, a ⌘K command palette, light/dark themes, a community correspondence chess board, and a Poptropica-style office game with real consequences.",
     description:
-      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a research-review section, light/dark theming, and a shared community chess board. Built to be a project, not just a showcase.",
+      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a research-review section, light/dark theming, a shared community chess board, and 'Bother Kev' — a hand-drawn canvas office game where tormenting a tiny coworker eventually gets a real hurtful email sent to my real inbox. Built to be a project, not just a showcase.",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "chess.js"],
     repoUrl: "https://github.com/kevinm126/portfolio",
-    // liveUrl set after the first Vercel deploy
+    // Self-populates once NEXT_PUBLIC_SITE_URL is set (see .env.example).
+    liveUrl: process.env.NEXT_PUBLIC_SITE_URL,
     metrics: [{ value: "20+", label: "features" }],
   },
 ];

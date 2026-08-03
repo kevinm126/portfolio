@@ -41,8 +41,8 @@ export function ReadmeCard() {
           {techBadges.map((t) => (
             <li
               key={t.label}
-              className="inline-flex items-center gap-1.5 rounded border px-2 py-1 text-xs"
-              style={{ background: `${t.color}1f`, borderColor: `${t.color}55`, color: "#f0f6fc" }}
+              className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-fg"
+              style={{ background: `${t.color}1f`, borderColor: `${t.color}55` }}
             >
               <span className="h-2 w-2 rounded-full" style={{ background: t.color }} />
               {t.label}

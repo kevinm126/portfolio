@@ -230,7 +230,7 @@ export default function CommunityChess() {
         ) : (
           <p className="flex items-center gap-2 text-xs text-muted">
             <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-coral" />
-            Locked — waiting for Kevin to reply as Black.
+            Locked — waiting for me to reply as Black.
           </p>
         )}
 
@@ -238,7 +238,7 @@ export default function CommunityChess() {
 
         {snap.lastMoveBy && (
           <p className="text-xs text-muted">
-            Last move by {snap.lastMoveBy === "kevin" ? "Kevin" : "the community"} ·{" "}
+            Last move by {snap.lastMoveBy === "kevin" ? "me" : "the community"} ·{" "}
             {timeAgo(snap.lastMoveAt)}
           </p>
         )}

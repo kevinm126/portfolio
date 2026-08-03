@@ -4,10 +4,10 @@ import { Providers } from "./providers";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { CopilotChat } from "@/components/github/CopilotChat";
 import { profile } from "@/content/content";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  // TODO: set to your deployed domain for correct OG/canonical URLs
-  metadataBase: new URL("https://your-portfolio.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: `${profile.name} · ${profile.identities[0].label}`,
     template: `%s · ${profile.name}`,

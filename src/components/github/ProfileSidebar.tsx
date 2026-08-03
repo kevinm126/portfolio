@@ -3,6 +3,7 @@ import { MapPin, Mail } from "lucide-react";
 import { profile, socials } from "@/content/content";
 import { SocialIcon } from "@/components/ui/icons";
 import { PageViews } from "@/components/features/page-views";
+import { AnimatedAvatar } from "@/components/github/AnimatedAvatar";
 
 export function ProfileSidebar() {
   const bio = profile.identities[0].blurb;
@@ -12,11 +13,11 @@ export function ProfileSidebar() {
     <aside className="w-full shrink-0 px-4 pt-4 md:w-[256px] md:px-0 md:pt-0 min-[1010px]:w-[296px]">
       {/* avatar + name: row on mobile, stacked on md+ */}
       <div className="flex items-center gap-4 md:block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <AnimatedAvatar
           src={profile.avatar}
           alt={`${profile.name} avatar`}
-          className="h-20 w-20 shrink-0 rounded-full border border-border bg-surface object-cover min-[375px]:h-[88px] min-[375px]:w-[88px] md:h-auto md:w-full md:max-w-[296px]"
+          priority
+          className="aspect-square w-20 shrink-0 min-[375px]:w-[88px] md:w-full md:max-w-[296px]"
         />
         <div className="md:mt-4">
           <h1 className="text-2xl font-semibold leading-tight text-fg">{profile.name}</h1>
