@@ -35,8 +35,16 @@ export const SEAT_HEAD_Y = 302;
  * ragdoll that lands on it always has room to fall off either end.
  */
 export const DESK = { x: 498, w: 300, top: 380 } as const;
-export const KEYBOARD = { x: 508, w: 104 } as const;
-export const MONITOR = { x: 664, y: 250, w: 128, h: 116 } as const;
+/**
+ * The gray laptop, Introverted-Attorney style. The base sits where the old
+ * keyboard did (his typing hands land on it unchanged); the screen panel
+ * rises at the base's far end, cheated toward the viewer so the
+ * spreadsheet/email drama stays legible.
+ */
+export const LAPTOP = {
+  base: { x: 506, w: 110 },
+  screen: { x: 598, y: 258, w: 122, h: 104 },
+} as const;
 
 /** Speed cap on a flick, so a violent swipe can't fling him off-world. */
 export const MAX_THROW = 2400;
@@ -292,10 +300,10 @@ export type Prop = {
   bonkCdUntil: number;
 };
 
-/** Home spots, sized so both clear the keyboard, monitor stand and Kev. */
+/** Home spots, on the clear stretch of desk to the right of the laptop. */
 export const PROP_HOME: Record<PropKind, { x: number; y: number }> = {
-  mug: { x: 636, y: DESK.top - 14 },
-  stapler: { x: 666, y: DESK.top - 7 },
+  mug: { x: 738, y: DESK.top - 14 },
+  stapler: { x: 770, y: DESK.top - 7 },
 };
 
 /**

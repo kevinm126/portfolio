@@ -18,8 +18,7 @@ import {
   CABLE_JACK,
   CHAIR_SEAT_Y,
   DESK,
-  KEYBOARD,
-  MONITOR,
+  LAPTOP,
   PROP_R,
   SEAT_X,
   SEAT_HEAD_X,
@@ -69,16 +68,17 @@ export type RenderState = {
   clockM: number;
 };
 
-/* ── palette: grayscale, plus one red reserved for the meltdown ─────── */
+/* ── palette: Introverted-Attorney pastels — cream wall, dusty-pink
+   floor, butter-yellow desk, gray hardware. The red tie and the meltdown
+   are still the only saturated things in the room. ─────────────────── */
 const INK = "#15171c";
-const WALL = "#f4f5f7";
-const WALL_TOP = "#e7e9ec";
-const BASEBOARD = "#c8ccd2";
-const FLOOR = "#dcdee2";
-const FLOOR_LINE = "#c1c5cb";
-const DESK_TOP = "#5c616a";
-const DESK_FACE = "#474c54";
-const DESK_DARK = "#383c43";
+const WALL = "#f2ecdf";
+const WALL_TOP = "#e8e1d0";
+const BASEBOARD = "#d9d0be";
+const FLOOR = "#ecd0c8";
+const DESK_TOP = "#f0e2a8";
+const DESK_FACE = "#e5d391";
+const DESK_DARK = "#474c54";
 const METAL = "#9aa0a8";
 const PAPER = "#ffffff";
 const SKIN = "#ffffff";
@@ -697,29 +697,79 @@ function drawRoom(ctx: CanvasRenderingContext2D) {
   ctx.lineTo(VIEW_W, FLOOR_Y - 12);
   ctx.stroke();
 
+  // the floor is a flat field of dusty pink — the reference rooms have no
+  // tile pattern, just colour meeting colour
   ctx.fillStyle = FLOOR;
   ctx.fillRect(-12, FLOOR_Y, VIEW_W + 24, VIEW_H - FLOOR_Y + 12);
-  ctx.strokeStyle = FLOOR_LINE;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i < 2; i++) {
-    const y = FLOOR_Y + 24 + i * 24;
-    ctx.moveTo(0, y);
-    ctx.lineTo(VIEW_W, y);
-  }
-  for (let x = 40; x < VIEW_W; x += 96) {
-    ctx.moveTo(x, FLOOR_Y);
-    ctx.lineTo(x, FLOOR_Y + 24);
-    ctx.moveTo(x + 48, FLOOR_Y + 24);
-    ctx.lineTo(x + 48, FLOOR_Y + 48);
-  }
-  ctx.stroke();
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(0, FLOOR_Y);
-  ctx.lineTo(VIEW_W, FLOOR_Y);
+  ctx.moveTo(-12, FLOOR_Y);
+  ctx.lineTo(VIEW_W + 12, FLOOR_Y);
   ctx.stroke();
+}
+
+/** The printer he crashes out on. Pure decor — until something hits it. */
+function drawPrinter(ctx: CanvasRenderingContext2D) {
+  const x = 272,
+    w = 96,
+    top = FLOOR_Y - 96;
+  // body
+  rr(ctx, x, top + 14, w, 82, 5);
+  inked(ctx, "#b9bec6", 2.6);
+  // scanner lid
+  rr(ctx, x - 4, top, w + 8, 16, 4);
+  inked(ctx, "#9aa0a8", 2.4);
+  // control panel with one sad button
+  rr(ctx, x + w - 30, top + 22, 22, 10, 3);
+  inked(ctx, DESK_DARK, 1.8);
+  ctx.fillStyle = PAPER;
+  ctx.beginPath();
+  ctx.arc(x + w - 12, top + 27, 2.2, 0, Math.PI * 2);
+  ctx.fill();
+  // output slot, mid-print — a sheet forever stuck halfway
+  rr(ctx, x + 8, top + 40, w - 16, 7, 2);
+  inked(ctx, "#8a9098", 1.8);
+  rr(ctx, x + 18, top + 30, 42, 11, 1);
+  inked(ctx, PAPER, 1.8);
+  // paper drawer
+  rr(ctx, x + 8, top + 58, w - 16, 22, 3);
+  inked(ctx, "#a6acb4", 2);
+  rr(ctx, x + w / 2 - 12, top + 66, 24, 5, 2);
+  inked(ctx, METAL, 1.6);
+}
+
+/** Ambient defeat: paper cups and crumpled drafts nobody picks up. */
+function drawClutter(ctx: CanvasRenderingContext2D) {
+  // cups: one by the printer, one under the desk's far end
+  for (const [cx, cy] of [
+    [392, FLOOR_Y - 6],
+    [826, FLOOR_Y - 6],
+  ] as const) {
+    ctx.beginPath();
+    ctx.moveTo(cx - 6, cy - 14);
+    ctx.lineTo(cx + 6, cy - 14);
+    ctx.lineTo(cx + 4.5, cy);
+    ctx.lineTo(cx - 4.5, cy);
+    ctx.closePath();
+    inked(ctx, PAPER, 2);
+  }
+  // crumpled paper balls
+  for (const [bx, by, r] of [
+    [420, FLOOR_Y - 5, 6],
+    [252, FLOOR_Y - 4, 5],
+    [448, FLOOR_Y - 4, 4.5],
+  ] as const) {
+    ctx.beginPath();
+    ctx.moveTo(bx - r, by);
+    for (let i = 1; i <= 7; i++) {
+      const a = (i / 7) * Math.PI * 2;
+      const rr2 = r * (0.75 + ((i * 37) % 10) / 22);
+      ctx.lineTo(bx + Math.cos(a) * rr2, by + Math.sin(a) * rr2 * 0.8);
+    }
+    ctx.closePath();
+    inked(ctx, PAPER, 1.8);
+  }
 }
 
 function drawWindow(ctx: CanvasRenderingContext2D, t: number) {
@@ -730,12 +780,12 @@ function drawWindow(ctx: CanvasRenderingContext2D, t: number) {
   ctx.save();
   rr(ctx, x, y, w, h, 5);
   ctx.clip();
-  ctx.fillStyle = "#eef0f3";
+  ctx.fillStyle = "#f6f1e6";
   ctx.fillRect(x, y, w, h);
-  // skyline in flat grays
-  ctx.fillStyle = "#b9bec5";
+  // skyline in flat warm grays
+  ctx.fillStyle = "#cec4b2";
   [24, 60, 36, 72, 48].forEach((bh, i) => ctx.fillRect(x + i * 40 - 4, y + h - bh - 26, 34, bh + 26));
-  ctx.fillStyle = "#a1a7af";
+  ctx.fillStyle = "#bcb19d";
   ctx.fillRect(x, y + h - 28, w, 28);
   // drifting clouds
   ctx.fillStyle = "#ffffff";
@@ -1002,15 +1052,15 @@ function drawLight(ctx: CanvasRenderingContext2D, s: RenderState) {
   ctx.restore();
 }
 
-/** Side-view office chair, drawn behind Kev. */
+/** Side-view office chair, drawn behind Kev. Dark gray, like the reference. */
 function drawChair(ctx: CanvasRenderingContext2D) {
   const x = SEAT_X;
   // backrest
   rr(ctx, x - 46, CHAIR_SEAT_Y - 82, 17, 88, 8);
-  inked(ctx, DESK_FACE, 2.6);
+  inked(ctx, "#565b64", 2.6);
   // seat
   rr(ctx, x - 44, CHAIR_SEAT_Y - 4, 82, 14, 6);
-  inked(ctx, DESK_TOP, 2.6);
+  inked(ctx, "#6a707a", 2.6);
   // post + base
   rr(ctx, x - 12, CHAIR_SEAT_Y + 10, 14, 40, 4);
   inked(ctx, METAL, 2.4);
@@ -1078,7 +1128,7 @@ function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
 }
 
-/** The desk, seen side-on and facing right. */
+/** The butter-yellow desk, seen side-on and facing right. */
 function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   const { x, w, top } = DESK;
 
@@ -1087,7 +1137,7 @@ function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   inked(ctx, DESK_FACE, 2.8);
   for (let i = 0; i < 2; i++) {
     rr(ctx, x + w - 90, top + 30 + i * 40, 72, 32, 4);
-    inked(ctx, DESK_DARK, 2.2);
+    inked(ctx, "#d9c67e", 2.2);
     rr(ctx, x + w - 65, top + 42 + i * 40, 22, 7, 3);
     inked(ctx, METAL, 1.8);
   }
@@ -1097,20 +1147,7 @@ function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   rr(ctx, x - 8, top, w + 16, 20, 5);
   inked(ctx, DESK_TOP, 2.8);
 
-  drawMonitor(ctx, s);
-
-  // keyboard, angled toward him
-  rr(ctx, KEYBOARD.x, top - 9, KEYBOARD.w, 11, 3);
-  inked(ctx, DESK_DARK, 2.2);
-  ctx.strokeStyle = METAL;
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  for (let i = 1; i < 7; i++) {
-    ctx.moveTo(KEYBOARD.x + i * (KEYBOARD.w / 7), top - 8);
-    ctx.lineTo(KEYBOARD.x + i * (KEYBOARD.w / 7), top + 1);
-  }
-  ctx.stroke();
-
+  drawLaptop(ctx, s);
 }
 
 /* ── the desk props (live objects — see engine.ts) ─────────────────── */
@@ -1172,24 +1209,34 @@ export function drawProps(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
 }
 
-function drawMonitor(ctx: CanvasRenderingContext2D, s: RenderState) {
-  const { x, y, w, h } = MONITOR;
+function drawLaptop(ctx: CanvasRenderingContext2D, s: RenderState) {
+  const { x, y, w, h } = LAPTOP.screen;
   const top = DESK.top;
 
-  // stand
-  rr(ctx, x + w / 2 - 13, y + h, 26, top - (y + h), 3);
-  inked(ctx, DESK_DARK, 2.4);
-  rr(ctx, x + w / 2 - 40, top - 8, 80, 10, 4);
-  inked(ctx, DESK_DARK, 2.4);
+  // base on the desk — his typing hands land on it
+  rr(ctx, LAPTOP.base.x, top - 9, LAPTOP.base.w, 11, 3);
+  inked(ctx, "#8a9098", 2.2);
+  ctx.strokeStyle = METAL;
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (let i = 1; i < 7; i++) {
+    ctx.moveTo(LAPTOP.base.x + i * (LAPTOP.base.w / 7), top - 8);
+    ctx.lineTo(LAPTOP.base.x + i * (LAPTOP.base.w / 7), top + 1);
+  }
+  ctx.stroke();
 
-  // bezel
-  rr(ctx, x, y, w, h, 6);
+  // hinge riser connecting base to panel
+  rr(ctx, x + 4, top - 14, 26, 8, 3);
+  inked(ctx, "#8a9098", 2);
+
+  // the screen panel, cheated toward the viewer so the drama stays legible
+  rr(ctx, x, y, w, h + (top - 16 - (y + h)), 6);
   inked(ctx, DESK_DARK, 3);
 
-  const sx = x + 9,
-    sy = y + 9,
-    sw = w - 18,
-    sh = h - 24;
+  const sx = x + 8,
+    sy = y + 8,
+    sw = w - 16,
+    sh = h - 20;
 
   if (s.screen.mode === "work") {
     ctx.fillStyle = PAPER;
@@ -1408,6 +1455,8 @@ export function render(ctx: CanvasRenderingContext2D, s: RenderState) {
   drawClock(ctx, s);
   drawWhiteboard(ctx, s);
   drawCabinet(ctx);
+  drawPrinter(ctx);
+  drawClutter(ctx);
   drawPlant(ctx, s.t, s.plantWob);
   drawLight(ctx, s);
   drawChair(ctx);

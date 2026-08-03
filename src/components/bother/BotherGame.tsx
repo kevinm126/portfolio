@@ -364,7 +364,7 @@ export default function BotherGame() {
       persist();
     };
 
-    /** Ripple an impact through the room: poster, light, plant. */
+    /** Ripple an impact through the room: poster, light, plant, printer. */
     const rattle = (x: number, y: number, strength: number) => {
       if (strength < 500) return;
       const posterX = 348;
@@ -374,6 +374,11 @@ export default function BotherGame() {
       }
       if (y < 130 && Math.abs(x - 330) < 260) g.lightFlickerUntil = g.t + 0.5 + strength / 4000;
       if (x > 700 && y > FLOOR_Y - 160) g.plantWob = Math.min(1, g.plantWob + strength / 2400);
+      // a hard hit near the printer coughs a few sheets out of the tray
+      if (strength > 900 && Math.abs(x - 320) < 140 && y > FLOOR_Y - 240) {
+        burst(g.particles, 320, FLOOR_Y - 92, "paper", Math.min(6, Math.round(strength / 500)));
+        beepRef.current(700, 400, 0.05, "square", 0.02);
+      }
     };
 
     /**
