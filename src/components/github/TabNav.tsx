@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Home, Code2, Mail, BookOpen, MoreHorizontal, type LucideProps } from "lucide-react";
+import { Home, Code2, Mail, BookOpen, Briefcase, MoreHorizontal, type LucideProps } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TabId = "welcome" | "portfolio" | "research" | "chess" | "contact";
+export type TabId = "welcome" | "portfolio" | "research" | "chess" | "bother" | "contact";
 
 function PawnIcon(props: LucideProps) {
   const { size = 16, ...rest } = props;
@@ -23,19 +23,25 @@ const TABS: Tab[] = [
   { id: "portfolio", label: "Portfolio", href: "/portfolio", Icon: Code2 },
   { id: "research", label: "Research", href: "/research", Icon: BookOpen },
   { id: "chess", label: "Chess", href: "/chess", Icon: PawnIcon },
+  { id: "bother", label: "Bother Kev", href: "/bother", Icon: Briefcase },
   { id: "contact", label: "Get in Touch", href: "/contact", Icon: Mail },
 ];
 
 export function TabNav({ active }: { active: TabId }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape" && open) {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     document.addEventListener("mousedown", h);
     document.addEventListener("keydown", onKey);
@@ -43,7 +49,31 @@ export function TabNav({ active }: { active: TabId }) {
       document.removeEventListener("mousedown", h);
       document.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [open]);
+
+  // Move focus into the menu when it opens.
+  useEffect(() => {
+    if (open) menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+  }, [open]);
+
+  function onMenuKeyDown(e: React.KeyboardEvent) {
+    const items = [...(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+    if (!items.length) return;
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      items[(i + 1) % items.length]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      items[(i - 1 + items.length) % items.length]?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      items[0]?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      items[items.length - 1]?.focus();
+    }
+  }
 
   const overflow = TABS.slice(2); // Research + Chess + Contact collapse on small screens
   const overflowActive = overflow.some((t) => t.id === active);
@@ -71,10 +101,11 @@ export function TabNav({ active }: { active: TabId }) {
       {/* overflow menu (small screens) */}
       <div ref={ref} className="relative flex min-[808px]:hidden">
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-label="More tabs"
-          aria-haspopup="true"
+          aria-haspopup="menu"
           aria-expanded={open}
           className={cn(
             "relative flex items-center px-3 pb-3 pt-1 text-sm",
@@ -87,11 +118,18 @@ export function TabNav({ active }: { active: TabId }) {
           )}
         </button>
         {open && (
-          <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-md border border-border bg-surface py-1 shadow-2xl">
+          <div
+            ref={menuRef}
+            role="menu"
+            aria-label="More tabs"
+            onKeyDown={onMenuKeyDown}
+            className="absolute right-0 top-full z-50 mt-1 w-44 rounded-md border border-border bg-surface py-1 shadow-2xl"
+          >
             {overflow.map((t) => (
               <Link
                 key={t.id}
                 href={t.href}
+                role="menuitem"
                 onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 text-sm hover:bg-btn",

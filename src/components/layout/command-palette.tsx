@@ -11,6 +11,7 @@ import {
   MessageSquare,
   FileText,
   BookOpen,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 import { socials, profile } from "@/content/content";
@@ -28,6 +29,7 @@ const ROUTES: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Portfolio", href: "/portfolio", icon: Code2 },
   { label: "Research", href: "/research", icon: BookOpen },
   { label: "Chess", href: "/chess", icon: MessageSquare },
+  { label: "Bother Kev", href: "/bother", icon: Briefcase },
   { label: "Get in Touch", href: "/contact", icon: Mail },
 ];
 
@@ -80,7 +82,7 @@ export function CommandPalette() {
       <Command
         loop
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-surface shadow-2xl"
+        className="w-full max-w-xl overflow-hidden rounded-md border border-border bg-surface shadow-2xl"
       >
         <div className="flex items-center gap-2 border-b border-border px-4">
           <Search size={16} className="text-icon" />

@@ -24,13 +24,27 @@ export type ChessState = {
 export const CHESS_START_FEN =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-type Store = { views: number; guestbook: GuestEntry[]; chess: ChessState };
+/** Rate-limit ledger for the Bother Kev email pipeline (/api/bother). */
+export type BotherState = {
+  day: string; // YYYY-MM-DD the counters belong to
+  hurtsToday: number;
+  apologiesToday: number;
+  byIp: Record<string, { lastHurtAt: number; lastApologyAt: number; hurtsToday: number }>;
+};
+
+type Store = {
+  views: number;
+  guestbook: GuestEntry[];
+  chess: ChessState;
+  bother: BotherState;
+};
 
 const g = globalThis as unknown as { __portfolioStore?: Store };
 
 if (!g.__portfolioStore) {
   g.__portfolioStore = {
     views: 1284,
+    bother: { day: "", hurtsToday: 0, apologiesToday: 0, byIp: {} },
     chess: {
       fen: CHESS_START_FEN,
       history: [],
@@ -59,6 +73,11 @@ if (!g.__portfolioStore) {
       },
     ],
   };
+}
+
+// Backfill for a store created by an older module version (dev hot-reload).
+if (!g.__portfolioStore.bother) {
+  g.__portfolioStore.bother = { day: "", hurtsToday: 0, apologiesToday: 0, byIp: {} };
 }
 
 export const store = g.__portfolioStore;

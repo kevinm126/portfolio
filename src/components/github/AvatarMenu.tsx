@@ -12,12 +12,15 @@ const ITEMS = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "Research", href: "/research" },
   { label: "Chess", href: "/chess" },
+  { label: "Bother Kev", href: "/bother" },
   { label: "Get in Touch", href: "/contact" },
 ];
 
 export function AvatarMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const github = socials.find((s) => s.icon === "github")?.href;
   const { theme, toggleTheme } = useTheme();
 
@@ -26,7 +29,10 @@ export function AvatarMenu() {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape" && open) {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     document.addEventListener("mousedown", h);
     document.addEventListener("keydown", onKey);
@@ -34,17 +40,42 @@ export function AvatarMenu() {
       document.removeEventListener("mousedown", h);
       document.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [open]);
+
+  // Move focus into the menu when it opens.
+  useEffect(() => {
+    if (open) menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+  }, [open]);
+
+  function onMenuKeyDown(e: React.KeyboardEvent) {
+    const items = [...(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+    if (!items.length) return;
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      items[(i + 1) % items.length]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      items[(i - 1 + items.length) % items.length]?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      items[0]?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      items[items.length - 1]?.focus();
+    }
+  }
 
   return (
     <div ref={ref} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Open menu"
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-0.5"
+        className="-m-1.5 flex items-center gap-0.5 p-1.5"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -55,7 +86,13 @@ export function AvatarMenu() {
         <ChevronDown size={13} className="text-icon" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-surface shadow-2xl">
+        <div
+          ref={menuRef}
+          role="menu"
+          aria-label="Site menu"
+          onKeyDown={onMenuKeyDown}
+          className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-surface shadow-2xl"
+        >
           <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={profile.avatar} alt="" className="h-7 w-7 rounded-full border border-border" />
@@ -69,16 +106,18 @@ export function AvatarMenu() {
               <Link
                 key={it.href}
                 href={it.href}
+                role="menuitem"
                 onClick={() => setOpen(false)}
-                className={cn("block px-3 py-1.5 text-sm text-fg hover:bg-btn")}
+                className={cn("block px-3 py-2 text-sm text-fg hover:bg-btn")}
               >
                 {it.label}
               </Link>
             ))}
             <button
               type="button"
+              role="menuitem"
               onClick={toggleTheme}
-              className="flex w-full items-center gap-2 border-t border-border px-3 py-1.5 text-left text-sm text-fg hover:bg-btn"
+              className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left text-sm text-fg hover:bg-btn"
             >
               {theme === "dark" ? (
                 <Sun size={15} className="text-icon" />
@@ -90,9 +129,10 @@ export function AvatarMenu() {
             {github && (
               <a
                 href={github}
+                role="menuitem"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block border-t border-border px-3 py-1.5 text-sm text-muted hover:bg-btn"
+                className="block border-t border-border px-3 py-2 text-sm text-muted hover:bg-btn"
               >
                 GitHub ↗
               </a>

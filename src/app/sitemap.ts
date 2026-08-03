@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { projects } from "@/content/content";
+import { SITE_URL } from "@/lib/site";
 
-// TODO: replace with your deployed domain
-const BASE = "https://your-portfolio.vercel.app";
+const BASE = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/portfolio`, lastModified: now, priority: 0.8 },
     { url: `${BASE}/research`, lastModified: now, priority: 0.7 },
     { url: `${BASE}/chess`, lastModified: now, priority: 0.6 },
+    { url: `${BASE}/bother`, lastModified: now, priority: 0.6 },
     { url: `${BASE}/contact`, lastModified: now, priority: 0.7 },
     { url: `${BASE}/terminal`, lastModified: now, priority: 0.4 },
     ...projects
