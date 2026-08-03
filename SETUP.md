@@ -118,6 +118,12 @@ are logged server-side and the game says "demo mode" in the aftermath dialog. Ra
 Over the limit, the game plays an "Outbox full" beat instead of pretending it sent. The
 apology button in the aftermath dialog sends a real (also rate-limited) email.
 
+After a meltdown the game asks "why did you do it?" — answers land in the same in-memory
+store (today's tallies surface on Kev's whiteboard). Like the chess game, that store resets
+on redeploy; swap to Upstash if the confessions should survive. Everything Kev remembers
+about a visitor (trust, lifetime incidents, his spreadsheet progress) lives in that
+visitor's own localStorage — nothing personal is stored server-side.
+
 ---
 
 ## 4. Deploy (Vercel)

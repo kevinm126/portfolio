@@ -5,10 +5,18 @@ import Link from "next/link";
 import { CircleHelp, Volume2, VolumeX } from "lucide-react";
 import {
   BODY_R,
+  BRITTLE_WORK_SECS,
+  CABLE_ARM_AT,
+  CABLE_HIT,
   DAZED_LINES,
   DAZE_TIME,
   DESK,
+  DESPAIR_LINE,
+  DESPAIR_TIME,
+  FLINCH_LINE,
   FLOOR_Y,
+  FLOW_1_AFTER,
+  FLOW_2_AFTER,
   GRAB_DAMP,
   GRAB_STIFF,
   HOLD_LINES,
@@ -19,9 +27,12 @@ import {
   PROP_HIT_LINES,
   PROP_MISS_LINES,
   RISE_TIME,
+  ROW_LOSS_BONK,
+  ROW_SECS,
   SEAT_X,
   SEAT_HEAD_X,
   SEAT_HEAD_Y,
+  SHEET_DONE_LINE,
   SIT_TIME,
   STORM_SPEED,
   TOO_LATE_LINE,
@@ -30,6 +41,7 @@ import {
   WALL_R,
   WALK_ACCEL,
   WALK_SPEED,
+  WHY_CALLBACKS,
   WORK_LINES,
   burst,
   clamp01,
@@ -39,7 +51,10 @@ import {
   makeProps,
   propTouchesBox,
   randThreshold,
+  randThresholdBrittle,
   resetProp,
+  rowLoss,
+  sheetName,
   stepFlight,
   stepParticles,
   stepProp,
@@ -51,12 +66,27 @@ import {
   type Tier,
 } from "./engine";
 import { guyHitBox, propHitBox, render, type FaceMood, type RenderState } from "./draw";
+import {
+  FLINCH_TRUST,
+  FLINCH_TRUST_BAD,
+  ROWS_TARGET,
+  TRUST,
+  clampTrust,
+  greetingFor,
+  loadMemory,
+  saveMemory,
+  wipeMemory,
+  type KevMemory,
+  type WhyAnswer,
+} from "./memory";
 
 type Overlay =
   | { kind: "sent"; line: string; subject: string; demo: boolean }
   | { kind: "limit" }
   | { kind: "failed" }
-  | { kind: "apologized"; demo: boolean };
+  | { kind: "apologized"; demo: boolean }
+  | { kind: "why" }
+  | { kind: "cablePulled"; lost: number };
 
 type Game = {
   guy: Guy;
@@ -82,7 +112,7 @@ type Game = {
   posterSkew: number;
   plantWob: number;
   shake: number;
-  screenMode: "work" | "compose" | "sent";
+  screenMode: "work" | "compose" | "sent" | "off";
   composeT: number;
   grabTilt: number;
   walkTarget: number | null;
@@ -100,6 +130,39 @@ type Game = {
   pointer: { x: number; y: number; history: { x: number; y: number; t: number }[] };
   grabTravel: number;
   sendInFlight: boolean;
+
+  /* ── memory / trust ── */
+  mem: KevMemory;
+  /** Fractional spreadsheet rows; mem.rows mirrors the floor of this. */
+  rows: number;
+  /** Uninterrupted working seconds — flow state speeds him up. */
+  rowFlow: number;
+  /** Rows lost mid-air, revealed (with the line) when he re-sits. */
+  pendingRowLoss: number;
+  /** Strongest impact of the current flight, for scaling the loss. */
+  worstImpact: number;
+  /** Typing at half speed until this game-time (post-cable brittleness). */
+  workSlowUntil: number;
+  greetingPending: boolean;
+  flinchT: number;
+  flinchCdUntil: number;
+  /** Fourth-wall stare until this game-time; 0 = not staring. */
+  stareUntil: number;
+  meltdownsThisSession: number;
+  stareOwed: boolean;
+  /** True from meltdown until the "why" question has been shown. */
+  whyPending: boolean;
+  cablePulled: boolean;
+  cableOverlayAt: number | null;
+  cableRowsLost: number;
+  /** Crowd confession beat on the whiteboard. */
+  confessionText: string | null;
+  confessionUntil: number;
+  nextConfessionAt: number;
+  whyCounts: Record<WhyAnswer, number> | null;
+  /** Seconds of peace accumulated toward the next trust tick. */
+  peaceAccum: number;
+  lastSavedAt: number;
 };
 
 const GRAB_STATES: Guy["phase"][] = [
@@ -111,6 +174,10 @@ const GRAB_STATES: Guy["phase"][] = [
   "flying",
 ];
 
+/** Wall-clock helpers, hoisted so event handlers stay lint-pure. */
+const nowSecs = () => performance.now() / 1000;
+const wallNow = () => Date.now();
+
 export default function BotherGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -121,6 +188,7 @@ export default function BotherGame() {
   const [ui, setUi] = useState({ bothers: 0, tier: 0 as Tier });
   const [muted, setMuted] = useState(false);
   const [apology, setApology] = useState<"idle" | "sending">("idle");
+  const [wipeArmed, setWipeArmed] = useState(false);
 
   const mutedRef = useRef(muted);
   useEffect(() => {
@@ -207,8 +275,42 @@ export default function BotherGame() {
       pointer: { x: 0, y: 0, history: [] },
       grabTravel: 0,
       sendInFlight: false,
+      mem: loadMemory(),
+      rows: 0,
+      rowFlow: 0,
+      pendingRowLoss: 0,
+      worstImpact: 0,
+      workSlowUntil: 0,
+      greetingPending: true,
+      flinchT: 0,
+      flinchCdUntil: 0,
+      stareUntil: 0,
+      meltdownsThisSession: 0,
+      stareOwed: false,
+      whyPending: false,
+      cablePulled: false,
+      cableOverlayAt: null,
+      cableRowsLost: 0,
+      confessionText: null,
+      confessionUntil: 0,
+      nextConfessionAt: 90,
+      whyCounts: null,
+      peaceAccum: 0,
+      lastSavedAt: 0,
     };
+    g.mem.visits += 1;
+    g.mem.lastVisitAt = Date.now();
+    g.rows = g.mem.rows;
+    saveMemory(g.mem);
     G.current = g;
+
+    // today's crowd confession counts, for the whiteboard beat
+    fetch("/api/bother")
+      .then((r) => r.json())
+      .then((d: { ok: boolean; counts?: Record<WhyAnswer, number> }) => {
+        if (d.ok && d.counts && G.current) G.current.whyCounts = d.counts;
+      })
+      .catch(() => {});
 
     const now0 = new Date();
     const clockH = now0.getHours();
@@ -233,6 +335,34 @@ export default function BotherGame() {
     const pick = (arr: readonly string[]) => arr[Math.floor(Math.random() * arr.length)];
     const tier = () => tierFor(g.bothers, g.threshold);
     const pushUi = () => uiRef.current({ bothers: g.bothers, tier: tier() });
+
+    const persist = () => {
+      g.mem.rows = Math.floor(g.rows);
+      saveMemory(g.mem);
+      g.lastSavedAt = g.t;
+    };
+    const applyTrust = (delta: number) => {
+      g.mem.trust = clampTrust(g.mem.trust + delta);
+    };
+    /** One grab-release or prop hit: the shared bookkeeping. */
+    const countIncident = () => {
+      g.bothers += 1;
+      g.incidents += 1;
+      g.mem.lifetimeIncidents += 1;
+      applyTrust(TRUST.incident);
+      g.lastBotherAt = Date.now();
+      g.peaceAccum = 0;
+      g.rowFlow = 0;
+    };
+    /** The moment the hurtful email starts being typed. */
+    const meltdownBegan = () => {
+      g.mem.meltdowns += 1;
+      g.meltdownsThisSession += 1;
+      if (g.meltdownsThisSession >= 2) g.stareOwed = true;
+      g.whyPending = true;
+      applyTrust(TRUST.meltdown);
+      persist();
+    };
 
     /** Ripple an impact through the room: poster, light, plant. */
     const rattle = (x: number, y: number, strength: number) => {
@@ -270,9 +400,7 @@ export default function BotherGame() {
      * and goes straight for the keyboard.
      */
     const propBother = () => {
-      g.bothers += 1;
-      g.incidents += 1;
-      g.lastBotherAt = Date.now();
+      countIncident();
       pushUi();
       if (g.bothers >= g.threshold) {
         if (g.guy.phase === "working" || g.guy.phase === "sitting") {
@@ -282,6 +410,7 @@ export default function BotherGame() {
           g.guy.phaseT = 0;
           g.screenMode = "compose";
           g.composeT = 0;
+          meltdownBegan();
         } else if (g.guy.phase === "returning") {
           say("THAT'S IT.", 1.6);
           beepRef.current(220, 80, 0.4, "sawtooth", 0.08);
@@ -389,6 +518,8 @@ export default function BotherGame() {
               g.faceOverride = "worried";
               g.faceOverrideUntil = g.t + 2.6;
             }
+            g.mem.mugsBroken += 1;
+            applyTrust(TRUST.mugBreak - TRUST.incident); // net -5 with the incident below
             propBother();
           } else {
             burst(g.particles, im.x, im.y, "puff", Math.min(5, Math.round(im.strength / 400) + 1));
@@ -412,11 +543,17 @@ export default function BotherGame() {
             // it ricochets off him and loses most of its heart
             p.vx = -p.vx * 0.35 + (Math.random() - 0.5) * 80;
             p.vy = Math.min(p.vy, 0) * 0.3 - 120;
-            if (guy.phase === "typing" || guy.phase === "sent" || guy.phase === "storming") {
+            if (
+              guy.phase === "typing" ||
+              guy.phase === "sent" ||
+              guy.phase === "storming" ||
+              guy.phase === "despair"
+            ) {
               say(TOO_LATE_LINE, 1.4);
             } else {
               say(pick(PROP_HIT_LINES[p.kind]), 2.4);
               g.faceOverride = null; // the tier face (angrier now) reads better
+              if (guy.phase === "working") g.rows = Math.max(0, g.rows - ROW_LOSS_BONK);
               propBother();
             }
           }
@@ -425,6 +562,24 @@ export default function BotherGame() {
 
       switch (guy.phase) {
         case "working": {
+          const staring = g.stareUntil > g.t;
+
+          // first settled moment of the visit: he acknowledges your history
+          if (g.greetingPending && !blockedRef.current) {
+            g.greetingPending = false;
+            const greet = greetingFor(g.mem);
+            if (greet.line) {
+              say(greet.line, 3);
+              if (greet.mood) {
+                g.faceOverride = greet.mood;
+                g.faceOverrideUntil = g.t + 3;
+              }
+            } else if (g.mem.visits > 1 && g.mem.trust < -60) {
+              // beyond words — he just watches you arrive
+              g.stareUntil = g.t + 2.5;
+            }
+          }
+
           // mercy: anger cools off if you leave him alone
           if (g.bothers > 0 && Date.now() - g.lastBotherAt > 40_000) {
             g.bothers -= 1;
@@ -432,14 +587,101 @@ export default function BotherGame() {
             pushUi();
           }
           // peace beat
-          if (!g.peaceShown && g.incidents === 0 && g.t > 50) {
+          if (!g.peaceShown && g.incidents === 0 && g.mem.lifetimeIncidents === 0 && g.t > 50) {
             g.peaceShown = true;
             say(PEACE_LINE, 4.5);
             g.faceOverride = "happy";
             g.faceOverrideUntil = g.t + 4.5;
           }
-          if (g.t > g.nextWorkLineAt && !g.bubble) {
-            if (Math.random() < 0.5) say(pick(WORK_LINES), 2.2);
+
+          // the rows: his life's work, one cell at a time. Flow when left alone.
+          if (!staring) {
+            g.rowFlow += dt;
+            const flow = g.rowFlow > FLOW_2_AFTER ? 3 : g.rowFlow > FLOW_1_AFTER ? 2 : 1;
+            const brittle = g.t < g.workSlowUntil ? 0.5 : 1;
+            g.rows += (dt / ROW_SECS) * flow * brittle;
+            if (g.rows >= ROWS_TARGET) {
+              g.rows = 0;
+              g.rowFlow = 0;
+              g.mem.sheetsDone += 1;
+              say(SHEET_DONE_LINE, 3.6);
+              g.faceOverride = "happy";
+              g.faceOverrideUntil = g.t + 3.6;
+              burst(g.particles, SEAT_HEAD_X + 120, DESK.top - 40, "paper", 6);
+              g.nextWorkLineAt = g.t + 5; // "Q3." lands right after
+              persist();
+            }
+          }
+
+          // a quiet minute at a time, he starts to relax about you
+          g.peaceAccum += dt;
+          if (g.peaceAccum >= 60) {
+            g.peaceAccum -= 60;
+            applyTrust(TRUST.peacefulMinute);
+          }
+
+          // flinch: your cursor coming at him fast, and what it has learned to mean
+          if (!staring && g.t > g.flinchCdUntil && g.mem.trust < FLINCH_TRUST) {
+            const h = g.pointer.history;
+            if (h.length >= 2) {
+              const a = h[h.length - 2];
+              const b = h[h.length - 1];
+              const fresh = performance.now() / 1000 - b.t < 0.12;
+              const hdt = Math.max(0.008, b.t - a.t);
+              const vx = (b.x - a.x) / hdt;
+              const vy = (b.y - a.y) / hdt;
+              const speed = Math.hypot(vx, vy);
+              const dx = SEAT_HEAD_X - b.x;
+              const dy = SEAT_HEAD_Y - b.y;
+              const dist = Math.hypot(dx, dy);
+              const toward = vx * dx + vy * dy > 0;
+              const speedGate = g.mem.trust < FLINCH_TRUST_BAD ? 150 : 500;
+              if (fresh && toward && dist < 260 && speed > speedGate) {
+                g.flinchT = 0.4;
+                g.flinchCdUntil = g.t + 3;
+                if (!g.mem.flinchSaid) {
+                  g.mem.flinchSaid = true;
+                  say(FLINCH_LINE, 2.2);
+                  persist();
+                }
+              }
+            }
+          }
+
+          // the whiteboard sometimes shows what everyone else confessed
+          if (
+            !staring &&
+            g.t > g.nextConfessionAt &&
+            g.mem.meltdowns > 0 &&
+            g.whyCounts &&
+            g.confessionUntil < g.t
+          ) {
+            const best = (Object.entries(g.whyCounts) as [WhyAnswer, number][])
+              .filter(([, n]) => n > 0)
+              .sort((x, y) => y[1] - x[1])[0];
+            if (best) {
+              const [answer, n] = best;
+              const phrase =
+                answer === "funny"
+                  ? `${n} said "it was funny."`
+                  : answer === "curious"
+                    ? `${n} just wanted to see.`
+                    : answer === "dunno"
+                      ? `${n} said "I don't know."`
+                      : `${n} said nothing at all.`;
+              g.confessionText = `today, ${phrase}`;
+              g.confessionUntil = g.t + 6;
+            }
+            g.nextConfessionAt = g.t + 120 + Math.random() * 60;
+          }
+
+          if (!staring && g.t > g.nextWorkLineAt && !g.bubble) {
+            if (g.mem.lastWhy && Math.random() < 0.2) {
+              say(pick(WHY_CALLBACKS[g.mem.lastWhy]), 2.6);
+            } else if (Math.random() < 0.5) {
+              const justFinished = g.rows < 40 && g.mem.sheetsDone > 0;
+              say(justFinished ? sheetName(g.mem.sheetsDone) : pick(WORK_LINES), 2.2);
+            }
             g.nextWorkLineAt = g.t + 11 + Math.random() * 9;
           }
           // his stuff stays wherever it landed for a while, but if you leave
@@ -487,6 +729,7 @@ export default function BotherGame() {
         case "flying": {
           const { impacts, atRest } = stepFlight(guy, dt);
           for (const im of impacts) {
+            g.worstImpact = Math.max(g.worstImpact, im.strength);
             beepRef.current(170, 70, 0.09, "triangle", Math.min(0.09, im.strength / 9000));
             g.shake = Math.min(9, im.strength / 130);
             // the harder the hit, the bigger the mess
@@ -535,6 +778,8 @@ export default function BotherGame() {
             guy.phaseT = 0;
             guy.facing = Math.random() < 0.5 ? -1 : 1;
             say(pick(DAZED_LINES), 1.4);
+            g.pendingRowLoss += rowLoss(g.worstImpact);
+            g.worstImpact = 0;
             break;
           }
           if (atRest) {
@@ -544,6 +789,8 @@ export default function BotherGame() {
             guy.facing = Math.random() < 0.5 ? -1 : 1;
             say(pick(DAZED_LINES), 1.4);
             burst(g.particles, guy.x, FLOOR_Y - 40, "star", 3);
+            g.pendingRowLoss += rowLoss(g.worstImpact);
+            g.worstImpact = 0;
           }
           break;
         }
@@ -571,10 +818,26 @@ export default function BotherGame() {
               guy.phase = "typing";
               g.screenMode = "compose";
               g.composeT = 0;
+              meltdownBegan();
             } else {
               guy.phase = "working";
               g.screenMode = "work";
-              if (!g.bubble) say(pick(MUTTERS[tier()]), 2.4);
+              g.rowFlow = 0;
+              // the damage report: he sees exactly what the flight cost him
+              if (g.pendingRowLoss > 0) {
+                g.rows = Math.max(0, g.rows - g.pendingRowLoss);
+                g.pendingRowLoss = 0;
+                say(`row ${Math.floor(g.rows).toLocaleString()}… again.`, 2.6);
+                persist();
+              } else if (!g.bubble) {
+                say(pick(MUTTERS[tier()]), 2.4);
+              }
+              // the stare he owes you comes before the work resumes
+              if (g.stareOwed) {
+                g.stareOwed = false;
+                g.stareUntil = g.t + 3;
+                g.bubble = null;
+              }
               // he quietly puts his things back where they belong
               for (const p of g.props) {
                 if (p.state === "resting" || p.state === "broken") {
@@ -636,7 +899,27 @@ export default function BotherGame() {
         }
         case "sent":
           break;
+        case "despair": {
+          // head down on the dead keyboard; the overlay arrives mid-grief
+          if (g.cableOverlayAt !== null && g.t >= g.cableOverlayAt) {
+            g.cableOverlayAt = null;
+            overlayRef.current({ kind: "cablePulled", lost: g.cableRowsLost });
+          }
+          if (guy.phaseT >= DESPAIR_TIME) {
+            guy.phase = "working";
+            guy.phaseT = 0;
+            g.screenMode = "work";
+            g.rowFlow = 0;
+            g.cablePulled = false; // he crawls under the desk and replugs it
+          }
+          break;
+        }
       }
+
+      // ambient timers that don't care what phase he's in
+      g.flinchT = Math.max(0, g.flinchT - dt);
+      if (g.confessionUntil < g.t) g.confessionText = null;
+      if (g.t - g.lastSavedAt > 10) persist();
 
       // draw
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
@@ -645,7 +928,8 @@ export default function BotherGame() {
         guy.phase === "working" ||
         guy.phase === "typing" ||
         guy.phase === "sent" ||
-        guy.phase === "sitting";
+        guy.phase === "sitting" ||
+        guy.phase === "despair";
       const bubbleAnchor = seated
         ? { x: SEAT_HEAD_X, y: SEAT_HEAD_Y - 34 }
         : {
@@ -673,9 +957,18 @@ export default function BotherGame() {
           g.faceOverride ??
           (guy.phase === "sent" ? "dazed" : guy.phase === "grabbed" || guy.phase === "flying" ? "worried" : "normal"),
         incidents: g.incidents,
+        lifetimeIncidents: g.mem.lifetimeIncidents,
         particles: g.particles,
         props: g.props,
         bubble: g.bubble ? { text: g.bubble.text, ...bubbleAnchor } : null,
+        rows: { done: Math.floor(g.rows), target: ROWS_TARGET },
+        stare: guy.phase === "working" ? Math.max(0, g.stareUntil - g.t) : 0,
+        flinch: clamp01(g.flinchT * 3),
+        cable: {
+          armed: guy.phase === "typing" && g.composeT >= CABLE_ARM_AT && !g.cablePulled,
+          pulled: g.cablePulled,
+        },
+        confession: g.confessionText,
         lightSwing: g.lightSwing,
         lightFlicker: Math.max(0, g.lightFlickerUntil - g.t),
         posterTilt: g.posterTilt,
@@ -747,7 +1040,7 @@ export default function BotherGame() {
     const g = G.current;
     if (!g || blockedRef.current) return;
     const p = toWorld(e);
-    g.pointer = { ...p, history: [{ ...p, t: performance.now() / 1000 }] };
+    g.pointer = { ...p, history: [{ ...p, t: nowSecs() }] };
 
     const capture = () => {
       try {
@@ -782,7 +1075,39 @@ export default function BotherGame() {
       pr.vy = 0;
       pr.vrot = 0;
       beepRef.current(500, 320, 0.05, "square", 0.03);
+      return;
     }
+
+    // the other trolley track: yank the plug while the email is being typed
+    if (g.guy.phase === "typing" && g.composeT >= CABLE_ARM_AT && !g.cablePulled && inBox(p, CABLE_HIT)) {
+      pullCable(g);
+    }
+  }
+
+  /** The choice: kill the email by killing his screen — and half his rows. */
+  function pullCable(g: Game) {
+    g.cablePulled = true;
+    g.guy.phase = "despair";
+    g.guy.phaseT = 0;
+    g.screenMode = "off";
+    const lost = Math.floor(Math.floor(g.rows) / 2);
+    g.cableRowsLost = lost;
+    g.rows = Math.max(0, g.rows - lost);
+    g.mem.cablePulls += 1;
+    g.mem.trust = clampTrust(g.mem.trust + TRUST.cablePull);
+    g.mem.rows = Math.floor(g.rows);
+    saveMemory(g.mem);
+    g.bothers = 0;
+    g.threshold = randThresholdBrittle(); // he's brittle now
+    g.workSlowUntil = g.t + BRITTLE_WORK_SECS;
+    g.stormPending = false;
+    g.whyPending = false; // this act asks its own question
+    g.cableOverlayAt = g.t + 2.6;
+    g.bubble = { text: DESPAIR_LINE, until: g.t + 3 };
+    setUi({ bothers: 0, tier: 0 });
+    // the dying whine of a monitor losing power
+    beepRef.current(800, 40, 0.5, "sine", 0.06);
+    beepRef.current(120, 30, 0.4, "triangle", 0.05);
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -800,7 +1125,13 @@ export default function BotherGame() {
       e.currentTarget.style.cursor = "grabbing";
     } else if (!blockedRef.current) {
       const overGuy = GRAB_STATES.includes(g.guy.phase) && inBox(p, guyHitBox(g.guy));
-      e.currentTarget.style.cursor = overGuy || propUnder(g, p) >= 0 ? "grab" : "default";
+      const overCable =
+        g.guy.phase === "typing" && g.composeT >= CABLE_ARM_AT && !g.cablePulled && inBox(p, CABLE_HIT);
+      e.currentTarget.style.cursor = overCable
+        ? "pointer"
+        : overGuy || propUnder(g, p) >= 0
+          ? "grab"
+          : "default";
     }
   }
 
@@ -865,10 +1196,14 @@ export default function BotherGame() {
     g.guy.phase = "flying";
     g.guy.phaseT = 0;
 
-    // every grab-and-release is a bother, gentle or not
+    // every grab-and-release is a bother, gentle or not — and he remembers
     g.bothers += 1;
     g.incidents += 1;
+    g.mem.lifetimeIncidents += 1;
+    g.mem.trust = clampTrust(g.mem.trust + TRUST.incident);
     g.lastBotherAt = Date.now();
+    g.peaceAccum = 0;
+    g.rowFlow = 0;
     setUi({ bothers: g.bothers, tier: tierFor(g.bothers, g.threshold) });
     if (Math.hypot(v.vx, v.vy) > 500) beepRef.current(700, 180, 0.16, "sawtooth", 0.035);
   }
@@ -896,6 +1231,64 @@ export default function BotherGame() {
   }
 
   /* ── overlay actions ────────────────────────────────────── */
+
+  /**
+   * Leaving any meltdown-terminal overlay detours through the one question
+   * he never asks out loud. Answering (or declining to) is what resets.
+   */
+  function finishMeltdownOverlay() {
+    const g = G.current;
+    if (g?.whyPending) {
+      setOverlay({ kind: "why" });
+      return;
+    }
+    closeOverlayAndReset();
+  }
+
+  function answerWhy(answer: WhyAnswer) {
+    const g = G.current;
+    if (g) {
+      g.whyPending = false;
+      g.mem.lastWhy = answer;
+      saveMemory(g.mem);
+      // feed the crowd tally; refresh what the whiteboard can show
+      fetch("/api/bother", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "why", answer }),
+      })
+        .then((r) => r.json())
+        .then((d: { ok: boolean; counts?: Record<WhyAnswer, number> }) => {
+          if (d.ok && d.counts && G.current) G.current.whyCounts = d.counts;
+        })
+        .catch(() => {});
+    }
+    closeOverlayAndReset();
+  }
+
+  /** "He won't remember any of it. You will." */
+  function eraseKevMemory() {
+    const g = G.current;
+    wipeMemory();
+    setWipeArmed(false);
+    if (!g) return;
+    g.mem = loadMemory();
+    g.mem.visits = 1;
+    g.mem.lastVisitAt = wallNow();
+    saveMemory(g.mem);
+    g.rows = 0;
+    g.pendingRowLoss = 0;
+    g.incidents = 0;
+    g.meltdownsThisSession = 0;
+    g.whyPending = false;
+    g.stareOwed = false;
+    g.stareUntil = 0;
+    g.peaceShown = false;
+    g.greetingPending = false; // a stranger gets no greeting
+    closeOverlayAndReset();
+    g.bubble = null; // and he has nothing to say about it
+  }
+
   function closeOverlayAndReset() {
     const g = G.current;
     setOverlay(null);
@@ -944,6 +1337,9 @@ export default function BotherGame() {
         if (g) {
           g.faceOverride = "happy";
           g.faceOverrideUntil = g.t + 6;
+          g.mem.apologies += 1;
+          g.mem.trust = clampTrust(g.mem.trust + TRUST.apology);
+          saveMemory(g.mem);
         }
       } else {
         setOverlay({ kind: "limit" });
@@ -1035,6 +1431,37 @@ export default function BotherGame() {
               The emails are real (and rate-limited, mercifully). The apology button afterwards is
               real too.
             </p>
+            <div className="mt-3 border-t border-border pt-3">
+              {!wipeArmed ? (
+                <button
+                  type="button"
+                  onClick={() => setWipeArmed(true)}
+                  className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline"
+                >
+                  Reset Kev&apos;s memory of you
+                </button>
+              ) : (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-fg">
+                    He won&apos;t remember any of it. You will.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={eraseKevMemory}
+                    className="text-xs font-semibold text-coral hover:underline"
+                  >
+                    Erase
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWipeArmed(false)}
+                    className="text-xs text-muted hover:text-fg"
+                  >
+                    Keep
+                  </button>
+                </div>
+              )}
+            </div>
           </Overlay>
         )}
 
@@ -1079,7 +1506,7 @@ export default function BotherGame() {
               >
                 {apology === "sending" ? "Sending…" : "Send a real apology"}
               </button>
-              <button type="button" onClick={closeOverlayAndReset} className={BTN_SECONDARY}>
+              <button type="button" onClick={finishMeltdownOverlay} className={BTN_SECONDARY}>
                 Let him get back to work
               </button>
             </div>
@@ -1095,7 +1522,7 @@ export default function BotherGame() {
             </p>
             <p className="mt-2 text-sm text-fg">Somehow, this feels like mercy.</p>
             <div className="mt-4">
-              <button type="button" onClick={closeOverlayAndReset} className={BTN_PRIMARY}>
+              <button type="button" onClick={finishMeltdownOverlay} className={BTN_PRIMARY}>
                 Let him get back to work
               </button>
             </div>
@@ -1110,7 +1537,7 @@ export default function BotherGame() {
               He doesn&apos;t know that yet. Let&apos;s not tell him.
             </p>
             <div className="mt-4">
-              <button type="button" onClick={closeOverlayAndReset} className={BTN_PRIMARY}>
+              <button type="button" onClick={finishMeltdownOverlay} className={BTN_PRIMARY}>
                 Let him get back to work
               </button>
             </div>
@@ -1126,8 +1553,62 @@ export default function BotherGame() {
               sending. He seems lighter.
             </p>
             <div className="mt-4">
-              <button type="button" onClick={closeOverlayAndReset} className={BTN_PRIMARY}>
+              <button type="button" onClick={finishMeltdownOverlay} className={BTN_PRIMARY}>
                 Let him get back to work
+              </button>
+            </div>
+          </Overlay>
+        )}
+
+        {/* the question he never asks out loud */}
+        {overlay?.kind === "why" && (
+          <Overlay>
+            <h2 className="mb-2 text-lg font-semibold text-fg">One thing, before you go on.</h2>
+            <p className="text-sm text-muted">Why did you do it?</p>
+            <div className="mt-4 flex flex-col gap-2">
+              <button type="button" onClick={() => answerWhy("funny")} className={BTN_SECONDARY}>
+                it was funny
+              </button>
+              <button type="button" onClick={() => answerWhy("curious")} className={BTN_SECONDARY}>
+                I wanted to see what would happen
+              </button>
+              <button type="button" onClick={() => answerWhy("dunno")} className={BTN_SECONDARY}>
+                I don&apos;t know
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => answerWhy("silent")}
+              className="mt-3 text-xs text-muted underline-offset-2 hover:text-fg hover:underline"
+            >
+              say nothing
+            </button>
+          </Overlay>
+        )}
+
+        {/* the other trolley track */}
+        {overlay?.kind === "cablePulled" && (
+          <Overlay>
+            <h2 className="mb-2 text-lg font-semibold text-fg">You pulled the plug.</h2>
+            <p className="text-sm text-muted">
+              The email died with the screen. The real Kevin will never read it — you saved him
+              that. Kev lost the draft, and{" "}
+              <span className="text-fg">{overlay.lost.toLocaleString()} rows</span>
+              {" "}of the quarter went with it. He hasn&apos;t lifted his head yet.
+            </p>
+            <p className="mt-2 text-sm text-fg">
+              Nobody got what they wanted. Maybe that was the choice.
+            </p>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setOverlay(null);
+                  setApology("idle");
+                }}
+                className={BTN_PRIMARY}
+              >
+                Leave him be
               </button>
             </div>
           </Overlay>

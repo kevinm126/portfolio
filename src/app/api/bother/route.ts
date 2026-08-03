@@ -1,6 +1,6 @@
 import { profile } from "@/content/content";
 import { SITE_URL } from "@/lib/site";
-import { store } from "@/lib/store";
+import { EMPTY_WHY, store, type WhyCounts } from "@/lib/store";
 import { buildApologyEmail, buildHurtEmail, HURTFUL_LINES } from "@/content/bother-lines";
 
 export const dynamic = "force-dynamic";
@@ -41,9 +41,16 @@ function ledgerFor(ip: string) {
     b.hurtsToday = 0;
     b.apologiesToday = 0;
     b.byIp = {};
+    b.why = { ...EMPTY_WHY };
   }
   if (!b.byIp[ip]) b.byIp[ip] = { lastHurtAt: 0, lastApologyAt: 0, hurtsToday: 0 };
   return { global: b, ip: b.byIp[ip] };
+}
+
+/** Today's confession tally, for the whiteboard's "MEANWHILE:" beat. */
+export async function GET() {
+  ledgerFor("probe"); // rolls the day over if needed
+  return Response.json({ ok: true, counts: store.bother.why });
 }
 
 async function sendEmail(subject: string, text: string): Promise<{ sent: boolean; demo: boolean }> {
@@ -85,20 +92,34 @@ async function sendEmail(subject: string, text: string): Promise<{ sent: boolean
 }
 
 export async function POST(req: Request) {
-  let data: { kind?: string; bothers?: number; seconds?: number } = {};
+  let data: { kind?: string; bothers?: number; seconds?: number; answer?: string } = {};
   try {
     data = await req.json();
   } catch {
     return Response.json({ ok: false, reason: "bad-request" }, { status: 400 });
   }
 
-  const kind = data.kind === "apology" ? "apology" : "hurt";
+  const kind = data.kind === "apology" ? "apology" : data.kind === "why" ? "why" : "hurt";
   const bothers = Math.min(Math.max(Math.round(Number(data.bothers) || 0), 0), 999);
   const seconds = Math.min(Math.max(Math.round(Number(data.seconds) || 0), 0), 86_400);
 
   const ip = (req.headers.get("x-forwarded-for") ?? "local").split(",")[0].trim();
   const { global, ip: ledger } = ledgerFor(ip);
   const now = Date.now();
+
+  // "why did you do it?" — fixed choices only, lightly rate-limited
+  if (kind === "why") {
+    const answer = String(data.answer) as keyof WhyCounts;
+    if (!(answer in global.why)) {
+      return Response.json({ ok: false, reason: "bad-request" }, { status: 400 });
+    }
+    if (now - (ledger.lastWhyAt ?? 0) < 20_000) {
+      return Response.json({ ok: true, counts: global.why }); // silently ignore spam
+    }
+    ledger.lastWhyAt = now;
+    global.why[answer] += 1;
+    return Response.json({ ok: true, counts: global.why });
+  }
 
   if (kind === "hurt") {
     if (

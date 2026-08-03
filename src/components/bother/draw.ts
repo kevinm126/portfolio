@@ -13,6 +13,7 @@ import {
   VIEW_H,
   FLOOR_Y,
   CEIL_Y,
+  CABLE_JACK,
   CHAIR_SEAT_Y,
   DESK,
   KEYBOARD,
@@ -36,10 +37,21 @@ export type RenderState = {
   grabTilt: number;
   tier: Tier;
   face: FaceMood;
-  incidents: number; // lifetime tally for the whiteboard
+  incidents: number; // today's tally for the whiteboard
+  lifetimeIncidents: number; // small, damning second line
   particles: Particle[];
   props: Prop[];
   bubble: { text: string; x: number; y: number } | null;
+  /** Spreadsheet progress bar on the monitor. */
+  rows: { done: number; target: number };
+  /** Seconds remaining of the fourth-wall stare (0 = none). */
+  stare: number;
+  /** 0..1 duck intensity — he's bracing away from your cursor. */
+  flinch: number;
+  /** The ethernet cable's state during the meltdown window. */
+  cable: { armed: boolean; pulled: boolean };
+  /** When set, the whiteboard shows this instead of the tally. */
+  confession: string | null;
   lightSwing: number;
   /** Light flicker time remaining, seconds. >0 makes the tube stutter. */
   lightFlicker: number;
@@ -49,7 +61,7 @@ export type RenderState = {
   plantWob: number;
   /** 0→1 progress through the current transition pose (rising / sitting). */
   transition: number;
-  screen: { mode: "work" | "compose" | "sent"; composeT: number };
+  screen: { mode: "work" | "compose" | "sent" | "off"; composeT: number };
   shake: number;
   clockH: number;
   clockM: number;
@@ -140,7 +152,8 @@ function star(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, co
 const blinkAt = (t: number) => t % 3.7 < 0.12;
 
 /* ── the head (shared by every pose; unit coords, R≈24) ────────────── */
-type FaceOpts = { tier: Tier; mood: FaceMood; blink: boolean; facing: 1 | -1 };
+/** facing 0 = looking straight at the viewer (the stare). */
+type FaceOpts = { tier: Tier; mood: FaceMood; blink: boolean; facing: 1 | -1 | 0 };
 
 function head(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, f: FaceOpts) {
   const k = R / 24;
@@ -162,16 +175,29 @@ function head(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, 
     ctx.restore();
   }
 
-  // hair: cap + forehead swoop + sideburn
+  // hair: cap + forehead swoop + sideburn (front view gets a center part)
   ctx.fillStyle = HAIR;
-  ctx.beginPath();
-  ctx.arc(cx, cy, R, Math.PI * 0.98, Math.PI * 2.02);
-  ctx.quadraticCurveTo(cx + f.facing * 14 * k, cy - R + 15 * k, cx + f.facing * 2 * k, cy - R + 13 * k);
-  ctx.quadraticCurveTo(cx - f.facing * 12 * k, cy - R + 10 * k, cx - R + 1, cy + 1);
-  ctx.closePath();
-  ctx.fill();
-  rr(ctx, cx - f.facing * (R - 3 * k) - 2 * k, cy - 4 * k, 4 * k, 11 * k, 2 * k);
-  ctx.fill();
+  if (f.facing === 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, Math.PI * 0.98, Math.PI * 2.02);
+    ctx.quadraticCurveTo(cx + 12 * k, cy - R + 12 * k, cx, cy - R + 10 * k);
+    ctx.quadraticCurveTo(cx - 12 * k, cy - R + 12 * k, cx - R + 1, cy + 1);
+    ctx.closePath();
+    ctx.fill();
+    for (const sx of [-1, 1]) {
+      rr(ctx, cx + sx * (R - 3 * k) - 2 * k, cy - 4 * k, 4 * k, 11 * k, 2 * k);
+      ctx.fill();
+    }
+  } else {
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, Math.PI * 0.98, Math.PI * 2.02);
+    ctx.quadraticCurveTo(cx + f.facing * 14 * k, cy - R + 15 * k, cx + f.facing * 2 * k, cy - R + 13 * k);
+    ctx.quadraticCurveTo(cx - f.facing * 12 * k, cy - R + 10 * k, cx - R + 1, cy + 1);
+    ctx.closePath();
+    ctx.fill();
+    rr(ctx, cx - f.facing * (R - 3 * k) - 2 * k, cy - 4 * k, 4 * k, 11 * k, 2 * k);
+    ctx.fill();
+  }
 
   // ears
   for (const ex of [cx - R + 2 * k, cx + R - 2 * k]) {
@@ -318,13 +344,22 @@ function typingHands(s: RenderState) {
  * and holds his hands off the keys until he's actually down.
  */
 export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle = 1) {
+  const staring = s.stare > 0;
   const h = typingHands(s);
-  const breathe = s.screen.mode === "compose" ? 0 : Math.sin(s.t * 2.2) * 0.8;
+  const breathe = s.screen.mode === "compose" || staring ? 0 : Math.sin(s.t * 2.2) * 0.8;
   const jitter = s.screen.mode === "compose" ? Math.sin(s.t * 38) * 0.7 : 0;
   const drop = (1 - settle) * 38;
+  // bracing: head down, shoulders up, hands pulled slightly off the keys
+  const duck = s.flinch * (staring ? 0 : 1);
   // hands reach for the keys only as he lands
   h.near.y -= drop * 0.5;
   h.far.y -= drop * 0.5;
+  if (staring) {
+    // hands come off the keys and rest at the desk edge — total stillness
+    h.near = { x: 40, y: -14 };
+    h.far = { x: 30, y: -16 };
+    h.fast = false;
+  }
 
   ctx.save();
   ctx.translate(SEAT_X + jitter, CHAIR_SEAT_Y - drop);
@@ -340,22 +375,23 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
   curveLimb(ctx, 36, 4, 40, 26, 38, 45, 10, PANTS);
   shoeAt(ctx, 40, 46);
 
-  torso(ctx, 2, -46 + breathe, 50, 25);
+  torso(ctx, 2, -46 + breathe + duck * 3, 50, 25);
 
   // far arm reaching for the keys
-  curveLimb(ctx, 1, -38 + breathe, 24, -26, h.far.x, h.far.y, 8, SHADE);
-  hand(ctx, h.far.x, h.far.y, 5.5);
+  curveLimb(ctx, 1, -38 + breathe, 24, -26, h.far.x, h.far.y + duck * 2, 8, SHADE);
+  hand(ctx, h.far.x, h.far.y + duck * 2, 5.5);
 
-  head(ctx, 9, -70 + breathe, 24, {
-    tier: s.tier,
-    mood: s.face,
-    blink: blinkAt(s.t),
-    facing: 1,
+  // The stare: the only moment he ever faces the viewer. One blink, no words.
+  head(ctx, 9 - duck * 2, -70 + breathe + duck * 6, 24, {
+    tier: staring ? 1 : s.tier,
+    mood: staring ? "normal" : s.face,
+    blink: staring ? s.stare < 1.7 && s.stare > 1.55 : blinkAt(s.t),
+    facing: staring ? 0 : 1,
   });
 
   // near arm, drawn over the head-side so it reads as the closer arm
-  curveLimb(ctx, 4, -36 + breathe, 28, -22, h.near.x, h.near.y, 9, SHIRT);
-  hand(ctx, h.near.x, h.near.y, 6.5);
+  curveLimb(ctx, 4, -36 + breathe, 28, -22, h.near.x, h.near.y + duck * 2, 9, SHIRT);
+  hand(ctx, h.near.x, h.near.y + duck * 2, 6.5);
 
   // motion ticks over the hands while he's hammering the keys
   if (h.fast && settle >= 1) {
@@ -372,6 +408,53 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
     ctx.stroke();
     ctx.globalAlpha = 1;
   }
+
+  ctx.restore();
+}
+
+/**
+ * The cable was pulled mid-email. He doesn't rage — he folds forward and
+ * puts his head down on the desk. You only see the top of his head.
+ */
+export function drawDespair(ctx: CanvasRenderingContext2D, s: RenderState) {
+  ctx.save();
+  ctx.translate(SEAT_X, CHAIR_SEAT_Y);
+  ctx.scale(K, K);
+
+  // legs, same as seated
+  curveLimb(ctx, 0, 1, 16, -1, 30, 1, 9, SHADE);
+  curveLimb(ctx, 30, 1, 34, 22, 32, 45, 9, SHADE);
+  shoeAt(ctx, 34, 46);
+  curveLimb(ctx, 2, 4, 20, 2, 36, 4, 10, PANTS);
+  curveLimb(ctx, 36, 4, 40, 26, 38, 45, 10, PANTS);
+  shoeAt(ctx, 40, 46);
+
+  // torso folded forward over the desk edge
+  ctx.save();
+  ctx.rotate(0.62);
+  rr(ctx, -13, -56, 26, 58, 10);
+  inked(ctx, SHIRT, 2.6);
+  ctx.restore();
+
+  // forearms flat on the desktop, one over the other
+  const deskY = (DESK.top - 10 - CHAIR_SEAT_Y) / K;
+  curveLimb(ctx, 22, -28, 40, deskY - 4, 58, deskY - 2, 8, SHADE);
+  hand(ctx, 58, deskY - 2, 5.5);
+  curveLimb(ctx, 26, -24, 44, deskY - 8, 62, deskY - 7, 9, SHIRT);
+  hand(ctx, 62, deskY - 7, 6);
+
+  // head face-down on the arms — hair toward the viewer, no face at all
+  const hx = 46;
+  const hy = deskY - 16 + Math.sin(s.t * 1.1) * 0.6; // slow, heavy breathing
+  ctx.beginPath();
+  ctx.arc(hx, hy, 22, 0, Math.PI * 2);
+  inked(ctx, SKIN, 2.6);
+  ctx.fillStyle = HAIR;
+  ctx.beginPath();
+  ctx.arc(hx, hy, 22, Math.PI * 0.75, Math.PI * 2.35);
+  ctx.quadraticCurveTo(hx + 6, hy + 14, hx - 16, hy + 15);
+  ctx.closePath();
+  ctx.fill();
 
   ctx.restore();
 }
@@ -714,10 +797,40 @@ function drawWhiteboard(ctx: CanvasRenderingContext2D, s: RenderState) {
   rr(ctx, x + 40, y + h + 2, w - 80, 9, 3);
   inked(ctx, BASEBOARD, 2.2);
 
+  // sometimes the board shows what everyone else confessed instead
+  if (s.confession) {
+    ctx.fillStyle = INK;
+    ctx.font = "800 15px system-ui, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("MEANWHILE:", x + 16, y + 30);
+    ctx.font = "700 16px system-ui, sans-serif";
+    const words = s.confession.split(" ");
+    let line = "";
+    let ly = y + 62;
+    for (const word of words) {
+      const test = line ? line + " " + word : word;
+      if (ctx.measureText(test).width > w - 32 && line) {
+        ctx.fillText(line, x + 16, ly);
+        ly += 24;
+        line = word;
+      } else line = test;
+    }
+    ctx.fillText(line, x + 16, ly);
+    return;
+  }
+
   ctx.fillStyle = INK;
   ctx.font = "800 15px system-ui, sans-serif";
   ctx.textAlign = "left";
   ctx.fillText("INCIDENTS TODAY:", x + 16, y + 30);
+  if (s.lifetimeIncidents > s.incidents) {
+    ctx.font = "700 11px system-ui, sans-serif";
+    ctx.fillStyle = "#6b7178";
+    ctx.textAlign = "right";
+    ctx.fillText(`(lifetime: ${s.lifetimeIncidents})`, x + w - 14, y + 30);
+    ctx.textAlign = "left";
+    ctx.fillStyle = INK;
+  }
 
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2.6;
@@ -847,6 +960,56 @@ function drawChair(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.arc(wx, FLOOR_Y - 2, 6, 0, Math.PI * 2);
     inked(ctx, DESK_DARK, 2.2);
+  }
+}
+
+/**
+ * The ethernet cable: desk pedestal → floor sag → wall jack. Decoration,
+ * until the meltdown arms it and it becomes the other trolley track.
+ */
+function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
+  const startX = DESK.x + DESK.w - 54;
+  const { x: jx, y: jy } = CABLE_JACK;
+
+  // wall plate
+  rr(ctx, jx - 9, jy - 12, 18, 24, 3);
+  inked(ctx, SHADE, 2.2);
+
+  ctx.lineCap = "round";
+  if (s.cable.pulled) {
+    // yanked: the loose end lies on the floor short of the jack
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(startX, FLOOR_Y - 10);
+    ctx.quadraticCurveTo((startX + jx) / 2 - 30, FLOOR_Y + 4, jx - 52, FLOOR_Y - 5);
+    ctx.stroke();
+    rr(ctx, jx - 54, FLOOR_Y - 10, 12, 8, 2);
+    inked(ctx, INK, 1.6);
+    return;
+  }
+
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(startX, FLOOR_Y - 10);
+  ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 6, jx - 6, jy);
+  ctx.stroke();
+
+  if (s.cable.armed) {
+    // the window is open: the cable pulses so the choice is visible
+    const pulse = 0.45 + 0.4 * Math.sin(s.t * 9);
+    ctx.strokeStyle = `rgba(255,255,255,${pulse})`;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(startX, FLOOR_Y - 10);
+    ctx.quadraticCurveTo((startX + jx) / 2, FLOOR_Y + 6, jx - 6, jy);
+    ctx.stroke();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2 + pulse * 1.5;
+    ctx.beginPath();
+    ctx.arc(jx, jy, 16 + pulse * 5, 0, Math.PI * 2);
+    ctx.stroke();
   }
 }
 
@@ -1000,6 +1163,15 @@ function drawMonitor(ctx: CanvasRenderingContext2D, s: RenderState) {
       ctx.lineWidth = 1.8;
       ctx.strokeRect(sx + 2, sy + 14 + (rows - 1) * 13, sw / 5 - 5, 11);
     }
+    // the quarter's real progress — his life's work, one thin bar
+    ctx.fillStyle = "#dfe2e6";
+    ctx.fillRect(sx, sy + sh - 5, sw, 5);
+    ctx.fillStyle = "#6b7178";
+    ctx.fillRect(sx, sy + sh - 5, sw * Math.min(1, s.rows.done / s.rows.target), 5);
+  } else if (s.screen.mode === "off") {
+    // the cable was pulled — dead glass
+    ctx.fillStyle = "#101216";
+    ctx.fillRect(sx, sy, sw, sh);
   } else if (s.screen.mode === "compose") {
     ctx.fillStyle = PAPER;
     ctx.fillRect(sx, sy, sw, sh);
@@ -1174,6 +1346,7 @@ export function render(ctx: CanvasRenderingContext2D, s: RenderState) {
   drawPlant(ctx, s.t, s.plantWob);
   drawLight(ctx, s);
   drawChair(ctx);
+  drawCable(ctx, s);
   drawDesk(ctx, s);
   drawProps(ctx, s);
 
@@ -1184,6 +1357,7 @@ export function render(ctx: CanvasRenderingContext2D, s: RenderState) {
 
   if (p === "working" || p === "typing" || p === "sent") drawSeated(ctx, s);
   else if (p === "sitting") drawSeated(ctx, s, s.transition);
+  else if (p === "despair") drawDespair(ctx, s);
   else if (p === "grabbed") drawDangle(ctx, s);
   else if (p === "flying") drawFly(ctx, s);
   else if (p === "dazed") drawLie(ctx, s);
@@ -1219,7 +1393,8 @@ export function guyHitBox(guy: Guy): { x: number; y: number; w: number; h: numbe
     guy.phase === "working" ||
     guy.phase === "typing" ||
     guy.phase === "sent" ||
-    guy.phase === "sitting"
+    guy.phase === "sitting" ||
+    guy.phase === "despair"
   ) {
     return grow(SEAT_HEAD_X - 46, SEAT_HEAD_Y - 34, 96, 150);
   }

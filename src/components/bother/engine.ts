@@ -87,7 +87,8 @@ export type Phase =
   | "storming" // threshold hit: marching back, ungrabbable
   | "sitting" // lowering into the chair
   | "typing" // furiously composing THE email
-  | "sent"; // slumped after sending; overlay is up
+  | "sent" // slumped after sending; overlay is up
+  | "despair"; // the cable was pulled mid-email — head down on the desk
 
 export type Guy = {
   phase: Phase;
@@ -454,3 +455,51 @@ export const MUG_BREAK_LINES = ["…that was my favorite mug.", "the mug. you br
 
 /** Bonked while already composing the email — nothing left to escalate. */
 export const TOO_LATE_LINE = "not. now.";
+
+/* ── the work (his rows are real, and they persist) ────────────────── */
+
+/** Base seconds per row; flow-state multipliers when left alone. */
+export const ROW_SECS = 1.6;
+export const FLOW_1_AFTER = 25; // uninterrupted seconds → 2× rate
+export const FLOW_2_AFTER = 60; // → 3× rate
+
+/** Rows lost when a throw finally lands him back at the desk. */
+export const rowLoss = (worstImpact: number) =>
+  15 + Math.floor(Math.random() * 8) + Math.min(30, Math.floor(worstImpact / 120));
+export const ROW_LOSS_BONK = 8;
+
+export const SHEET_DONE_LINE = "…done. that's the whole sheet.";
+/** Next sheet name, by count already finished. */
+export const sheetName = (n: number) => `Q${(n % 4) + 1}.`;
+
+/* ── memory beats ──────────────────────────────────────────────────── */
+
+/** Said once, ever, the first time he ducks away from your cursor. */
+export const FLINCH_LINE = "sorry. reflex.";
+
+/** He quotes your own answer back, eventually. Keyed by WhyAnswer. */
+export const WHY_CALLBACKS: Record<string, string[]> = {
+  funny: ["'it was funny.' …was it?", "still funny?"],
+  curious: ["'to see what would happen.' now you know.", "curiosity, huh."],
+  dunno: ["'I don't know.' yeah. me neither.", "still don't know?"],
+  silent: ["you never did say why.", "…nothing to say. still."],
+};
+
+/* ── the cable (the choice) ────────────────────────────────────────── */
+
+/** Where the wall jack lives; the cable runs there from the desk. */
+export const CABLE_JACK = { x: 866, y: FLOOR_Y - 26 } as const;
+/** Generous click target around the jack while the window is live. */
+export const CABLE_HIT = { x: CABLE_JACK.x - 34, y: CABLE_JACK.y - 30, w: 68, h: 60 } as const;
+/** The pull window opens this far into the compose (0..1). */
+export const CABLE_ARM_AT = 0.35;
+
+export const DESPAIR_TIME = 5;
+export const DESPAIR_LINE = "I lost everything.";
+/** After a pull he is brittle: the next threshold rolls from this range. */
+export const MIN_BOTHERS_BRITTLE = 6;
+export const MAX_BOTHERS_BRITTLE = 12;
+export const randThresholdBrittle = () =>
+  MIN_BOTHERS_BRITTLE + Math.floor(Math.random() * (MAX_BOTHERS_BRITTLE - MIN_BOTHERS_BRITTLE + 1));
+/** And he types at half speed for a while. */
+export const BRITTLE_WORK_SECS = 60;
