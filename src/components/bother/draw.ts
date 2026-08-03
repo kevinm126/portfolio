@@ -1,8 +1,10 @@
 /**
- * Bother Kev — all canvas rendering. Flat Poptropica-style vector art with
- * heavy ink outlines, drawn in near-monochrome: the office is pure grayscale
- * and the single red accent is held back for the meltdown, so the moment he
- * snaps is the only time colour enters the room.
+ * Bother Kev — all canvas rendering. Flat vector art modeled on "The
+ * Introverted Attorney": an enormous bald egg head, huge heavy-lidded oval
+ * eyes in a permanent exhausted deadpan, no nose, a tiny mouth, stick-thin
+ * limbs — and one red tie. The office stays near-monochrome; the tie is the
+ * only standing colour, and the meltdown's red screen/face-flush remains the
+ * only other time colour enters the room.
  *
  * Poses are authored in "unit" coords (head radius 24) and drawn through
  * ctx.scale(K, K) — see engine.ts.
@@ -84,8 +86,7 @@ const SHIRT = "#ffffff";
 const SHADE = "#d8dbe0";
 const PANTS = "#2c3038";
 const SHOE = "#15171c";
-const HAIR = "#15171c";
-const ACCENT = "#d9483b"; // meltdown only
+const ACCENT = "#d9483b"; // the tie — and the meltdown
 
 /* ── tiny helpers ─────────────────────────────────────────────────── */
 function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -155,60 +156,94 @@ const blinkAt = (t: number) => t % 3.7 < 0.12;
 /** facing 0 = looking straight at the viewer (the stare). */
 type FaceOpts = { tier: Tier; mood: FaceMood; blink: boolean; facing: 1 | -1 | 0 };
 
+/**
+ * One eye of the exhausted pair: a big white oval, a heavy upper lid drawn
+ * as a flat fill + line, and a small low pupil. `lid` is 0..1 closed-ness;
+ * `tilt` slants the lid line (inner edge down = angry).
+ */
+function eye(
+  ctx: CanvasRenderingContext2D,
+  ex: number,
+  ey: number,
+  rx: number,
+  ry: number,
+  lid: number,
+  tilt: number,
+  pupilDx: number,
+  k: number
+) {
+  ctx.beginPath();
+  ctx.ellipse(ex, ey, rx, ry, 0, 0, Math.PI * 2);
+  inked(ctx, PAPER, 2 * k);
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(ex, ey, rx, ry, 0, 0, Math.PI * 2);
+  ctx.clip();
+  if (lid >= 1) {
+    // full blink: the lid swallows the eye
+    ctx.fillStyle = SKIN;
+    ctx.fillRect(ex - rx - 2, ey - ry - 2, rx * 2 + 4, ry * 2 + 4);
+  } else {
+    // pupil sits low — he is looking at nothing in particular
+    ctx.fillStyle = INK;
+    ctx.beginPath();
+    ctx.arc(ex + pupilDx, ey + ry * 0.34, Math.min(rx, ry) * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // heavy upper lid, slanted by mood
+    const lidY = ey - ry + lid * ry * 2;
+    ctx.fillStyle = SKIN;
+    ctx.beginPath();
+    ctx.moveTo(ex - rx - 2, lidY - tilt);
+    ctx.lineTo(ex + rx + 2, lidY + tilt);
+    ctx.lineTo(ex + rx + 2, ey - ry - 4);
+    ctx.lineTo(ex - rx - 2, ey - ry - 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.2 * k;
+    ctx.beginPath();
+    ctx.moveTo(ex - rx - 1, lidY - tilt);
+    ctx.lineTo(ex + rx + 1, lidY + tilt);
+    ctx.stroke();
+  }
+  ctx.restore();
+  // re-ink the rim so the lid fill doesn't erase the outline
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2 * k;
+  ctx.beginPath();
+  ctx.ellipse(ex, ey, rx, ry, 0, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
 function head(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, f: FaceOpts) {
   const k = R / 24;
-  const dx = f.facing * 3 * k; // eyes drift toward where he's looking
+  const dx = f.facing * 2.5 * k; // eyes drift toward where he's looking
 
-  // skull
+  // the skull: a big bald egg, slightly taller than wide
+  const RX = R * 1.04;
+  const RY = R * 1.22;
   ctx.beginPath();
-  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy, RX, RY, 0, 0, Math.PI * 2);
   inked(ctx, SKIN, 2.6 * k);
 
-  // the room is monochrome — red only ever means "he has had enough"
+  // red only ever floods the face when he has had enough
   if (f.tier >= 3 && f.mood === "normal") {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy, RX, RY, 0, 0, Math.PI * 2);
     ctx.clip();
     ctx.fillStyle = "rgba(217,72,59,0.30)";
-    ctx.fillRect(cx - R, cy - R * 0.15, R * 2, R * 2);
+    ctx.fillRect(cx - RX, cy - RY * 0.05, RX * 2, RY * 2);
     ctx.restore();
   }
 
-  // hair: cap + forehead swoop + sideburn (front view gets a center part)
-  ctx.fillStyle = HAIR;
-  if (f.facing === 0) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, Math.PI * 0.98, Math.PI * 2.02);
-    ctx.quadraticCurveTo(cx + 12 * k, cy - R + 12 * k, cx, cy - R + 10 * k);
-    ctx.quadraticCurveTo(cx - 12 * k, cy - R + 12 * k, cx - R + 1, cy + 1);
-    ctx.closePath();
-    ctx.fill();
-    for (const sx of [-1, 1]) {
-      rr(ctx, cx + sx * (R - 3 * k) - 2 * k, cy - 4 * k, 4 * k, 11 * k, 2 * k);
-      ctx.fill();
-    }
-  } else {
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, Math.PI * 0.98, Math.PI * 2.02);
-    ctx.quadraticCurveTo(cx + f.facing * 14 * k, cy - R + 15 * k, cx + f.facing * 2 * k, cy - R + 13 * k);
-    ctx.quadraticCurveTo(cx - f.facing * 12 * k, cy - R + 10 * k, cx - R + 1, cy + 1);
-    ctx.closePath();
-    ctx.fill();
-    rr(ctx, cx - f.facing * (R - 3 * k) - 2 * k, cy - 4 * k, 4 * k, 11 * k, 2 * k);
-    ctx.fill();
-  }
-
-  // ears
-  for (const ex of [cx - R + 2 * k, cx + R - 2 * k]) {
-    ctx.beginPath();
-    ctx.arc(ex, cy + 4 * k, 4.5 * k, 0, Math.PI * 2);
-    inked(ctx, SKIN, 2 * k);
-  }
-
-  const eyeY = cy - 1 * k;
-  const eL = cx - 8 * k + dx;
-  const eR = cx + 8 * k + dx;
+  // the eyes: two huge ovals nearly touching, low on the face
+  const eyeY = cy + 2 * k;
+  const eRx = 8.6 * k;
+  const eRy = 10.4 * k;
+  const eL = cx - 8.8 * k + dx;
+  const eR = cx + 8.8 * k + dx;
+  const mouthY = cy + RY * 0.62;
 
   ctx.lineCap = "round";
 
@@ -217,100 +252,99 @@ function head(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, 
     ctx.lineWidth = 2.8 * k;
     for (const ex of [eL, eR]) {
       ctx.beginPath();
-      ctx.moveTo(ex - 4.5 * k, eyeY - 4.5 * k);
-      ctx.lineTo(ex + 4.5 * k, eyeY + 4.5 * k);
-      ctx.moveTo(ex + 4.5 * k, eyeY - 4.5 * k);
-      ctx.lineTo(ex - 4.5 * k, eyeY + 4.5 * k);
+      ctx.moveTo(ex - 5 * k, eyeY - 5 * k);
+      ctx.lineTo(ex + 5 * k, eyeY + 5 * k);
+      ctx.moveTo(ex + 5 * k, eyeY - 5 * k);
+      ctx.lineTo(ex - 5 * k, eyeY + 5 * k);
       ctx.stroke();
     }
     ctx.beginPath();
-    ctx.moveTo(cx - 7 * k + dx, cy + 12 * k);
-    ctx.quadraticCurveTo(cx - 2 * k + dx, cy + 8 * k, cx + 1 * k + dx, cy + 12 * k);
-    ctx.quadraticCurveTo(cx + 4 * k + dx, cy + 16 * k, cx + 8 * k + dx, cy + 12 * k);
+    ctx.moveTo(cx - 6 * k + dx, mouthY);
+    ctx.quadraticCurveTo(cx - 1 * k + dx, mouthY - 4 * k, cx + 2 * k + dx, mouthY);
+    ctx.quadraticCurveTo(cx + 5 * k + dx, mouthY + 4 * k, cx + 8 * k + dx, mouthY);
     ctx.stroke();
     return;
   }
 
   if (f.mood === "worried") {
+    // lids gone: the eyes go fully round, pupils shrink to pinpricks
     for (const ex of [eL, eR]) {
       ctx.beginPath();
-      ctx.arc(ex, eyeY, 6.5 * k, 0, Math.PI * 2);
+      ctx.ellipse(ex, eyeY, eRx, eRy, 0, 0, Math.PI * 2);
       inked(ctx, PAPER, 2 * k);
     }
     ctx.fillStyle = INK;
     ctx.beginPath();
-    ctx.arc(eL + 1 * k, eyeY + 1 * k, 2.8 * k, 0, Math.PI * 2);
-    ctx.arc(eR + 1 * k, eyeY + 1 * k, 2.8 * k, 0, Math.PI * 2);
+    ctx.arc(eL + dx * 0.4, eyeY + 1 * k, 1.9 * k, 0, Math.PI * 2);
+    ctx.arc(eR + dx * 0.4, eyeY + 1 * k, 1.9 * k, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(cx + dx, cy + 12 * k, 4 * k, 5 * k, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + dx, mouthY, 3.2 * k, 4 * k, 0, 0, Math.PI * 2);
     inked(ctx, INK, 1.5 * k);
     return;
   }
 
   if (f.mood === "happy") {
+    // contentment, attorney-style: lids simply lowered all the way, gently
     ctx.strokeStyle = INK;
-    ctx.lineWidth = 2.8 * k;
+    ctx.lineWidth = 2.6 * k;
     for (const ex of [eL, eR]) {
       ctx.beginPath();
-      ctx.arc(ex, eyeY + 1 * k, 5 * k, Math.PI * 1.15, Math.PI * 1.85);
+      ctx.arc(ex, eyeY - 1 * k, 6.5 * k, Math.PI * 0.1, Math.PI * 0.9);
       ctx.stroke();
     }
     ctx.beginPath();
-    ctx.arc(cx + dx, cy + 7 * k, 8 * k, Math.PI * 0.15, Math.PI * 0.85);
+    ctx.arc(cx + dx, mouthY - 3 * k, 5.5 * k, Math.PI * 0.2, Math.PI * 0.8);
     ctx.stroke();
     return;
   }
 
-  // normal (tier-driven)
-  ctx.fillStyle = INK;
-  if (f.blink) {
-    ctx.fillRect(eL - 3.5 * k, eyeY - 1 * k, 7 * k, 2.2 * k);
-    ctx.fillRect(eR - 3.5 * k, eyeY - 1 * k, 7 * k, 2.2 * k);
-  } else {
-    ctx.beginPath();
-    ctx.ellipse(eL, eyeY, 3.2 * k, 5.2 * k, 0, 0, Math.PI * 2);
-    ctx.ellipse(eR, eyeY, 3.2 * k, 5.2 * k, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (f.tier >= 2) {
-    ctx.strokeStyle = INK;
-    ctx.lineWidth = 3 * k;
-    ctx.beginPath();
-    ctx.moveTo(eL - 5.5 * k, eyeY - 11 * k);
-    ctx.lineTo(eL + 4.5 * k, eyeY - 6.5 * k);
-    ctx.moveTo(eR + 5.5 * k, eyeY - 11 * k);
-    ctx.lineTo(eR - 4.5 * k, eyeY - 6.5 * k);
-    ctx.stroke();
-  }
+  // normal: the tier sets how far the lids have given up
+  //   0 content-ish deadpan · 1 flatter · 2 angry slant · 3 meltdown
+  const lid = f.blink ? 1 : f.tier === 0 ? 0.42 : f.tier === 1 ? 0.52 : 0.58;
+  const tilt = f.tier >= 2 ? 3.4 * k : 0;
+  eye(ctx, eL, eyeY, eRx, eRy, lid, tilt, dx * 0.4, k);
+  eye(ctx, eR, eyeY, eRx, eRy, lid, -tilt, dx * 0.4, k);
 
   ctx.strokeStyle = INK;
-  ctx.lineWidth = 2.6 * k;
+  ctx.lineWidth = 2.4 * k;
   if (f.tier === 3) {
-    // gritted teeth
-    rr(ctx, cx - 9 * k + dx, cy + 8 * k, 18 * k, 8 * k, 2 * k);
-    inked(ctx, PAPER, 2 * k);
+    // small gritted teeth — fury at deadpan scale
+    rr(ctx, cx - 7 * k + dx, mouthY - 3 * k, 14 * k, 6.5 * k, 1.5 * k);
+    inked(ctx, PAPER, 1.8 * k);
     ctx.strokeStyle = INK;
-    ctx.lineWidth = 1.6 * k;
+    ctx.lineWidth = 1.4 * k;
     ctx.beginPath();
     for (let i = 1; i < 4; i++) {
-      ctx.moveTo(cx - 9 * k + dx + i * 4.5 * k, cy + 8 * k);
-      ctx.lineTo(cx - 9 * k + dx + i * 4.5 * k, cy + 16 * k);
+      ctx.moveTo(cx - 7 * k + dx + i * 3.5 * k, mouthY - 3 * k);
+      ctx.lineTo(cx - 7 * k + dx + i * 3.5 * k, mouthY + 3.5 * k);
     }
     ctx.stroke();
   } else {
+    // the mouth barely exists
     ctx.beginPath();
-    if (f.tier === 0) ctx.arc(cx + dx, cy + 8 * k, 6.5 * k, Math.PI * 0.2, Math.PI * 0.8);
-    else if (f.tier === 1) {
-      ctx.moveTo(cx - 5.5 * k + dx, cy + 13 * k);
-      ctx.lineTo(cx + 5.5 * k + dx, cy + 13 * k);
-    } else ctx.arc(cx + dx, cy + 17 * k, 6.5 * k, Math.PI * 1.2, Math.PI * 1.8);
+    if (f.tier === 2) {
+      ctx.arc(cx + dx, mouthY + 4.5 * k, 4.5 * k, Math.PI * 1.25, Math.PI * 1.75);
+    } else {
+      ctx.moveTo(cx - 3.5 * k + dx, mouthY);
+      ctx.lineTo(cx + 3.5 * k + dx, mouthY);
+    }
     ctx.stroke();
   }
 }
 
-function torso(ctx: CanvasRenderingContext2D, cx: number, topY: number, h: number, w = 24) {
+/**
+ * White shirt with THE red tie. `tieLean` skews the tie's tail sideways
+ * (velocity while flying, a slight sway while dangling); 0 hangs straight.
+ */
+function torso(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  topY: number,
+  h: number,
+  w = 24,
+  tieLean = 0
+) {
   rr(ctx, cx - w / 2, topY, w, h, 9);
   inked(ctx, SHIRT, 2.6);
   // collar
@@ -320,6 +354,29 @@ function torso(ctx: CanvasRenderingContext2D, cx: number, topY: number, h: numbe
   ctx.moveTo(cx - 5, topY + 1);
   ctx.lineTo(cx, topY + 6);
   ctx.lineTo(cx + 5, topY + 1);
+  ctx.stroke();
+  // the tie: knot + tapered tail, the one thing about him with any colour
+  const tw = Math.min(7, w * 0.3);
+  const tl = h * 0.58;
+  ctx.fillStyle = ACCENT;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(cx - tw * 0.45, topY + 5);
+  ctx.lineTo(cx + tw * 0.45, topY + 5);
+  ctx.lineTo(cx + tw * 0.62 + tieLean * 0.4, topY + 8.5);
+  ctx.lineTo(cx - tw * 0.62 + tieLean * 0.4, topY + 8.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - tw * 0.5 + tieLean * 0.4, topY + 8.5);
+  ctx.lineTo(cx + tw * 0.5 + tieLean * 0.4, topY + 8.5);
+  ctx.lineTo(cx + tw * 0.7 + tieLean, topY + 8.5 + tl * 0.7);
+  ctx.lineTo(cx + tieLean * 1.3, topY + 8.5 + tl);
+  ctx.lineTo(cx - tw * 0.7 + tieLean, topY + 8.5 + tl * 0.7);
+  ctx.closePath();
+  ctx.fill();
   ctx.stroke();
 }
 
@@ -366,23 +423,23 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
   ctx.scale(K, K);
 
   // far leg first (lighter, sits behind): thigh along the seat, shin straight down
-  curveLimb(ctx, 0, 1, 16, -1, 30, 1, 9, SHADE);
-  curveLimb(ctx, 30, 1, 34, 22, 32, 45, 9, SHADE);
+  curveLimb(ctx, 0, 1, 16, -1, 30, 1, 7, SHADE);
+  curveLimb(ctx, 30, 1, 34, 22, 32, 45, 7, SHADE);
   shoeAt(ctx, 34, 46);
 
   // near leg: knee squarely bent over the seat edge
-  curveLimb(ctx, 2, 4, 20, 2, 36, 4, 10, PANTS);
-  curveLimb(ctx, 36, 4, 40, 26, 38, 45, 10, PANTS);
+  curveLimb(ctx, 2, 4, 20, 2, 36, 4, 8, PANTS);
+  curveLimb(ctx, 36, 4, 40, 26, 38, 45, 8, PANTS);
   shoeAt(ctx, 40, 46);
 
-  torso(ctx, 2, -46 + breathe + duck * 3, 50, 25);
+  torso(ctx, 2, -46 + breathe + duck * 3, 50, 22);
 
   // far arm reaching for the keys
-  curveLimb(ctx, 1, -38 + breathe, 24, -26, h.far.x, h.far.y + duck * 2, 8, SHADE);
-  hand(ctx, h.far.x, h.far.y + duck * 2, 5.5);
+  curveLimb(ctx, 1, -38 + breathe, 24, -26, h.far.x, h.far.y + duck * 2, 6, SHADE);
+  hand(ctx, h.far.x, h.far.y + duck * 2, 5);
 
   // The stare: the only moment he ever faces the viewer. One blink, no words.
-  head(ctx, 9 - duck * 2, -70 + breathe + duck * 6, 24, {
+  head(ctx, 9 - duck * 2, -74 + breathe + duck * 6, 24, {
     tier: staring ? 1 : s.tier,
     mood: staring ? "normal" : s.face,
     blink: staring ? s.stare < 1.7 && s.stare > 1.55 : blinkAt(s.t),
@@ -390,8 +447,8 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
   });
 
   // near arm, drawn over the head-side so it reads as the closer arm
-  curveLimb(ctx, 4, -36 + breathe, 28, -22, h.near.x, h.near.y + duck * 2, 9, SHIRT);
-  hand(ctx, h.near.x, h.near.y + duck * 2, 6.5);
+  curveLimb(ctx, 4, -36 + breathe, 28, -22, h.near.x, h.near.y + duck * 2, 7, SHIRT);
+  hand(ctx, h.near.x, h.near.y + duck * 2, 5.8);
 
   // motion ticks over the hands while he's hammering the keys
   if (h.fast && settle >= 1) {
@@ -422,11 +479,11 @@ export function drawDespair(ctx: CanvasRenderingContext2D, s: RenderState) {
   ctx.scale(K, K);
 
   // legs, same as seated
-  curveLimb(ctx, 0, 1, 16, -1, 30, 1, 9, SHADE);
-  curveLimb(ctx, 30, 1, 34, 22, 32, 45, 9, SHADE);
+  curveLimb(ctx, 0, 1, 16, -1, 30, 1, 7, SHADE);
+  curveLimb(ctx, 30, 1, 34, 22, 32, 45, 7, SHADE);
   shoeAt(ctx, 34, 46);
-  curveLimb(ctx, 2, 4, 20, 2, 36, 4, 10, PANTS);
-  curveLimb(ctx, 36, 4, 40, 26, 38, 45, 10, PANTS);
+  curveLimb(ctx, 2, 4, 20, 2, 36, 4, 8, PANTS);
+  curveLimb(ctx, 36, 4, 40, 26, 38, 45, 8, PANTS);
   shoeAt(ctx, 40, 46);
 
   // torso folded forward over the desk edge
@@ -438,23 +495,17 @@ export function drawDespair(ctx: CanvasRenderingContext2D, s: RenderState) {
 
   // forearms flat on the desktop, one over the other
   const deskY = (DESK.top - 10 - CHAIR_SEAT_Y) / K;
-  curveLimb(ctx, 22, -28, 40, deskY - 4, 58, deskY - 2, 8, SHADE);
-  hand(ctx, 58, deskY - 2, 5.5);
-  curveLimb(ctx, 26, -24, 44, deskY - 8, 62, deskY - 7, 9, SHIRT);
-  hand(ctx, 62, deskY - 7, 6);
+  curveLimb(ctx, 22, -28, 40, deskY - 4, 58, deskY - 2, 6.5, SHADE);
+  hand(ctx, 58, deskY - 2, 5);
+  curveLimb(ctx, 26, -24, 44, deskY - 8, 62, deskY - 7, 7, SHIRT);
+  hand(ctx, 62, deskY - 7, 5.5);
 
-  // head face-down on the arms — hair toward the viewer, no face at all
+  // the bald egg, face-down on the arms — no face at all, just the crown
   const hx = 46;
   const hy = deskY - 16 + Math.sin(s.t * 1.1) * 0.6; // slow, heavy breathing
   ctx.beginPath();
-  ctx.arc(hx, hy, 22, 0, Math.PI * 2);
+  ctx.ellipse(hx, hy, 23, 21, 0.2, 0, Math.PI * 2);
   inked(ctx, SKIN, 2.6);
-  ctx.fillStyle = HAIR;
-  ctx.beginPath();
-  ctx.arc(hx, hy, 22, Math.PI * 0.75, Math.PI * 2.35);
-  ctx.quadraticCurveTo(hx + 6, hy + 14, hx - 16, hy + 15);
-  ctx.closePath();
-  ctx.fill();
 
   ctx.restore();
 }
@@ -470,16 +521,16 @@ function drawDangle(ctx: CanvasRenderingContext2D, s: RenderState) {
   ctx.scale(K, K);
 
   const kick = Math.sin(s.t * 11);
-  curveLimb(ctx, -5, 40, -9, 52, -11 + kick * 9, 66, 9, PANTS);
-  curveLimb(ctx, 5, 40, 9, 52, 11 - kick * 9, 66, 9, PANTS);
+  curveLimb(ctx, -5, 40, -9, 52, -11 + kick * 9, 66, 7, PANTS);
+  curveLimb(ctx, 5, 40, 9, 52, 11 - kick * 9, 66, 7, PANTS);
   shoeAt(ctx, -11 + kick * 9, 68);
   shoeAt(ctx, 11 - kick * 9, 68);
-  torso(ctx, 0, 12, 30, 25);
-  curveLimb(ctx, -10, 18, -20, 8, -25, 4 + kick * 5, 8, SHIRT);
-  curveLimb(ctx, 10, 18, 20, 8, 25, 4 - kick * 5, 8, SHIRT);
-  hand(ctx, -25, 4 + kick * 5);
-  hand(ctx, 25, 4 - kick * 5);
-  head(ctx, 0, -10, 24, { tier: s.tier, mood: "worried", blink: false, facing: g.facing });
+  torso(ctx, 0, 12, 30, 22, Math.sin(s.t * 3.2) * 3);
+  curveLimb(ctx, -10, 18, -20, 8, -25, 4 + kick * 5, 6.5, SHIRT);
+  curveLimb(ctx, 10, 18, 20, 8, 25, 4 - kick * 5, 6.5, SHIRT);
+  hand(ctx, -25, 4 + kick * 5, 5.2);
+  hand(ctx, 25, 4 - kick * 5, 5.2);
+  head(ctx, 0, -14, 24, { tier: s.tier, mood: "worried", blink: false, facing: g.facing });
   ctx.restore();
 }
 
@@ -494,17 +545,18 @@ function drawFly(ctx: CanvasRenderingContext2D, s: RenderState) {
   ctx.rotate(g.rot);
   ctx.scale(K, K);
   const fl = Math.sin(s.t * 22);
+  const tieLean = Math.max(-9, Math.min(9, -g.vx * 0.006));
 
-  curveLimb(ctx, -5, 14, -12, 24, -18, 32 + fl * 6, 9, PANTS);
-  curveLimb(ctx, 5, 14, 14, 22, 20, 30 - fl * 6, 9, PANTS);
+  curveLimb(ctx, -5, 14, -12, 24, -18, 32 + fl * 6, 7, PANTS);
+  curveLimb(ctx, 5, 14, 14, 22, 20, 30 - fl * 6, 7, PANTS);
   shoeAt(ctx, -18, 34 + fl * 6, -1);
   shoeAt(ctx, 20, 32 - fl * 6);
-  torso(ctx, 0, -14, 30, 25);
-  curveLimb(ctx, -10, -8, -20, -16, -26, -20 - fl * 5, 8, SHIRT);
-  curveLimb(ctx, 10, -8, 20, -14, 26, -18 + fl * 5, 8, SHIRT);
-  hand(ctx, -26, -20 - fl * 5);
-  hand(ctx, 26, -18 + fl * 5);
-  head(ctx, 0, -36, 24, { tier: s.tier, mood: "worried", blink: false, facing: g.facing });
+  torso(ctx, 0, -14, 30, 22, tieLean);
+  curveLimb(ctx, -10, -8, -20, -16, -26, -20 - fl * 5, 6.5, SHIRT);
+  curveLimb(ctx, 10, -8, 20, -14, 26, -18 + fl * 5, 6.5, SHIRT);
+  hand(ctx, -26, -20 - fl * 5, 5.2);
+  hand(ctx, 26, -18 + fl * 5, 5.2);
+  head(ctx, 0, -40, 24, { tier: s.tier, mood: "worried", blink: false, facing: g.facing });
   ctx.restore();
 }
 
@@ -517,23 +569,35 @@ function drawLie(ctx: CanvasRenderingContext2D, s: RenderState) {
   ctx.scale(dir * K, K);
 
   // far limbs first
-  curveLimb(ctx, 22, -13, 44, -5, 64, -9, 10, SHADE);
+  curveLimb(ctx, 22, -13, 44, -5, 64, -9, 8, SHADE);
   shoeAt(ctx, 67, -9);
-  curveLimb(ctx, -6, -14, -16, -6, -22, -3, 9, SHADE);
-  hand(ctx, -22, -3, 6);
+  curveLimb(ctx, -6, -14, -16, -6, -22, -3, 7, SHADE);
+  hand(ctx, -22, -3, 5.2);
 
   // torso, lying flat
   rr(ctx, -14, -34, 44, 29, 13);
   inked(ctx, SHIRT, 2.6);
+  // the tie, flopped sideways across his chest
+  ctx.fillStyle = ACCENT;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(-8, -28);
+  ctx.lineTo(-3, -32);
+  ctx.lineTo(14, -24);
+  ctx.lineTo(12, -16);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
 
   // near leg, knee flopped up
-  curveLimb(ctx, 24, -24, 46, -36, 62, -25, 11, PANTS);
+  curveLimb(ctx, 24, -24, 46, -36, 62, -25, 9, PANTS);
   shoeAt(ctx, 65, -24);
   // near arm, thrown back over his head
-  curveLimb(ctx, -8, -30, 0, -48, 6, -52, 9, SHIRT);
-  hand(ctx, 6, -53, 7);
+  curveLimb(ctx, -8, -30, 0, -48, 6, -52, 7, SHIRT);
+  hand(ctx, 6, -53, 5.8);
 
-  head(ctx, -40, -21, 24, { tier: s.tier, mood: "dazed", blink: false, facing: 1 });
+  head(ctx, -42, -23, 24, { tier: s.tier, mood: "dazed", blink: false, facing: 1 });
   ctx.restore();
 
   // orbiting stars, drawn unflipped and outlined so they read on the pale wall
@@ -582,29 +646,30 @@ function drawWalk(
   const ly = hipY + Math.cos(swing) * 54;
   const rx = Math.sin(-swing) * 16;
   const ry = hipY + Math.cos(-swing) * 54;
-  curveLimb(ctx, -5, hipY, -5 + lx * 0.6, hipY + 28, -5 + lx, ly, 11, SHADE);
+  curveLimb(ctx, -5, hipY, -5 + lx * 0.6, hipY + 28, -5 + lx, ly, 8, SHADE);
   shoeAt(ctx, -5 + lx + 3, ly + 2);
-  curveLimb(ctx, 5, hipY, 5 + rx * 0.6, hipY + 28, 5 + rx, ry, 12, PANTS);
+  curveLimb(ctx, 5, hipY, 5 + rx * 0.6, hipY + 28, 5 + rx, ry, 9, PANTS);
   shoeAt(ctx, 5 + rx + 3, ry + 2);
 
-  torso(ctx, 0, -104, 52, 31);
+  torso(ctx, 0, -104, 52, 26, storming ? -4 : 0);
 
   if (storming) {
     // fists pumping
-    curveLimb(ctx, -12, -94, -22, -102, -24, -112, 9, SHIRT);
-    curveLimb(ctx, 12, -94, 22, -88, 24, -76, 10, SHIRT);
-    hand(ctx, -24, -114, 7.5);
-    hand(ctx, 24, -74, 7.5);
+    curveLimb(ctx, -12, -94, -22, -102, -24, -112, 7, SHIRT);
+    curveLimb(ctx, 12, -94, 22, -88, 24, -76, 7.5, SHIRT);
+    hand(ctx, -24, -114, 6);
+    hand(ctx, 24, -74, 6);
   } else {
     const a1 = -Math.sin(swing) * 15;
     const a2 = Math.sin(swing) * 15;
-    curveLimb(ctx, -12, -94, -17, -80, -12 + a1, -62, 9, SHADE);
-    curveLimb(ctx, 12, -94, 17, -80, 12 + a2, -62, 10, SHIRT);
-    hand(ctx, -12 + a1, -62, 6);
-    hand(ctx, 12 + a2, -62, 7);
+    curveLimb(ctx, -12, -94, -17, -80, -12 + a1, -62, 6.5, SHADE);
+    curveLimb(ctx, 12, -94, 17, -80, 12 + a2, -62, 7.5, SHIRT);
+    hand(ctx, -12 + a1, -62, 5);
+    hand(ctx, 12 + a2, -62, 5.8);
   }
 
-  head(ctx, 2, -128, 24, {
+  // standing, the egg reads bigger — reference proportions are ~45% head
+  head(ctx, 2, -138, 28, {
     tier: storming ? 3 : s.tier,
     mood: s.face,
     blink: blinkAt(s.t),
