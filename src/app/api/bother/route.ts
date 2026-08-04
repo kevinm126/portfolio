@@ -138,7 +138,9 @@ export async function POST(req: Request) {
     ledger.lastHurtAt = now;
     ledger.hurtsToday += 1;
     global.hurtsToday += 1;
-    return Response.json({ ok: true, line, subject, demo });
+    // The player never learns what it said — the line and subject stay
+    // server-side. Only Kevin reads them.
+    return Response.json({ ok: true, demo });
   }
 
   // apology

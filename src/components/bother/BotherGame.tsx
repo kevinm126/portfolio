@@ -81,7 +81,7 @@ import {
 } from "./memory";
 
 type Overlay =
-  | { kind: "sent"; line: string; subject: string; demo: boolean }
+  | { kind: "sent"; demo: boolean }
   | { kind: "limit" }
   | { kind: "failed" }
   | { kind: "apologized"; demo: boolean }
@@ -452,18 +452,11 @@ export default function BotherGame() {
         });
         const data = (await res.json()) as {
           ok: boolean;
-          line?: string;
-          subject?: string;
           demo?: boolean;
           reason?: string;
         };
-        if (data.ok && data.line) {
-          overlayRef.current({
-            kind: "sent",
-            line: data.line,
-            subject: data.subject ?? "I need to say something",
-            demo: !!data.demo,
-          });
+        if (data.ok) {
+          overlayRef.current({ kind: "sent", demo: !!data.demo });
         } else if (data.reason === "limit") {
           overlayRef.current({ kind: "limit" });
         } else {
@@ -1470,7 +1463,7 @@ export default function BotherGame() {
           </Overlay>
         )}
 
-        {/* aftermath */}
+        {/* aftermath — the one thing the player never gets to see */}
         {overlay?.kind === "sent" && (
           <Overlay>
             <h2 className="mb-2 text-lg font-semibold text-fg">It happened.</h2>
@@ -1478,27 +1471,28 @@ export default function BotherGame() {
               <div className="text-muted">
                 to: <span className="text-fg">kevin (the real one)</span>
               </div>
-              <div className="text-muted">
-                subject: <span className="text-fg">{overlay.subject}</span>
+              <div className="flex items-center gap-1.5 text-muted">
+                subject:{" "}
+                <span className="inline-block h-2.5 w-36 rounded-sm bg-fg opacity-25" />
               </div>
-              <div className="mt-2 border-t border-border pt-2 text-fg">
-                “{overlay.line}”
-              </div>
-              <div className="mt-1.5 text-muted">
-                …a stranger threw me around the office until I snapped. This is on both of you. — Kev
+              <div className="mt-2 space-y-1.5 border-t border-border pt-2.5">
+                <span className="block h-2.5 w-full rounded-sm bg-fg opacity-25" />
+                <span className="block h-2.5 w-4/5 rounded-sm bg-fg opacity-25" />
+                <span className="block h-2.5 w-3/5 rounded-sm bg-fg opacity-25" />
+                <span className="mt-2 block h-2.5 w-16 rounded-sm bg-fg opacity-25" />
               </div>
             </div>
             <p className="mt-3 text-sm text-muted">
               {overlay.demo ? (
                 <>
                   <span className="font-semibold text-fg">Demo mode:</span>{" "}no email key is
-                  configured, so this one was only logged. On the live site it lands in
-                  Kevin&apos;s actual inbox.
+                  configured, so this one was only logged — unread by you either way. On the live
+                  site it lands in Kevin&apos;s actual inbox.
                 </>
               ) : (
                 <>
-                  That was really sent. Kevin will really read it.{" "}
-                  <span className="text-fg">You did this together.</span>
+                  It really sent, and it really says something.{" "}
+                  <span className="text-fg">Kevin gets to read it. You don&apos;t.</span>
                 </>
               )}
             </p>
