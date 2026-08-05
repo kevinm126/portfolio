@@ -30,7 +30,7 @@ Copy `.env.example` → `.env.local`, add a key, restart `npm run dev`.
 
 | Feature | Var(s) | Where to get it |
 |---|---|---|
-| **AI chatbot** ("Ask my résumé") | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) → API Keys |
+| **AI chatbot** ("Ask my résumé") | `ANTHROPIC_API_KEY` (best) or `GEMINI_API_KEY` (**free**, no card) | [console.anthropic.com](https://console.anthropic.com) → API Keys, or [aistudio.google.com](https://aistudio.google.com) → Get API key. Chain: Claude → Gemini → canned answers. |
 | **GitHub stats** | `githubUsername` in content.ts (+ optional `GITHUB_TOKEN`) | [github.com/settings/tokens](https://github.com/settings/tokens) (classic, no scopes) |
 | **Spotify now-playing** | `SPOTIFY_CLIENT_ID` / `SECRET` / `REFRESH_TOKEN` | see below |
 | **WakaTime** | `WAKATIME_API_KEY` | [wakatime.com/settings/account](https://wakatime.com/settings/account) |
