@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BookOpen, Mail } from "lucide-react";
 import { profile } from "@/content/content";
-import { techBadges } from "@/lib/github-data";
+import { SkillsMatrix } from "./SkillsMatrix";
 
 export function ReadmeCard() {
   return (
@@ -35,20 +35,9 @@ export function ReadmeCard() {
         </Link>
 
         <h2 className="mb-3 mt-7 text-base font-semibold text-fg">
-          Technologies I&apos;ve Worked With:
+          Skills — with the projects that prove them:
         </h2>
-        <ul className="flex flex-wrap gap-2">
-          {techBadges.map((t) => (
-            <li
-              key={t.label}
-              className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-fg"
-              style={{ background: `${t.color}1f`, borderColor: `${t.color}55` }}
-            >
-              <span className="h-2 w-2 rounded-full" style={{ background: t.color }} />
-              {t.label}
-            </li>
-          ))}
-        </ul>
+        <SkillsMatrix />
       </div>
     </section>
   );
