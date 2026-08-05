@@ -66,6 +66,7 @@ import {
   type Tier,
 } from "./engine";
 import { guyHitBox, propHitBox, render, type FaceMood, type RenderState } from "./draw";
+import { KevFace } from "./KevFace";
 import {
   FLINCH_TRUST,
   FLINCH_TRUST_BAD,
@@ -1348,7 +1349,6 @@ export default function BotherGame() {
     setApology("idle");
   }
 
-  const moodEmoji = ["🙂", "😒", "😠", "🤬"][ui.tier];
 
   return (
     <div className="max-w-[960px]">
@@ -1373,11 +1373,11 @@ export default function BotherGame() {
             Bothers: {ui.bothers}
           </span>
           <span
-            className="rounded-full border border-border bg-header/80 px-2 py-1 text-xs backdrop-blur"
+            className="flex items-center rounded-full border border-border bg-header/80 px-1.5 py-1 backdrop-blur"
             role="img"
             aria-label={`Kev's mood: ${["content", "annoyed", "angry", "furious"][ui.tier]}`}
           >
-            {moodEmoji}
+            <KevFace tier={ui.tier} size={16} />
           </span>
         </div>
         <div className="absolute right-3 top-3 flex items-center gap-1.5">

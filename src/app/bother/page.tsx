@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { TopHeader } from "@/components/github/TopHeader";
 import { SiteFooter } from "@/components/github/SiteFooter";
 import BotherGame from "@/components/bother/BotherGame";
+import { KevFace } from "@/components/bother/KevFace";
 
 export const metadata: Metadata = {
   title: "Bother Kev",
@@ -15,7 +16,10 @@ export default function BotherPage() {
       <TopHeader activeTab="bother" />
       <main className="mx-auto w-full max-w-[1216px] flex-1 px-4 py-6 sm:px-8">
         <h1 className="mb-3 flex items-center gap-2 text-xl font-semibold text-fg">
-          Bother Kev <span aria-hidden>🗄️</span>
+          Bother Kev{" "}
+          <span aria-hidden>
+            <KevFace size={20} />
+          </span>
         </h1>
         <p className="mb-6 max-w-2xl text-sm text-muted">
           One tiny office, one tiny coworker, drawn entirely in code — no sprites, no game engine,
