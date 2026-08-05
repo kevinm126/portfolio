@@ -56,11 +56,13 @@ async function askClaude(apiKey: string, system: string, history: ChatMsg[]): Pr
 
 /**
  * Gemini via plain REST — no SDK dependency. Free-tier keys come from
- * Google AI Studio (aistudio.google.com, no card). Model overridable via
- * GEMINI_MODEL if the default is ever renamed.
+ * Google AI Studio (aistudio.google.com, no card). The rolling
+ * `gemini-flash-latest` alias tracks Google's current flash model — pinned
+ * names (e.g. gemini-2.5-flash) get retired for new accounts and 404.
+ * Overridable via GEMINI_MODEL.
  */
 async function askGemini(apiKey: string, system: string, history: ChatMsg[]): Promise<string> {
-  const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL?.trim() || "gemini-flash-latest";
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
@@ -72,7 +74,10 @@ async function askGemini(apiKey: string, system: string, history: ChatMsg[]): Pr
           role: m.role === "assistant" ? "model" : "user",
           parts: [{ text: m.content }],
         })),
-        generationConfig: { maxOutputTokens: 500 },
+        // Current Gemini flash models "think" before answering, and thinking
+        // spends from the same output budget (disabling it isn't supported on
+        // this model line) — leave generous headroom or replies truncate.
+        generationConfig: { maxOutputTokens: 2000 },
       }),
     }
   );
