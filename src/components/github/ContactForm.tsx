@@ -9,7 +9,7 @@ type State = "idle" | "sending" | "sent" | "error";
 
 export function ContactForm() {
   const [state, setState] = useState<State>("idle");
-  const linkSocials = socials.filter((s) => s.icon !== "fileText");
+  const linkSocials = socials;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,6 +39,11 @@ export function ContactForm() {
         {profile.handle}/Contact.js
       </div>
 
+      <p className="text-sm text-muted">
+        I&apos;m looking for entry-level Data Science and Software Engineering roles. Drop me a
+        line.
+      </p>
+
       {state === "sent" ? (
         <div role="status" className="flex flex-col items-center gap-3 py-10 text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green/15 text-green">
@@ -49,10 +54,6 @@ export function ContactForm() {
         </div>
       ) : (
         <form onSubmit={onSubmit} className="space-y-4">
-          <p className="text-sm text-muted">
-            I&apos;m looking for entry-level Data Science and Software Engineering roles. Drop me a
-            line.
-          </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               <span className="mb-1.5 block font-medium text-fg">

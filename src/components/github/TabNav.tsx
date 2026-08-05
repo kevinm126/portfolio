@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Home, Code2, Mail, BookOpen, Briefcase, MoreHorizontal, type LucideProps } from "lucide-react";
+import { Home, Code2, Mail, BookOpen, Briefcase, FileText, MoreHorizontal, type LucideProps } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TabId = "welcome" | "portfolio" | "research" | "chess" | "bother" | "contact";
+export type TabId = "welcome" | "portfolio" | "resume" | "research" | "chess" | "bother" | "contact";
 
 function PawnIcon(props: LucideProps) {
   const { size = 16, ...rest } = props;
@@ -21,11 +21,16 @@ type Tab = { id: TabId; label: string; href: string; Icon: React.ComponentType<L
 const TABS: Tab[] = [
   { id: "welcome", label: "Welcome", href: "/", Icon: Home },
   { id: "portfolio", label: "Portfolio", href: "/portfolio", Icon: Code2 },
+  { id: "resume", label: "Résumé", href: "/resume", Icon: FileText },
   { id: "research", label: "Research", href: "/research", Icon: BookOpen },
   { id: "chess", label: "Chess", href: "/chess", Icon: PawnIcon },
   { id: "bother", label: "Bother Kev", href: "/bother", Icon: Briefcase },
   { id: "contact", label: "Get in Touch", href: "/contact", Icon: Mail },
 ];
+
+/** Tabs always visible; the rest collapse into "..." on small screens. The
+ *  résumé tab stays visible everywhere — it's the one recruiters came for. */
+const ALWAYS_VISIBLE = 3;
 
 export function TabNav({ active }: { active: TabId }) {
   const [open, setOpen] = useState(false);
@@ -75,7 +80,7 @@ export function TabNav({ active }: { active: TabId }) {
     }
   }
 
-  const overflow = TABS.slice(2); // Research + Chess + Contact collapse on small screens
+  const overflow = TABS.slice(ALWAYS_VISIBLE);
   const overflowActive = overflow.some((t) => t.id === active);
 
   return (
@@ -86,7 +91,7 @@ export function TabNav({ active }: { active: TabId }) {
           href={t.href}
           className={cn(
             "relative items-center gap-2 px-3 pb-3 pt-1 text-sm transition-colors",
-            i >= 2 ? "hidden min-[808px]:flex" : "flex",
+            i >= ALWAYS_VISIBLE ? "hidden min-[808px]:flex" : "flex",
             active === t.id ? "font-semibold text-fg" : "text-muted hover:text-fg"
           )}
         >

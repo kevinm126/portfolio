@@ -27,6 +27,7 @@ export function openChat() {
 const ROUTES: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Welcome", href: "/", icon: Home },
   { label: "Portfolio", href: "/portfolio", icon: Code2 },
+  { label: "Résumé", href: "/resume", icon: FileText },
   { label: "Research", href: "/research", icon: BookOpen },
   { label: "Chess", href: "/chess", icon: MessageSquare },
   { label: "Bother Kev", href: "/bother", icon: Briefcase },

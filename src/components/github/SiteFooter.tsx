@@ -3,7 +3,7 @@ import { SocialIcon } from "@/components/ui/icons";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
-  const links = socials.filter((s) => s.icon !== "fileText");
+  const links = socials;
   return (
     // pb-28 clears the fixed Copilot launcher (h-12 + bottom-5) at every width
     <footer className="mt-auto px-4 pb-28 pt-16 sm:px-8">

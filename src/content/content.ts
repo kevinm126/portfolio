@@ -17,7 +17,12 @@ export type Social = {
   icon: "github" | "linkedin" | "mail" | "twitter" | "fileText" | "globe" | "kaggle";
 };
 
-export type Skill = { name: string; level?: number /* 0-100, optional */ };
+export type Skill = {
+  name: string;
+  level?: number /* 0-100, optional */;
+  /** Project slugs that prove this skill — rendered as evidence links. */
+  provenBy?: string[];
+};
 export type SkillGroup = { category: string; items: Skill[] };
 
 export type Certification = {
@@ -89,6 +94,11 @@ export const profile = {
   tagline:
     "Entry-level Data Scientist & Software Engineer. I build AI/ML tools end-to-end in Python and ship real products, from NHANES-trained risk models to deployed web apps.",
   location: "Open to relocation · Remote (US)",
+  /** The recruiter fast-lane line, rendered in the site-wide banner + OG card. */
+  availability: {
+    status: "Seeking entry-level Data Science / Software Engineering roles",
+    facts: "B.A. Data Science, Claremont McKenna '26 · Open to relocation · Remote (US)",
+  },
   email: "kmarin1220@gmail.com",
   resumeUrl: "/resume.pdf",
   // Luca-style 3D headshot (optimized 768px JPEG, ~90KB). The sidebar renders
@@ -106,7 +116,7 @@ export const socials: Social[] = [
   { label: "GitHub", href: "https://github.com/kevinm126", icon: "github" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/kevin-marin-aa85151b1/", icon: "linkedin" },
   { label: "Email", href: "mailto:kmarin1220@gmail.com", icon: "mail" },
-  { label: "Résumé", href: "/resume.pdf", icon: "fileText" },
+  { label: "Résumé", href: "/resume", icon: "fileText" },
 ];
 
 // ─── SKILLS ───────────────────────────────────────────────────────────────────
@@ -115,40 +125,40 @@ export const skillGroups: SkillGroup[] = [
   {
     category: "Languages",
     items: [
-      { name: "Python", level: 95 },
+      { name: "Python", level: 95, provenBy: ["metricpath", "pagerank", "redditbot"] },
       { name: "SQL", level: 82 },
-      { name: "TypeScript", level: 75 },
-      { name: "JavaScript", level: 75 },
-      { name: "HTML / CSS", level: 80 },
+      { name: "TypeScript", level: 75, provenBy: ["this-portfolio"] },
+      { name: "JavaScript", level: 75, provenBy: ["this-portfolio"] },
+      { name: "HTML / CSS", level: 80, provenBy: ["13th-care", "this-portfolio"] },
     ],
   },
   {
     category: "Data / ML",
     items: [
-      { name: "pandas", level: 90 },
-      { name: "NumPy", level: 88 },
-      { name: "scikit-learn", level: 85 },
+      { name: "pandas", level: 90, provenBy: ["metricpath", "pagerank"] },
+      { name: "NumPy", level: 88, provenBy: ["pagerank", "metricpath"] },
+      { name: "scikit-learn", level: 85, provenBy: ["metricpath"] },
       { name: "Matplotlib", level: 80 },
       { name: "Jupyter", level: 90 },
-      { name: "Logistic Regression / stats", level: 82 },
+      { name: "Logistic Regression / stats", level: 82, provenBy: ["metricpath"] },
     ],
   },
   {
     category: "AI / LLM",
     items: [
-      { name: "Anthropic API", level: 88 },
-      { name: "OpenAI API", level: 82 },
-      { name: "Ollama (local LLMs)", level: 80 },
-      { name: "Prompt Engineering", level: 85 },
+      { name: "Anthropic API", level: 88, provenBy: ["metricpath", "this-portfolio"] },
+      { name: "OpenAI API", level: 82, provenBy: ["metricpath"] },
+      { name: "Ollama (local LLMs)", level: 80, provenBy: ["metricpath"] },
+      { name: "Prompt Engineering", level: 85, provenBy: ["metricpath", "this-portfolio"] },
       { name: "MCP", level: 70 },
     ],
   },
   {
     category: "Engineering",
     items: [
-      { name: "Next.js / React", level: 75 },
-      { name: "Flask", level: 78 },
-      { name: "Docker", level: 70 },
+      { name: "Next.js / React", level: 75, provenBy: ["this-portfolio"] },
+      { name: "Flask", level: 78, provenBy: ["flask-on-docker"] },
+      { name: "Docker", level: 70, provenBy: ["flask-on-docker"] },
       { name: "PostgreSQL", level: 80 },
       { name: "Playwright", level: 70 },
       { name: "Git", level: 88 },

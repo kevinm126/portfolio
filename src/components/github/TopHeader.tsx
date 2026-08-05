@@ -4,6 +4,7 @@ import Link from "next/link";
 import { profile } from "@/content/content";
 import { SearchBox } from "./SearchBox";
 import { AvatarMenu } from "./AvatarMenu";
+import { HireBanner } from "./HireBanner";
 import { TabNav, type TabId } from "./TabNav";
 
 export function TopHeader({ activeTab }: { activeTab: TabId }) {
@@ -24,6 +25,7 @@ export function TopHeader({ activeTab }: { activeTab: TabId }) {
       <div className="mx-auto max-w-[1216px] px-4 sm:px-7">
         <TabNav active={activeTab} />
       </div>
+      <HireBanner />
     </header>
   );
 }
