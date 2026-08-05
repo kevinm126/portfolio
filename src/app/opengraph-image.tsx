@@ -58,6 +58,27 @@ export default function Image() {
           <div
             style={{
               display: "flex",
+              alignItems: "center",
+              gap: 12,
+              fontSize: 26,
+              color: "#3fb950",
+              fontWeight: 600,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                width: 12,
+                height: 12,
+                borderRadius: 12,
+                backgroundColor: "#3fb950",
+              }}
+            />
+            {profile.availability.status} · Class of 2026
+          </div>
+          <div
+            style={{
+              display: "flex",
               fontSize: 27,
               color: "#c9d1d9",
               lineHeight: 1.45,

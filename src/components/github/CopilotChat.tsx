@@ -13,10 +13,10 @@ const GREETING: Msg = {
   content: `Hi! I'm ${first} — well, an AI version of me, grounded in my résumé. Ask me about my experience, skills, or projects.`,
 };
 const SUGGESTIONS = [
-  "What's your strongest skill?",
-  "Tell me about MetricPath",
-  "Are you good with Python?",
-  "How do I contact you?",
+  "When do you graduate?",
+  "What's your strongest project?",
+  "Summarize your experience",
+  "How do I get your résumé?",
 ];
 
 function CopilotGlyph({ size = 20 }: { size?: number }) {
