@@ -144,7 +144,7 @@ npm run build        # sanity-check the production build locally first
 - GitHub-profile chrome (header, tabs, sidebar, footer) → `src/components/github/*`
 - Welcome page (README + projects + contribution graph) → `src/app/page.tsx`
 - Portfolio + repo filter/search/sort → `src/app/portfolio/page.tsx`, `components/github/RepoFilterList.tsx`
-- Research reviews → `src/app/research/page.tsx`, `components/github/ResearchList.tsx` (papers in `content.ts`)
+- Paper suggestions → `src/app/research/page.tsx`, `components/github/ResearchList.tsx` (papers in `content.ts`)
 - Chess (community correspondence + vs-bot) → `src/components/chess/*` + `src/app/api/chess/route.ts`
 - Bother Kev (canvas office game) → `src/components/bother/{engine,draw}.ts` + `BotherGame.tsx`, `src/app/api/bother/route.ts`, lines in `src/content/bother-lines.ts` (server-only)
 - Contribution graph you can type words into → `src/components/features/WordGraph.tsx`, `ContributionGraph.tsx`

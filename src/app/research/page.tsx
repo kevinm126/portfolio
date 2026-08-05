@@ -4,7 +4,7 @@ import { ResearchList } from "@/components/github/ResearchList";
 
 export const metadata: Metadata = {
   title: "Research",
-  description: "Papers Kevin Marin has read, with notes and reviews.",
+  description: "Research papers Kevin Marin suggests, with links.",
 };
 
 export default function ResearchPage() {

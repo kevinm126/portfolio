@@ -310,7 +310,7 @@ export const projects: Project[] = [
     blurb:
       "The site you're on: a Next.js 16 clone of a GitHub profile — interactive chess, a contribution graph you can type into, a Copilot-style chatbot, a ⌘K command palette, light/dark themes, a community correspondence chess board, and a Poptropica-style office game with real consequences.",
     description:
-      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a research-review section, light/dark theming, a shared community chess board, and 'Bother Kev' — a hand-drawn canvas office game where tormenting a tiny coworker eventually gets a real hurtful email sent to my real inbox. Built to be a project, not just a showcase.",
+      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a paper-suggestions section, light/dark theming, a shared community chess board, and 'Bother Kev' — a hand-drawn canvas office game where tormenting a tiny coworker eventually gets a real hurtful email sent to my real inbox. Built to be a project, not just a showcase.",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "chess.js"],
     repoUrl: "https://github.com/kevinm126/portfolio",
     // Self-populates once NEXT_PUBLIC_SITE_URL is set (see .env.example).
@@ -319,97 +319,112 @@ export const projects: Project[] = [
   },
 ];
 
-// ─── RESEARCH REVIEWS ─────────────────────────────────────────────────────────
-//  Papers I've read, with my own notes. Seeded from the domains my projects and
-//  coursework actually touch — curate / add to these as I read more.
+// ─── PAPER SUGGESTIONS ────────────────────────────────────────────────────────
+//  Papers (and one essay) I suggest to anyone getting into data science.
+//  Each gets a link and one line on why it's worth your time — no ratings,
+//  no reviews. Add to this as I find more.
 
 export type ResearchPaper = {
   slug: string;
   title: string;
   authors: string;
-  venue: string;
+  venue: string; // essays are labeled honestly
   year: string;
   url: string;
   tags: string[];
-  rating: 1 | 2 | 3 | 4 | 5; // how strongly I'd recommend it
-  relatedProject?: string; // a project slug this connects to
-  takeaway: string; // one-line "why it stuck with me"
-  review: string; // my longer note
+  why: string; // one line on why you should read it
 };
 
 export const papers: ResearchPaper[] = [
   {
-    slug: "pagerank-1999",
-    title: "The PageRank Citation Ranking: Bringing Order to the Web",
-    authors: "Page, Brin, Motwani & Winograd",
-    venue: "Stanford InfoLab",
-    year: "1999",
-    url: "http://ilpubs.stanford.edu:8090/422/",
-    tags: ["Information Retrieval", "Graphs", "Linear Algebra"],
-    rating: 5,
-    relatedProject: "pagerank",
-    takeaway:
-      "Authority is just the dominant eigenvector of the web's link graph — a whole search engine falls out of one fixed-point iteration.",
-    review:
-      "This is the paper I reimplemented from scratch for my PageRank project. Reading it before coding it made the difference: the 'random surfer' framing turns an intimidating eigenvector problem into a damped power iteration you can write in a dozen lines of NumPy. It's also a clinic in choosing the right abstraction — they model the entire web as a stochastic matrix and let linear algebra do the work.",
+    slug: "two-cultures-2001",
+    title: "Statistical Modeling: The Two Cultures",
+    authors: "Leo Breiman",
+    venue: "Statistical Science",
+    year: "2001",
+    url: "https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.full",
+    tags: ["Statistics", "Machine Learning", "Philosophy"],
+    why: "The stats-versus-ML worldview split, named in 2001 — it's still the argument underneath every modeling debate you'll ever be in.",
   },
   {
-    slug: "attention-2017",
-    title: "Attention Is All You Need",
-    authors: "Vaswani et al.",
+    slug: "tech-debt-2015",
+    title: "Hidden Technical Debt in Machine Learning Systems",
+    authors: "Sculley et al.",
     venue: "NeurIPS",
-    year: "2017",
-    url: "https://arxiv.org/abs/1706.03762",
-    tags: ["Transformers", "NLP", "Deep Learning"],
-    rating: 5,
-    relatedProject: "metricpath",
-    takeaway:
-      "Drop recurrence, keep attention — the architecture every LLM I build against is descended from this.",
-    review:
-      "Required reading for anyone touching LLMs. I work against the Anthropic, OpenAI and Ollama APIs in MetricPath, and understanding self-attention — why these models are good at the long, multi-turn intake conversation it relies on — comes straight from here. The 'attention is a soft, content-addressable lookup' mental model is the one I keep coming back to.",
+    year: "2015",
+    url: "https://papers.nips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html",
+    tags: ["ML Systems", "Production", "Engineering"],
+    why: "The model is the smallest box in the diagram; everything around it is the actual job. Read before your first ML role, re-read during it.",
   },
   {
-    slug: "domingos-2012",
-    title: "A Few Useful Things to Know About Machine Learning",
-    authors: "Pedro Domingos",
-    venue: "Communications of the ACM",
+    slug: "effectiveness-of-data-2009",
+    title: "The Unreasonable Effectiveness of Data",
+    authors: "Halevy, Norvig & Pereira",
+    venue: "IEEE Intelligent Systems",
+    year: "2009",
+    url: "https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/35179.pdf",
+    tags: ["Data", "Machine Learning", "NLP"],
+    why: "Why more data beats a cleverer model more often than anyone's pride would like — four pages that predicted the next fifteen years.",
+  },
+  {
+    slug: "tidy-data-2014",
+    title: "Tidy Data",
+    authors: "Hadley Wickham",
+    venue: "Journal of Statistical Software",
+    year: "2014",
+    url: "https://www.jstatsoft.org/article/view/v059i10",
+    tags: ["Data Wrangling", "Statistics", "Practice"],
+    why: "The paper behind why every dataframe you've ever liked felt likeable. You already follow its rules — this is where they come from.",
+  },
+  {
+    slug: "ioannidis-2005",
+    title: "Why Most Published Research Findings Are False",
+    authors: "John Ioannidis",
+    venue: "PLoS Medicine",
+    year: "2005",
+    url: "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020124",
+    tags: ["Statistics", "Inference", "Science"],
+    why: "The cheapest inoculation available against taking p-values at face value — uncomfortable, famous, and worth the discomfort.",
+  },
+  {
+    slug: "alexnet-2012",
+    title: "ImageNet Classification with Deep Convolutional Neural Networks",
+    authors: "Krizhevsky, Sutskever & Hinton",
+    venue: "NeurIPS",
     year: "2012",
-    url: "https://homes.cs.washington.edu/~pedrod/papers/cacm12.pdf",
-    tags: ["Machine Learning", "Practical", "Generalization"],
-    rating: 5,
-    takeaway:
-      "Data beats a cleverer algorithm, and the thing you're really fighting is overfitting — judgment, not math.",
-    review:
-      "The most quotable ML paper I've read, and the one I'd hand to anyone starting out. 'It's generalization that counts', 'more data beats a cleverer algorithm', 'feature engineering is the key' — these aren't equations, they're the instincts that kept my NHANES mortality-risk model honest. I re-read it whenever I'm tempted to reach for a fancier model instead of better features.",
+    url: "https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html",
+    tags: ["Deep Learning", "Computer Vision"],
+    why: "The starting gun for modern deep learning — eight pages, one GPU trick, and a decade of consequences.",
   },
   {
-    slug: "lasso-1996",
-    title: "Regression Shrinkage and Selection via the Lasso",
-    authors: "Robert Tibshirani",
-    venue: "J. Royal Statistical Society B",
-    year: "1996",
-    url: "https://www.jstor.org/stable/2346178",
-    tags: ["Statistics", "Regularization", "Feature Selection"],
-    rating: 4,
-    relatedProject: "metricpath",
-    takeaway:
-      "An L1 penalty does selection and fitting in one shot — sparse models you can actually explain.",
-    review:
-      "Directly relevant to the logistic model behind MetricPath. The lasso's geometric intuition — why an L1 ball drives coefficients exactly to zero where an L2 ball only shrinks them — is what made regularization click for me. For a health model that has to be interpretable, a sparse, defensible set of coefficients matters as much as the score itself.",
+    slug: "gpt3-2020",
+    title: "Language Models are Few-Shot Learners",
+    authors: "Brown et al.",
+    venue: "NeurIPS",
+    year: "2020",
+    url: "https://arxiv.org/abs/2005.14165",
+    tags: ["LLMs", "NLP", "Scaling"],
+    why: "Scale as a research result in its own right — the paper where the current era of AI actually begins.",
   },
   {
-    slug: "mapreduce-2004",
-    title: "MapReduce: Simplified Data Processing on Large Clusters",
-    authors: "Jeffrey Dean & Sanjay Ghemawat",
-    venue: "OSDI",
-    year: "2004",
-    url: "https://research.google/pubs/pub62/",
-    tags: ["Distributed Systems", "Big Data", "Systems"],
-    rating: 4,
-    takeaway:
-      "Two functions — map and reduce — and a runtime that hides the hard parts of running them on a thousand machines.",
-    review:
-      "I read this around my Big Data coursework (CSCI143), where I was doing parallel bulk loads and full-text search over large Twitter datasets in PostgreSQL. MapReduce is the cleanest example I know of moving complexity out of the user's code and into the framework — fault tolerance, data locality and parallelism become someone else's problem. It reframed how I think about scaling a data pipeline.",
+    slug: "shannon-1948",
+    title: "A Mathematical Theory of Communication",
+    authors: "Claude Shannon",
+    venue: "Bell System Technical Journal",
+    year: "1948",
+    url: "https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf",
+    tags: ["Information Theory", "Foundations"],
+    why: "One paper invents the bit, entropy, and the ceiling on every channel — everything else on this list is measured in its units.",
+  },
+  {
+    slug: "bitter-lesson-2019",
+    title: "The Bitter Lesson",
+    authors: "Rich Sutton",
+    venue: "essay",
+    year: "2019",
+    url: "http://www.incompleteideas.net/IncIdeas/BitterLesson.html",
+    tags: ["AI", "Essay", "History"],
+    why: "1,100 words explaining seventy years of AI research regret: general methods plus compute beat human cleverness, every time.",
   },
 ];
 
