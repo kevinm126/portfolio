@@ -22,14 +22,18 @@ const TABS: Tab[] = [
   { id: "welcome", label: "Welcome", href: "/", Icon: Home },
   { id: "portfolio", label: "Portfolio", href: "/portfolio", Icon: Code2 },
   { id: "resume", label: "Résumé", href: "/resume", Icon: FileText },
-  { id: "research", label: "Research", href: "/research", Icon: BookOpen },
+  { id: "research", label: "Research Recommendations", href: "/research", Icon: BookOpen },
   { id: "chess", label: "Chess", href: "/chess", Icon: PawnIcon },
   { id: "bother", label: "Bother Kev", href: "/bother", Icon: Briefcase },
   { id: "contact", label: "Get in Touch", href: "/contact", Icon: Mail },
 ];
 
 /** Tabs always visible; the rest collapse into "..." on small screens. The
- *  résumé tab stays visible everywhere — it's the one recruiters came for. */
+ *  résumé tab stays visible everywhere — it's the one recruiters came for.
+ *  The 960px cutoff is measured, not guessed: the seven-tab row needs 893px
+ *  of content width plus ~67px of container padding, and at 240px "Research
+ *  Recommendations" is more than twice the width of any other tab. Shorten
+ *  that label and the cutoff can come back down (it was 808px). */
 const ALWAYS_VISIBLE = 3;
 
 export function TabNav({ active }: { active: TabId }) {
@@ -90,8 +94,8 @@ export function TabNav({ active }: { active: TabId }) {
           key={t.id}
           href={t.href}
           className={cn(
-            "relative items-center gap-2 px-3 pb-3 pt-1 text-sm transition-colors",
-            i >= ALWAYS_VISIBLE ? "hidden min-[808px]:flex" : "flex",
+            "relative shrink-0 items-center gap-2 whitespace-nowrap px-3 pb-3 pt-1 text-sm transition-colors",
+            i >= ALWAYS_VISIBLE ? "hidden min-[960px]:flex" : "flex",
             active === t.id ? "font-semibold text-fg" : "text-muted hover:text-fg"
           )}
         >
@@ -104,7 +108,7 @@ export function TabNav({ active }: { active: TabId }) {
       ))}
 
       {/* overflow menu (small screens) */}
-      <div ref={ref} className="relative flex min-[808px]:hidden">
+      <div ref={ref} className="relative flex min-[960px]:hidden">
         <button
           ref={triggerRef}
           type="button"
@@ -128,7 +132,7 @@ export function TabNav({ active }: { active: TabId }) {
             role="menu"
             aria-label="More tabs"
             onKeyDown={onMenuKeyDown}
-            className="absolute right-0 top-full z-50 mt-1 w-44 rounded-md border border-border bg-surface py-1 shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-1 w-64 rounded-md border border-border bg-surface py-1 shadow-2xl"
           >
             {overflow.map((t) => (
               <Link

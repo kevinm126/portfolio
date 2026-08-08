@@ -11,7 +11,7 @@ const ITEMS = [
   { label: "Welcome", href: "/" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Résumé", href: "/resume" },
-  { label: "Research", href: "/research" },
+  { label: "Research Recommendations", href: "/research" },
   { label: "Chess", href: "/chess" },
   { label: "Bother Kev", href: "/bother" },
   { label: "Get in Touch", href: "/contact" },
