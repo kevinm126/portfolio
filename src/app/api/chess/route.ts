@@ -1,6 +1,8 @@
+import { timingSafeEqual } from "node:crypto";
 import { Chess } from "chess.js";
 import { store, CHESS_START_FEN } from "@/lib/store";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
@@ -8,10 +10,24 @@ export const dynamic = "force-dynamic";
  *   • The community plays White: anyone can make White's move.
  *   • Kevin plays Black: those moves require the admin key, so the board
  *     stays locked to the public until he replies.
- * Set CHESS_ADMIN_KEY in the environment for production; the dev fallback
- * below only exists so the feature is playable locally.
+ *
+ * The key must fail CLOSED. This repo is public, so a literal fallback would
+ * be a published credential: anyone could read it here and then reset the game
+ * or play Kevin's side. With CHESS_ADMIN_KEY unset in production there is no
+ * admin at all, which loses nothing (the community can still play White) and
+ * gives away nothing. The convenience fallback exists only off-production.
  */
-const ADMIN_KEY = process.env.CHESS_ADMIN_KEY || "kevin-dev";
+const ADMIN_KEY: string | null =
+  process.env.CHESS_ADMIN_KEY?.trim() ||
+  (process.env.NODE_ENV === "production" ? null : "local-dev-only");
+
+/** Constant-time compare, so the key can't be recovered a byte at a time. */
+function isAdminKey(supplied: unknown): boolean {
+  if (ADMIN_KEY === null || typeof supplied !== "string" || !supplied) return false;
+  const a = Buffer.from(supplied);
+  const b = Buffer.from(ADMIN_KEY);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 type Snapshot = {
   fen: string;
@@ -78,7 +94,10 @@ export async function POST(req: Request) {
     return Response.json({ error: "Bad request" }, { status: 400 });
   }
 
-  const isAdmin = typeof data.admin === "string" && data.admin === ADMIN_KEY;
+  const isAdmin = isAdminKey(data.admin);
+  if (!isAdmin && data.admin && ADMIN_KEY === null) {
+    console.warn("[chess] admin action attempted but CHESS_ADMIN_KEY is not set; refusing.");
+  }
 
   // Admin: start a fresh game.
   if (data.action === "reset") {
