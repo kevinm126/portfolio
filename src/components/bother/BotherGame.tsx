@@ -13,6 +13,7 @@ import {
   DESK,
   DESPAIR_LINE,
   DESPAIR_TIME,
+  FIRST_BOTHER_LINES,
   FLINCH_LINE,
   FLOOR_Y,
   FLOW_1_AFTER,
@@ -32,6 +33,7 @@ import {
   SEAT_X,
   SEAT_HEAD_X,
   SEAT_HEAD_Y,
+  SECOND_BOTHER_LINES,
   SHEET_DONE_LINE,
   SIT_TIME,
   STORM_SPEED,
@@ -336,6 +338,13 @@ export default function BotherGame() {
     const pick = (arr: readonly string[]) => arr[Math.floor(Math.random() * arr.length)];
     const tier = () => tierFor(g.bothers, g.threshold);
     const pushUi = () => uiRef.current({ bothers: g.bothers, tier: tier() });
+    /** The two scripted beats: calm ask on bother #1, the warning on #2. */
+    const scriptedBotherLine = () =>
+      g.bothers === 1
+        ? pick(FIRST_BOTHER_LINES)
+        : g.bothers === 2
+          ? pick(SECOND_BOTHER_LINES)
+          : null;
 
     const persist = () => {
       g.mem.rows = Math.floor(g.rows);
@@ -423,6 +432,13 @@ export default function BotherGame() {
           g.guy.phase = "storming";
         }
         // any other phase: the storm check in startReturn catches it
+      } else {
+        // the escalation script outranks the yelp the caller just said
+        const scripted = scriptedBotherLine();
+        if (scripted) {
+          say(scripted, 3);
+          g.faceOverride = null; // let the tier face carry the mood
+        }
       }
     };
 
@@ -823,11 +839,18 @@ export default function BotherGame() {
               g.screenMode = "work";
               g.rowFlow = 0;
               // the damage report: he sees exactly what the flight cost him
-              if (g.pendingRowLoss > 0) {
+              const lostRows = g.pendingRowLoss > 0;
+              if (lostRows) {
                 g.rows = Math.max(0, g.rows - g.pendingRowLoss);
                 g.pendingRowLoss = 0;
-                say(`row ${Math.floor(g.rows).toLocaleString()}… again.`, 2.6);
                 persist();
+              }
+              // the escalation script outranks everything else he might say
+              const scripted = scriptedBotherLine();
+              if (scripted) {
+                say(scripted, 3);
+              } else if (lostRows) {
+                say(`row ${Math.floor(g.rows).toLocaleString()}… again.`, 2.6);
               } else if (!g.bubble) {
                 say(pick(MUTTERS[tier()]), 2.4);
               }

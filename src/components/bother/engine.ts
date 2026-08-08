@@ -68,20 +68,29 @@ export const easeInOutQuad = (t: number) =>
   t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 export const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
-/** He snaps somewhere in this range — re-rolled after every meltdown. */
-export const MIN_BOTHERS = 9;
-export const MAX_BOTHERS = 17;
+/**
+ * He snaps somewhere in this range — re-rolled after every meltdown. The
+ * pool is weighted toward 3–4: most players get two clear warnings and
+ * then very little rope.
+ */
+export const MIN_BOTHERS = 3;
+export const MAX_BOTHERS = 6;
+const THRESHOLD_POOL = [3, 3, 3, 4, 4, 4, 5, 5, 6];
 
 export const randThreshold = () =>
-  MIN_BOTHERS + Math.floor(Math.random() * (MAX_BOTHERS - MIN_BOTHERS + 1));
+  THRESHOLD_POOL[Math.floor(Math.random() * THRESHOLD_POOL.length)];
 
 /** 0 content · 1 annoyed · 2 angry · 3 meltdown */
 export type Tier = 0 | 1 | 2 | 3;
+/**
+ * With only 3–6 bothers of rope the tiers track the script, not a fraction:
+ * hit 1 = the polite ask (annoyed), hit 2 = the warning (angry), threshold
+ * = meltdown.
+ */
 export const tierFor = (bothers: number, threshold: number): Tier => {
-  const f = bothers / threshold;
-  if (f >= 1) return 3;
-  if (f >= 0.7) return 2;
-  if (f >= 0.4) return 1;
+  if (bothers >= threshold) return 3;
+  if (bothers >= 2) return 2;
+  if (bothers >= 1) return 1;
   return 0;
 };
 
@@ -438,6 +447,23 @@ export const MUTTERS: Record<Tier, string[]> = {
   3: ["THAT'S IT."],
 };
 
+/**
+ * The escalation script. Bother #1 gets a calm request to stop; bother #2
+ * gets the explicit warning that the real Kevin is one incident away from
+ * hearing about this. These override the tier mutter (and the prop-hit
+ * yelp) so the two beats always land.
+ */
+export const FIRST_BOTHER_LINES = [
+  "please don't do that. I'm asking nicely.",
+  "okay. please stop — I have work to do.",
+  "let's not do that again, alright?",
+];
+export const SECOND_BOTHER_LINES = [
+  "that's twice. keep going and I'm emailing Kevin about you.",
+  "I mean it — one more and Kevin hears about this.",
+  "stop. now. or I write to Kevin. the REAL one.",
+];
+
 export const DAZED_LINES = ["ow.", "why.", "my stapler…", "cool. cool cool cool."];
 export const PEACE_LINE = "oh… you're just watching me work? that's… nice, actually.";
 export const WORK_LINES = ["so many rows…", "row 4,102 of 9,880.", "hm. off by one.", "almost caught up…"];
@@ -505,8 +531,8 @@ export const CABLE_ARM_AT = 0.35;
 export const DESPAIR_TIME = 5;
 export const DESPAIR_LINE = "I lost everything.";
 /** After a pull he is brittle: the next threshold rolls from this range. */
-export const MIN_BOTHERS_BRITTLE = 6;
-export const MAX_BOTHERS_BRITTLE = 12;
+export const MIN_BOTHERS_BRITTLE = 2;
+export const MAX_BOTHERS_BRITTLE = 4;
 export const randThresholdBrittle = () =>
   MIN_BOTHERS_BRITTLE + Math.floor(Math.random() * (MAX_BOTHERS_BRITTLE - MIN_BOTHERS_BRITTLE + 1));
 /** And he types at half speed for a while. */
