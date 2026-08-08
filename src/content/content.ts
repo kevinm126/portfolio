@@ -436,6 +436,16 @@ export const papers: ResearchPaper[] = [
     tags: ["AI", "Essay", "History"],
     why: "1,100 words explaining seventy years of AI research regret: general methods plus compute beat human cleverness, every time.",
   },
+  {
+    slug: "llms-cant-jump-2026",
+    title: "Position: LLMs can't jump",
+    authors: "Tom Zahavy",
+    venue: "ICML",
+    year: "2026",
+    url: "https://icml.cc/virtual/2026/poster/67091",
+    tags: ["LLMs", "Reasoning", "Philosophy"],
+    why: "The abductive leap — inventing the premises, not deriving the proof — is the one move LLMs still can't make. Read it right after The Bitter Lesson and let the two argue.",
+  },
 ];
 
 // ─── NAV (single-page section anchors) ────────────────────────────────────────
