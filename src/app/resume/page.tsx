@@ -7,7 +7,7 @@ import { profile, projects, socials } from "@/content/content";
 export const metadata: Metadata = {
   title: "Résumé",
   description:
-    "Kevin Marin's résumé — entry-level Data Science / Software Engineering. Quick facts, top projects, and the PDF.",
+    "Kevin Marin's résumé for entry-level Data Science / Software Engineering roles. Quick facts, top projects, and the PDF.",
 };
 
 /**
@@ -95,7 +95,7 @@ export default function ResumePage() {
             aria-label="Kevin Marin's résumé PDF"
           >
             <p className="p-6 text-sm text-muted">
-              Your browser can&apos;t display the PDF inline —{" "}
+              Your browser can&apos;t display the PDF inline;{" "}
               <a href={profile.resumeUrl} className="text-link hover:underline" download>
                 download it instead
               </a>

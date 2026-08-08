@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       const resp = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 400,
-        system: "You are a translator. Reply with ONLY a JSON object — no prose, no code fences.",
+        system: "You are a translator. Reply with ONLY a JSON object. No prose, no code fences.",
         messages: [
           {
             role: "user",

@@ -85,7 +85,7 @@ export default function Image() {
               maxWidth: 950,
             }}
           >
-            I build AI/ML tools end-to-end in Python and ship real products — from
+            I build AI/ML tools end-to-end in Python and ship real products, from
             NHANES-trained risk models to deployed web apps.
           </div>
         </div>

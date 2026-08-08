@@ -1429,12 +1429,12 @@ export default function BotherGame() {
             <div className="space-y-2.5 text-sm text-muted">
               <p>
                 He&apos;s just trying to get through his inbox. You can pick him up and fling him
-                around his office as much as you like — he&apos;ll always dust himself off and go
+                around his office as much as you like; he&apos;ll always dust himself off and go
                 back to work. He always does.
               </p>
               <p className="text-fg">
                 But know this: every bother pushes him closer to the edge. After a random number of
-                them — you&apos;ll never know which one — he will snap, sit down at his computer,
+                them (you&apos;ll never know which one), he will snap, sit down at his computer,
                 and send the <strong>real Kevin</strong> a genuinely hurtful email.{" "}
                 <strong>A real email, to his real inbox.</strong>{" "}He&apos;ll read it.
               </p>
@@ -1509,7 +1509,7 @@ export default function BotherGame() {
               {overlay.demo ? (
                 <>
                   <span className="font-semibold text-fg">Demo mode:</span>{" "}no email key is
-                  configured, so this one was only logged — unread by you either way. On the live
+                  configured, so this one was only logged, unread by you either way. On the live
                   site it lands in Kevin&apos;s actual inbox.
                 </>
               ) : (
@@ -1539,7 +1539,7 @@ export default function BotherGame() {
           <Overlay>
             <h2 className="mb-2 text-lg font-semibold text-fg">Outbox full.</h2>
             <p className="text-sm text-muted">
-              The email bounced. Kev has sent enough hurtful messages today — Kevin&apos;s inbox
+              The email bounced. Kev has sent enough hurtful messages today; Kevin&apos;s inbox
               needs a break. Kev stared at the screen for a second, sighed, and deleted the draft.
             </p>
             <p className="mt-2 text-sm text-fg">Somehow, this feels like mercy.</p>
@@ -1571,7 +1571,7 @@ export default function BotherGame() {
             <h2 className="mb-2 text-lg font-semibold text-fg">He passed it along.</h2>
             <p className="text-sm text-muted">
               A real apology is on its way to Kevin&apos;s inbox
-              {overlay.demo ? " (well — logged, in demo mode)" : ""}. Kev read it over twice before
+              {overlay.demo ? " (well, logged in demo mode)" : ""}. Kev read it over twice before
               sending. He seems lighter.
             </p>
             <div className="mt-4">
@@ -1613,7 +1613,7 @@ export default function BotherGame() {
           <Overlay>
             <h2 className="mb-2 text-lg font-semibold text-fg">You pulled the plug.</h2>
             <p className="text-sm text-muted">
-              The email died with the screen. The real Kevin will never read it — you saved him
+              The email died with the screen. The real Kevin will never read it; you saved him
               that. Kev lost the draft, and{" "}
               <span className="text-fg">{overlay.lost.toLocaleString()} rows</span>
               {" "}of the quarter went with it. He hasn&apos;t lifted his head yet.
@@ -1638,7 +1638,7 @@ export default function BotherGame() {
       </div>
 
       <p className="mt-3 text-xs text-muted">
-        Drag Kev to pick him up; flick to throw. His mug and stapler throw too — mind the mug. He
+        Drag Kev to pick him up; flick to throw. His mug and stapler throw too; mind the mug. He
         gets over it. Mostly. Leave him alone for a while and he calms down.
       </p>
     </div>

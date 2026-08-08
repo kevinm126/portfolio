@@ -63,7 +63,7 @@ export function Terminal() {
           "  gui / exit   return to the graphical site",
         ].join("\n")
       ),
-    about: () => print([`${profile.name} — ${profile.tagline}`, "", ...profile.about].join("\n")),
+    about: () => print([`${profile.name}: ${profile.tagline}`, "", ...profile.about].join("\n")),
     whoami: () => print(profile.name),
     skills: () =>
       print(
@@ -186,7 +186,7 @@ export function Terminal() {
         <span className="h-3 w-3 rounded-full bg-red-500/80" />
         <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
         <span className="h-3 w-3 rounded-full bg-green-500/80" />
-        <span className="ml-2 text-muted">visitor@{profile.initials.toLowerCase()} — bash</span>
+        <span className="ml-2 text-muted">visitor@{profile.initials.toLowerCase()} · bash</span>
         <button
           onClick={(e) => {
             e.stopPropagation();

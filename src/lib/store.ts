@@ -66,7 +66,7 @@ if (!g.__portfolioStore) {
       {
         id: "seed-3",
         name: "Ada",
-        message: "Clean build — the terminal mode is a great touch!",
+        message: "Clean build. The terminal mode is a great touch!",
         createdAt: "2026-05-22T14:10:00.000Z",
       },
       {

@@ -31,7 +31,7 @@ export function TopHeader({ activeTab }: { activeTab: TabId }) {
             <span className="truncate">
               Try my new game
               <span className="hidden md:inline">
-                {" — it has "}
+                {": it has "}
                 <span className="font-semibold text-coral">real-world consequences</span>
               </span>
             </span>

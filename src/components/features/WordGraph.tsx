@@ -294,10 +294,10 @@ export function WordGraph({ initialWord = "KEVIN" }: { initialWord?: string }) {
         </div>
       </div>
       {sendState === "error" && (
-        <p className="mb-3 text-xs text-muted">Something went wrong — give it another try.</p>
+        <p className="mb-3 text-xs text-muted">Something went wrong. Give it another try.</p>
       )}
       {transState === "error" && (
-        <p className="mb-3 text-xs text-muted">Translation didn&apos;t go through — keep typing to retry.</p>
+        <p className="mb-3 text-xs text-muted">Translation didn&apos;t go through. Keep typing to retry.</p>
       )}
       {!translations && transState === "loading" && (
         <p className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted">

@@ -148,10 +148,10 @@ export default function ChessGame() {
   }, [game, sync]);
 
   const status = useMemo(() => {
-    if (game.isCheckmate()) return `Checkmate — ${game.turn() === "w" ? "Black" : "White"} wins`;
-    if (game.isStalemate()) return "Draw — stalemate";
+    if (game.isCheckmate()) return `Checkmate: ${game.turn() === "w" ? "Black" : "White"} wins`;
+    if (game.isStalemate()) return "Draw by stalemate";
     if (game.isDraw()) return "Draw";
-    return `${game.turn() === "w" ? "White" : "Black"} to move${game.inCheck() ? " — check" : ""}`;
+    return `${game.turn() === "w" ? "White" : "Black"} to move${game.inCheck() ? " (check)" : ""}`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen, game]);
 

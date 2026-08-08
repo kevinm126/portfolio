@@ -7,7 +7,7 @@ import { KevFace } from "@/components/bother/KevFace";
 export const metadata: Metadata = {
   title: "Bother Kev",
   description:
-    "A tiny office game: throw Kev around all you like — he'll always go back to work. But when he finally snaps, the real Kevin gets a real hurtful email about it.",
+    "A tiny office game: throw Kev around all you like; he'll always go back to work. But when he finally snaps, the real Kevin gets a real hurtful email about it.",
 };
 
 export default function BotherPage() {
@@ -22,10 +22,10 @@ export default function BotherPage() {
           </span>
         </h1>
         <p className="mb-6 max-w-2xl text-sm text-muted">
-          One tiny office, one tiny coworker, drawn entirely in code — no sprites, no game engine,
+          One tiny office, one tiny coworker, drawn entirely in code: no sprites, no game engine,
           just a <code className="text-fg">&lt;canvas&gt;</code>{" "}and math. Throw him around all you
           like; he&apos;ll always dust himself off and go back to work. But everything has a limit,
-          and when Kev hits his, he opens his email client —{" "}
+          and when Kev hits his, he opens his email client,{" "}
           <strong className="text-fg">and the real me gets a real, hurtful email about it.</strong>{" "}
           How far you push him is up to you.
         </p>

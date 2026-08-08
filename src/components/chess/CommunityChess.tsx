@@ -128,7 +128,7 @@ export default function CommunityChess() {
           applySnapshot(data as Snapshot);
         }
       } catch {
-        setError("Network error — try again.");
+        setError("Network error. Try again.");
       } finally {
         setSelected(null);
         submitting.current = false;
@@ -220,17 +220,17 @@ export default function CommunityChess() {
           </p>
         ) : snap.turn === "w" ? (
           <p className="text-xs text-muted">
-            Your move — you&apos;re playing the community&apos;s <strong>White</strong>{" "}pieces.
+            Your move: you&apos;re playing the community&apos;s <strong>White</strong>{" "}pieces.
             Click a piece, then a highlighted square.
           </p>
         ) : isAdmin ? (
           <p className="text-xs text-coral">
-            You&apos;re signed in as Kevin — play <strong>Black&apos;s</strong>{" "}reply.
+            You&apos;re signed in as Kevin: play <strong>Black&apos;s</strong>{" "}reply.
           </p>
         ) : (
           <p className="flex items-center gap-2 text-xs text-muted">
             <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-coral" />
-            Locked — waiting for me to reply as Black.
+            Locked: waiting for me to reply as Black.
           </p>
         )}
 

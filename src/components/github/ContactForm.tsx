@@ -49,7 +49,7 @@ export function ContactForm() {
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green/15 text-green">
             <Check />
           </span>
-          <p className="font-semibold text-fg">Thanks — your message is on its way.</p>
+          <p className="font-semibold text-fg">Thanks, your message is on its way.</p>
           <p className="text-sm text-muted">I&apos;ll get back to you soon.</p>
         </div>
       ) : (

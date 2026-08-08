@@ -41,7 +41,7 @@ export default function ChessModes() {
           <>
             One shared, never-ending game. The <strong className="text-fg">whole internet</strong>{" "}
             plays White; <strong className="text-fg">I</strong>{" "}answer as Black. Make
-            White&apos;s next move and the board locks until I reply — then it&apos;s open again.
+            White&apos;s next move and the board locks until I reply, then it&apos;s open again.
             Check back to see how the game evolves.
           </>
         ) : (

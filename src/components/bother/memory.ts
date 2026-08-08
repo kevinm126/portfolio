@@ -100,7 +100,7 @@ export const TRUST = {
 /** Greeting buckets. `null` line means he only looks (the stare handles it). */
 export function greetingFor(m: KevMemory): { line: string | null; mood: "happy" | "worried" | null } {
   if (m.visits <= 1) return { line: null, mood: null }; // strangers get no history
-  if (m.trust >= 30) return { line: "oh — it's you. good.", mood: "happy" };
+  if (m.trust >= 30) return { line: "oh. it's you. good.", mood: "happy" };
   if (m.trust >= -20) return { line: "…you're back.", mood: null };
   if (m.trust >= -60) return { line: "you're back.", mood: "worried" };
   return { line: null, mood: "worried" }; // beyond words — he just watches you arrive

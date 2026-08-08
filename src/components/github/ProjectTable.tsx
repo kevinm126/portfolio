@@ -38,7 +38,7 @@ export function ProjectTable({
           </thead>
           <tbody>
             {repos.map((r) => {
-              const outcome = r.metrics?.[0] ? `${r.metrics[0].value} ${r.metrics[0].label}` : "—";
+              const outcome = r.metrics?.[0] ? `${r.metrics[0].value} ${r.metrics[0].label}` : "-";
               return (
                 <tr key={r.slug} className="border-b border-border align-top last:border-b-0 hover:bg-card-hover">
                   <td className="px-3 py-2.5">

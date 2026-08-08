@@ -455,12 +455,12 @@ export const MUTTERS: Record<Tier, string[]> = {
  */
 export const FIRST_BOTHER_LINES = [
   "please don't do that. I'm asking nicely.",
-  "okay. please stop — I have work to do.",
+  "okay. please stop. I have work to do.",
   "let's not do that again, alright?",
 ];
 export const SECOND_BOTHER_LINES = [
   "that's twice. keep going and I'm emailing Kevin about you.",
-  "I mean it — one more and Kevin hears about this.",
+  "I mean it. one more and Kevin hears about this.",
   "stop. now. or I write to Kevin. the REAL one.",
 ];
 

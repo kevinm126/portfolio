@@ -30,15 +30,15 @@ function statusText(game: Chess): string {
   if (game.isCheckmate()) {
     // The side to move has been mated, so the other side won.
     return game.turn() === "w"
-      ? "Checkmate — I win as Black"
-      : "Checkmate — the community (White) wins";
+      ? "Checkmate: I win as Black"
+      : "Checkmate: the community (White) wins";
   }
-  if (game.isStalemate()) return "Draw — stalemate";
-  if (game.isInsufficientMaterial()) return "Draw — insufficient material";
-  if (game.isThreefoldRepetition()) return "Draw — threefold repetition";
+  if (game.isStalemate()) return "Draw by stalemate";
+  if (game.isInsufficientMaterial()) return "Draw by insufficient material";
+  if (game.isThreefoldRepetition()) return "Draw by threefold repetition";
   if (game.isDraw()) return "Draw";
   const side = game.turn() === "w" ? "White (community)" : "Black (me)";
-  return `${side} to move${game.inCheck() ? " — check" : ""}`;
+  return `${side} to move${game.inCheck() ? " (check)" : ""}`;
 }
 
 function snapshot(): Snapshot {
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
   // Admin: start a fresh game.
   if (data.action === "reset") {
     if (!isAdmin) {
-      return Response.json({ error: "Only I can start a new game — nice try though." }, { status: 403 });
+      return Response.json({ error: "Only I can start a new game. Nice try though." }, { status: 403 });
     }
     store.chess = {
       fen: CHESS_START_FEN,
@@ -103,14 +103,14 @@ export async function POST(req: Request) {
 
   // Guard against a stale client view (someone else moved first).
   if (data.expectedFen && data.expectedFen !== store.chess.fen) {
-    return Response.json({ error: "The board changed — refreshed.", ...snapshot() }, { status: 409 });
+    return Response.json({ error: "The board changed, so I refreshed it.", ...snapshot() }, { status: 409 });
   }
 
   const turn = game.turn();
   // Black is Kevin's side and requires the admin key.
   if (turn === "b" && !isAdmin) {
     return Response.json(
-      { error: "It's my move — the board is locked until I reply.", ...snapshot() },
+      { error: "It's my move; the board is locked until I reply.", ...snapshot() },
       { status: 403 }
     );
   }

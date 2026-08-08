@@ -46,7 +46,7 @@ export function ResearchList() {
         </span>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Papers (and one essay) I suggest to anyone getting into data science — across machine
+        Papers (and one essay) I suggest to anyone getting into data science, across machine
         learning, statistics, systems, and the occasional heresy. Titles link out to the source.
       </p>
       <div className="mt-1">

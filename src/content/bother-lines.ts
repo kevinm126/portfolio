@@ -33,11 +33,11 @@ export function buildHurtEmail(opts: { line: string; bothers: number; seconds: n
     "",
     opts.line,
     "",
-    "There. I said it. I didn't want to — but a stranger on your website just",
+    "There. I said it. I didn't want to, but a stranger on your website just",
     `threw me around the office ${opts.bothers} times in about ${mins} minute${mins === 1 ? "" : "s"},`,
     "and I snapped. This is on both of you.",
     "",
-    "— Kev",
+    "- Kev",
     `   (the little guy at ${opts.siteUrl}/bother)`,
   ].join("\n");
   return { subject, text };
@@ -54,7 +54,7 @@ export function buildApologyEmail(opts: { bothers: number; siteUrl: string }) {
     "",
     `(For the record: ${opts.bothers} bothers. Kev has accepted the apology.)`,
     "",
-    "— Kev's conscience",
+    "- Kev's conscience",
     `   (${opts.siteUrl}/bother)`,
   ].join("\n");
   return { subject, text };

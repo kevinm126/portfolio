@@ -82,13 +82,13 @@ export const profile = {
       key: "data",
       label: "Data Scientist",
       blurb:
-        "I build AI/ML tools end-to-end in Python — NHANES-trained risk models, multi-provider LLMs, privacy-first by design.",
+        "I build AI/ML tools end-to-end in Python: NHANES-trained risk models, multi-provider LLMs, privacy-first by design.",
     },
     {
       key: "swe",
       label: "Software Engineer",
       blurb:
-        "I ship real products, from the data pipeline to the deployed app — internal tooling, web apps, tested and reviewed.",
+        "I ship real products, from the data pipeline to the deployed app: internal tooling, web apps, tested and reviewed.",
     },
   ],
   tagline:
@@ -107,8 +107,8 @@ export const profile = {
   githubUsername: "kevinm126",
   wakatimeUsername: "", // optional — add to light up the WakaTime widget with real data
   about: [
-    "Hey, I'm Kevin — a Data Science student at Claremont McKenna College (Class of 2026). I like the whole arc of a problem: turning a vague question into a clean dataset, a model, and something a person can actually use.",
-    "My flagship project, MetricPath, is an AI health CLI that runs a logistic mortality-risk model trained on NHANES data behind a conversational LLM intake — and it runs fully local for privacy. I also ship web apps and internal engineering tooling, and I'm currently sharpening my SQL and ML system design while prepping for interviews.",
+    "Hey, I'm Kevin, a Data Science student at Claremont McKenna College (Class of 2026). I like the whole arc of a problem: turning a vague question into a clean dataset, a model, and something a person can actually use.",
+    "My flagship project, MetricPath, is an AI health CLI that runs a logistic mortality-risk model trained on NHANES data behind a conversational LLM intake, and it runs fully local for privacy. I also ship web apps and internal engineering tooling, and I'm currently sharpening my SQL and ML system design while prepping for interviews.",
   ],
 } as const;
 
@@ -185,7 +185,7 @@ export const experience: ExperienceItem[] = [
     summary:
       "Build internal engineering tooling for Nocturne, a Stripe-Connect SaaS for nightlife venues (nocturne.vip).",
     highlights: [
-      'Designed and built "nightbored" — a self-hosted kanban + MCP server + Playwright QA harness powering an audit-driven, agent-assisted development workflow.',
+      'Designed and built "nightbored", a self-hosted kanban + MCP server + Playwright QA harness powering an audit-driven, agent-assisted development workflow.',
       "Ship features through reviewed pull requests against the production app.",
       "Work across the stack: TypeScript, Bun, SQLite, and Playwright automation.",
     ],
@@ -200,7 +200,7 @@ export const education: EducationItem[] = [
     start: "2022",
     end: "2026",
     details: [
-      "Big Data / data engineering at scale on PostgreSQL — indexing, parallel bulk loads, full-text search over large Twitter datasets incl. a COVID-tweet analysis (CSCI143).",
+      "Big Data / data engineering at scale on PostgreSQL: indexing, parallel bulk loads, full-text search over large Twitter datasets incl. a COVID-tweet analysis (CSCI143).",
       "Data Mining (CSCI145). Currently exploring Tableau / Power BI for BI reporting.",
     ],
   },
@@ -213,9 +213,9 @@ export const projects: Project[] = [
     slug: "metricpath",
     title: "MetricPath",
     blurb:
-      "An AI health CLI: a conversational LLM intake feeds a logistic mortality-risk model trained on public NHANES data, then writes a lifestyle report and daily schedule — privacy-first, runs fully local.",
+      "An AI health CLI: a conversational LLM intake feeds a logistic mortality-risk model trained on public NHANES data, then writes a lifestyle report and daily schedule. Privacy-first, runs fully local.",
     description:
-      "A staged, mostly-pure-Python pipeline. A 19-question conversational LLM intake feeds a logistic mortality-risk model trained on NHANES public-use linked-mortality data (risk score + population percentile), then generates a Lifestyle Report and a personalized daily schedule. Multi-provider LLM (cloud or fully-local Ollama), privacy-first — no accounts, nothing retained between runs.",
+      "A staged, mostly-pure-Python pipeline. A 19-question conversational LLM intake feeds a logistic mortality-risk model trained on NHANES public-use linked-mortality data (risk score + population percentile), then generates a Lifestyle Report and a personalized daily schedule. Multi-provider LLM (cloud or fully-local Ollama), privacy-first: no accounts, nothing retained between runs.",
     tags: ["Python", "LLMs (Anthropic / OpenAI / Ollama)", "Logistic Regression", "NHANES", "CLI"],
     repoUrl: "https://github.com/kevinm126/metricpath",
     featured: true,
@@ -226,12 +226,12 @@ export const projects: Project[] = [
     ],
     caseStudy: {
       problem:
-        'Most "health insight" tools are either a wall of forms nobody finishes, or a black box that ships your data to a server. I wanted the opposite: a short, human conversation that produces a grounded, defensible picture of someone\'s lifestyle — and never leaves their machine unless they say so.',
+        'Most "health insight" tools are either a wall of forms nobody finishes, or a black box that ships your data to a server. I wanted the opposite: a short, human conversation that produces a grounded, defensible picture of someone\'s lifestyle, and never leaves their machine unless they say so.',
       approach: [
         "Conversational intake: a multi-turn LLM dialogue collects 19 lifestyle data points, validating each answer in place instead of dumping a 19-field form on the user.",
         "Multi-provider LLM client: one abstraction over Anthropic, OpenAI, and local Ollama, with model-family-specific prompts. Pick a cloud key or run free, fully offline.",
         "Derived metrics: pure-Python scoring for sleep debt, activity, and diet.",
-        "Risk model: a logistic-regression mortality-risk model trained on NHANES public-use linked-mortality data, producing a risk score and population percentile. Ships as JSON coefficients — inference is one dot product, a sigmoid, and a percentile lookup, with no runtime ML dependency.",
+        "Risk model: a logistic-regression mortality-risk model trained on NHANES public-use linked-mortality data, producing a risk score and population percentile. Ships as JSON coefficients: inference is one dot product, a sigmoid, and a percentile lookup, with no runtime ML dependency.",
         "Report & schedule: the score feeds a structured Lifestyle Report and a personalized daily time-block schedule.",
       ],
       result:
@@ -255,10 +255,10 @@ export const projects: Project[] = [
     ],
     caseStudy: {
       problem:
-        "Search engines rank pages by relevance and authority. I wanted to implement the authority half — PageRank — from scratch, and run it on a real web-link graph rather than a toy example.",
+        "Search engines rank pages by relevance and authority. I wanted to implement the authority half, PageRank, from scratch, and run it on a real web-link graph rather than a toy example.",
       approach: [
         "Built the web-link graph from the Lawfare national-security blog corpus.",
-        "Implemented PageRank via power iteration in NumPy — the linear algebra is mine, not a library's.",
+        "Implemented PageRank via power iteration in NumPy; the linear algebra is mine, not a library's.",
         "Combined link-authority scores with query relevance to rank results.",
       ],
       result:
@@ -270,7 +270,7 @@ export const projects: Project[] = [
     slug: "13th-care",
     title: "13th Care",
     blurb:
-      "An athlete-first presentation site for a sports-care startup — responsive, scroll-reveal animations, deployed on Vercel with security headers. Shipped freelance.",
+      "An athlete-first presentation site for a sports-care startup: responsive, scroll-reveal animations, deployed on Vercel with security headers. Shipped freelance.",
     description:
       "A multi-page, athlete-first marketing site for a sports-care startup: responsive layout, scroll-reveal animations, deployed on Vercel with security headers.",
     tags: ["HTML", "CSS", "JavaScript", "Vercel"],
@@ -307,7 +307,7 @@ export const projects: Project[] = [
     slug: "flask-on-docker",
     title: "Flask on Docker",
     blurb:
-      "A containerized Flask web app with Docker + CI — the full deployment path, end to end.",
+      "A containerized Flask web app with Docker + CI: the full deployment path, end to end.",
     description:
       "A containerized Flask application with Docker and CI, built as deployment practice for shipping Python web apps.",
     tags: ["Python", "Flask", "Docker", "CI"],
@@ -318,9 +318,9 @@ export const projects: Project[] = [
     slug: "this-portfolio",
     title: "This Portfolio",
     blurb:
-      "The site you're on: a Next.js 16 clone of a GitHub profile — interactive chess, a contribution graph you can type into, a Copilot-style chatbot, a ⌘K command palette, light/dark themes, a community correspondence chess board, and a Poptropica-style office game with real consequences.",
+      "The site you're on: a Next.js 16 clone of a GitHub profile, with interactive chess, a contribution graph you can type into, a Copilot-style chatbot, a ⌘K command palette, light/dark themes, a community correspondence chess board, and a Poptropica-style office game with real consequences.",
     description:
-      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a paper-suggestions section, light/dark theming, a shared community chess board, and 'Bother Kev' — a hand-drawn canvas office game where tormenting a tiny coworker eventually gets a real hurtful email sent to my real inbox. Built to be a project, not just a showcase.",
+      "A from-scratch portfolio built as a faithful clone of a GitHub profile page: a click-to-move chess engine (chess.js), a contribution graph you can render words into, an AI 'ask my résumé' chatbot, a ⌘K command palette, a paper-suggestions section, light/dark theming, a shared community chess board, and 'Bother Kev', a hand-drawn canvas office game where tormenting a tiny coworker eventually gets a real hurtful email sent to my real inbox. Built to be a project, not just a showcase.",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "chess.js"],
     repoUrl: "https://github.com/kevinm126/portfolio",
     // Self-populates once NEXT_PUBLIC_SITE_URL is set (see .env.example).

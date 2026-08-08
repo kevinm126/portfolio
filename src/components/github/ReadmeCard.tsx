@@ -35,7 +35,7 @@ export function ReadmeCard() {
         </Link>
 
         <h2 className="mb-3 mt-7 text-base font-semibold text-fg">
-          Skills — with the projects that prove them:
+          Skills, with the projects that prove them:
         </h2>
         <SkillsMatrix />
       </div>

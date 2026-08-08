@@ -10,7 +10,7 @@ const first = profile.name.split(" ")[0];
 
 const GREETING: Msg = {
   role: "assistant",
-  content: `Hi! I'm ${first} — well, an AI version of me, grounded in my résumé. Ask me about my experience, skills, or projects.`,
+  content: `Hi! I'm ${first}. Well, an AI version of me, grounded in my résumé. Ask me about my experience, skills, or projects.`,
 };
 const SUGGESTIONS = [
   "When do you graduate?",
@@ -60,7 +60,7 @@ export function CopilotChat() {
       const data = await res.json();
       setMsgs((m) => [...m, { role: "assistant", content: data.reply ?? "No answer came back." }]);
     } catch {
-      setMsgs((m) => [...m, { role: "assistant", content: "Sorry — I couldn't reach the server." }]);
+      setMsgs((m) => [...m, { role: "assistant", content: "Sorry, I couldn't reach the server." }]);
     } finally {
       setLoading(false);
     }
