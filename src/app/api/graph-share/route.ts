@@ -1,4 +1,5 @@
 import { profile } from "@/content/content";
+import { clientIp, consume, refund } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,15 @@ export async function POST(req: Request) {
   // Live mode: if RESEND_API_KEY is set, email it (see SETUP.md to enable).
   const resendKey = process.env.RESEND_API_KEY;
   if (resendKey) {
+    // This one is a novelty notification, so it gets a tight quota: it shares
+    // the Resend allowance with the contact form, which matters far more.
+    const ip = clientIp(req);
+    const limit = consume("graph-share", ip);
+    if (!limit.ok) {
+      // Nothing is lost by dropping these, so the visitor still sees success.
+      console.warn(`[graph-share] rate limited (${limit.reason}) from ${ip}`);
+      return Response.json({ ok: true, throttled: true });
+    }
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -39,9 +49,12 @@ export async function POST(req: Request) {
         }),
       });
       if (res.ok) return Response.json({ ok: true });
+      const body = await res.text().catch(() => "");
+      console.error(`[graph-share] resend refused (${res.status}):`, body);
     } catch (err) {
       console.error("[graph-share] resend error:", err);
     }
+    refund("graph-share", ip);
   }
 
   // Demo mode: log it so the flow works end-to-end without a key.

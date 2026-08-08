@@ -5,7 +5,7 @@ import { Send, Check } from "lucide-react";
 import { profile, socials } from "@/content/content";
 import { SocialIcon } from "@/components/ui/icons";
 
-type State = "idle" | "sending" | "sent" | "error";
+type State = "idle" | "sending" | "sent" | "error" | "limit" | "bad-email";
 
 export function ContactForm() {
   const [state, setState] = useState<State>("idle");
@@ -22,7 +22,16 @@ export function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("bad status");
+      // The server only claims success when the message is genuinely on its
+      // way, so anything else has to be shown rather than swallowed: a false
+      // checkmark loses the message silently.
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string };
+      if (!res.ok || !body.ok) {
+        setState(
+          body.reason === "limit" ? "limit" : body.reason === "bad-email" ? "bad-email" : "error"
+        );
+        return;
+      }
       setState("sent");
       form.reset();
     } catch {
@@ -82,13 +91,22 @@ export function ContactForm() {
             {state === "sending" ? "Sending…" : "Send Message"}
             <Send size={15} />
           </button>
-          {state === "error" && (
+          {state === "bad-email" && (
             <p role="alert" className="text-sm text-muted">
-              Something went wrong. Email me directly at{" "}
+              That email address doesn&apos;t look right. Fix it and try again, so I have a way to
+              reply.
+            </p>
+          )}
+          {(state === "error" || state === "limit") && (
+            <p role="alert" className="text-sm text-muted">
+              {state === "limit"
+                ? "Too many messages have gone through just now, so this one didn't send."
+                : "This didn't send."}{" "}
+              Email me directly at{" "}
               <a href={`mailto:${profile.email}`} className="text-link hover:underline">
                 {profile.email}
-              </a>
-              .
+              </a>{" "}
+              and it&apos;ll reach me.
             </p>
           )}
         </form>
