@@ -138,7 +138,7 @@ type Game = {
   mem: KevMemory;
   /** Fractional spreadsheet rows; mem.rows mirrors the floor of this. */
   rows: number;
-  /** Uninterrupted working seconds — flow state speeds him up. */
+  /** Uninterrupted working seconds; flow state speeds him up. */
   rowFlow: number;
   /** Rows lost mid-air, revealed (with the line) when he re-sits. */
   pendingRowLoss: number;
@@ -543,7 +543,7 @@ export default function BotherGame() {
           }
         }
         // A prop in flight that clips Kev is very much a bother. The grab
-        // hit box is padded way out for touch targets — shrink it back to
+        // hit box is padded way out for touch targets, so shrink it back to
         // his actual silhouette, or a mug sailing over his head "hits" him.
         if (wasFlying && p.state === "flying" && Math.hypot(p.vx, p.vy) > 260 && g.t > p.bonkCdUntil) {
           const box = guyHitBox(guy);
@@ -590,7 +590,7 @@ export default function BotherGame() {
                 g.faceOverrideUntil = g.t + 3;
               }
             } else if (g.mem.visits > 1 && g.mem.trust < -60) {
-              // beyond words — he just watches you arrive
+              // beyond words; he just watches you arrive
               g.stareUntil = g.t + 2.5;
             }
           }
@@ -722,7 +722,7 @@ export default function BotherGame() {
         case "grabbed": {
           // Damped spring toward the pointer rather than a hard snap: he lags,
           // swings, and overshoots a little, and the spring velocity is exactly
-          // what the throw inherits — so grab → fling is one continuous motion.
+          // what the throw inherits, so grab → fling is one continuous motion.
           const p = g.pointer;
           const before = { x: guy.x, y: guy.y };
           guy.vx += ((p.x - guy.x) * GRAB_STIFF - guy.vx * GRAB_DAMP) * dt;
@@ -764,9 +764,9 @@ export default function BotherGame() {
             }
           }
           // Come to rest on the desktop? Shove him off the nearer edge so he
-          // always ends up on the floor — he can only walk back from there.
+          // always ends up on the floor; he can only walk back from there.
           // Must be genuinely *settled on the surface*, not merely passing over
-          // it near the top of an arc — a loose test here relaunches him every
+          // it near the top of an arc; a loose test here relaunches him every
           // time he floats above the desk and the flight never ends.
           const overDesk = guy.x > DESK.x - 6 && guy.x < DESK.x + DESK.w + 6;
           const deskRestY = DESK.top - 6 - BODY_R;
@@ -775,7 +775,7 @@ export default function BotherGame() {
           if (restingOnDesk) {
             // Shove him toward an edge he can actually clear. The desk's right
             // end sits flush against the wall, so pushing him that way just
-            // rebounds him onto the desktop — pick the side with real room.
+            // rebounds him onto the desktop, so pick the side with real room.
             const rightEscape = DESK.x + DESK.w + 6 < WALL_R - BODY_R;
             const goLeft = !rightEscape || guy.x < DESK.x + DESK.w / 2;
             guy.vx = (goLeft ? -1 : 1) * 340;
@@ -964,7 +964,7 @@ export default function BotherGame() {
       // eased 0→1 for the two transition poses; 1 everywhere else
       const transition =
         guy.phase === "rising"
-          ? // slow gather, quick push, settle — easeOutBack peaks almost
+          ? // slow gather, quick push, settle; easeOutBack peaks almost
             // immediately and made the get-up read as an instant snap
             easeInOutQuad(clamp01(guy.phaseT / RISE_TIME))
           : guy.phase === "sitting"
@@ -1068,7 +1068,7 @@ export default function BotherGame() {
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {
-        /* synthetic or already-released pointer — grabbing works regardless */
+        /* synthetic or already-released pointer; grabbing works regardless */
       }
     };
 
@@ -1106,7 +1106,7 @@ export default function BotherGame() {
     }
   }
 
-  /** The choice: kill the email by killing his screen — and half his rows. */
+  /** The choice: kill the email by killing his screen, and half his rows. */
   function pullCable(g: Game) {
     g.cablePulled = true;
     g.guy.phase = "despair";
@@ -1183,9 +1183,9 @@ export default function BotherGame() {
   }
 
   /**
-   * Let go of whatever is held — Kev or a prop — converting recent pointer
+   * Let go of whatever is held (Kev or a prop), converting recent pointer
    * travel into throw velocity. Safe to call twice (the window-level safety
-   * net and the canvas handler both fire) — it no-ops unless something is
+   * net and the canvas handler both fire); it no-ops unless something is
    * actually being held.
    */
   function releaseGrab() {
@@ -1202,7 +1202,7 @@ export default function BotherGame() {
       pr.state = "flying";
       const speed = Math.hypot(v.vx, v.vy);
       if (speed > 500) beepRef.current(600, 200, 0.12, "sawtooth", 0.025);
-      // he notices you messing with his desk — protest, but not a bother
+      // he notices you messing with his desk: protest, but not a bother
       if (speed > 260 && g.guy.phase === "working" && Date.now() - g.lastPropLineAt > 9000) {
         g.lastPropLineAt = Date.now();
         g.bubble = { text: PROP_MISS_LINES[Math.floor(Math.random() * PROP_MISS_LINES.length)], until: g.t + 2.4 };
@@ -1218,7 +1218,7 @@ export default function BotherGame() {
     g.guy.phase = "flying";
     g.guy.phaseT = 0;
 
-    // every grab-and-release is a bother, gentle or not — and he remembers
+    // every grab-and-release is a bother, gentle or not, and he remembers
     g.bothers += 1;
     g.incidents += 1;
     g.mem.lifetimeIncidents += 1;
@@ -1486,7 +1486,7 @@ export default function BotherGame() {
           </Overlay>
         )}
 
-        {/* aftermath — the one thing the player never gets to see */}
+        {/* aftermath: the one thing the player never gets to see */}
         {overlay?.kind === "sent" && (
           <Overlay>
             <h2 className="mb-2 text-lg font-semibold text-fg">It happened.</h2>
@@ -1652,7 +1652,7 @@ const BTN_SECONDARY =
 
 /**
  * Full-screen modal on phones (the canvas box is far too short to hold the
- * text — the buttons would be stranded below a nested scroll), and an
+ * text; the buttons would be stranded below a nested scroll), and an
  * in-canvas panel from md up.
  */
 function Overlay({ children }: { children: React.ReactNode }) {

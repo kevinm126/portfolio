@@ -8,10 +8,10 @@ type ChatMsg = { role: "user" | "assistant"; content: string };
 
 /**
  * Provider chain, best to cheapest:
- *   1. Claude (ANTHROPIC_API_KEY) — best quality, pay-as-you-go (pennies at
+ *   1. Claude (ANTHROPIC_API_KEY): best quality, pay-as-you-go (pennies at
  *      portfolio traffic, but needs purchased credits).
- *   2. Gemini (GEMINI_API_KEY) — Google AI Studio free tier, card-free.
- *   3. Canned answers — always work, no key at all.
+ *   2. Gemini (GEMINI_API_KEY): Google AI Studio free tier, card-free.
+ *   3. Canned answers: always work, no key at all.
  * A provider that errors falls through to the next tier instead of surfacing
  * a failure to the visitor.
  */
@@ -56,9 +56,9 @@ async function askClaude(apiKey: string, system: string, history: ChatMsg[]): Pr
 }
 
 /**
- * Gemini via plain REST — no SDK dependency. Free-tier keys come from
+ * Gemini via plain REST, no SDK dependency. Free-tier keys come from
  * Google AI Studio (aistudio.google.com, no card). The rolling
- * `gemini-flash-latest` alias tracks Google's current flash model — pinned
+ * `gemini-flash-latest` alias tracks Google's current flash model, pinned
  * names (e.g. gemini-2.5-flash) get retired for new accounts and 404.
  * Overridable via GEMINI_MODEL.
  */
@@ -77,7 +77,7 @@ async function askGemini(apiKey: string, system: string, history: ChatMsg[]): Pr
         })),
         // Current Gemini flash models "think" before answering, and thinking
         // spends from the same output budget (disabling it isn't supported on
-        // this model line) — leave generous headroom or replies truncate.
+        // this model line), so leave generous headroom or replies truncate.
         generationConfig: { maxOutputTokens: 2000 },
       }),
     }

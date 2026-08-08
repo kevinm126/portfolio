@@ -2,7 +2,7 @@ import { useId } from "react";
 import type { Tier } from "./engine";
 
 /**
- * Kev's face as a tiny inline SVG — the game's own art instead of a stock
+ * Kev's face as a tiny inline SVG: the game's own art instead of a stock
  * emoji. The heavy lids sink as his anger tier climbs, slant when he's
  * angry, and at meltdown the face floods red over gritted teeth. He also
  * blinks, because he is alive and this is his life.
@@ -17,7 +17,7 @@ const ACCENT = "#d9483b";
 const LID_DROP = [0, 1.6, 2.8, 3.7] as const;
 
 export function KevFace({ tier = 0 as Tier, size = 18 }: { tier?: Tier; size?: number }) {
-  const uid = useId(); // the face renders more than once per page — ids must not collide
+  const uid = useId(); // the face renders more than once per page, so ids must not collide
   const drop = LID_DROP[tier];
   const slant = tier >= 2 ? 4 : 0; // degrees; inner edges dip when angry
 
@@ -66,7 +66,7 @@ export function KevFace({ tier = 0 as Tier, size = 18 }: { tier?: Tier; size?: n
         </clipPath>
       </defs>
 
-      {/* the tie — so there's no mistaking whose face this is */}
+      {/* the tie, so there's no mistaking whose face this is */}
       <path d="M20.5 47.5 L27.5 47.5 L26 51.5 L22 51.5 Z" fill={ACCENT} stroke={INK} strokeWidth="1.1" />
       <path d="M22.2 51.5 L25.8 51.5 L24 56 Z" fill={ACCENT} stroke={INK} strokeWidth="1.1" />
 
@@ -84,7 +84,7 @@ export function KevFace({ tier = 0 as Tier, size = 18 }: { tier?: Tier; size?: n
         {eye(31.5, -slant, `${uid}-eye-r`)}
       </g>
 
-      {/* the mouth barely exists — until it's teeth */}
+      {/* the mouth barely exists, until it's teeth */}
       {tier === 3 ? (
         <g>
           <rect x={18.5} y={39} width={11} height={4.6} rx={1.2} fill="#fff" stroke={INK} strokeWidth="1.2" />

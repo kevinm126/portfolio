@@ -1,13 +1,13 @@
 /**
- * The lines Kev sends when he snaps — SERVER-ONLY.
+ * The lines Kev sends when he snaps. SERVER-ONLY.
  *
  * ⚠️  Import this ONLY from /api/bother. It must never be imported by a
  * client component, so the list never ships in the browser bundle and
  * players can't peek at what's coming.
  *
- * CONFIRM: Kevin — replace HURTFUL_LINES with your real list. These are
+ * CONFIRM: Kevin, replace HURTFUL_LINES with your real list. These are
  * mild placeholders so the pipeline works end-to-end. One string per
- * message; Kev picks one at random each meltdown. Add as many as you like —
+ * message; Kev picks one at random each meltdown. Add as many as you like;
  * more lines means less repetition for anyone who pushes him twice.
  */
 

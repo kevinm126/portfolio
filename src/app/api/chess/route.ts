@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 
 /**
  * One shared correspondence game.
- *   • The community plays White — anyone can make White's move.
- *   • Kevin plays Black — those moves require the admin key, so the board
+ *   • The community plays White: anyone can make White's move.
+ *   • Kevin plays Black: those moves require the admin key, so the board
  *     stays locked to the public until he replies.
  * Set CHESS_ADMIN_KEY in the environment for production; the dev fallback
  * below only exists so the feature is playable locally.

@@ -56,7 +56,7 @@ export default function CommunityChess() {
       const data = (await res.json()) as Snapshot;
       applySnapshot(data);
     } catch {
-      /* transient — next poll will retry */
+      /* transient; next poll will retry */
     }
   }, [applySnapshot]);
 
@@ -186,7 +186,7 @@ export default function CommunityChess() {
   const lastMove =
     history.length > 0
       ? (() => {
-          // derive the from/to of the last move by replaying — cheap for short games
+          // derive the from/to of the last move by replaying; cheap for short games
           const replay = new Chess();
           let mv: { from: string; to: string } | null = null;
           for (const san of history) {

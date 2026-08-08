@@ -53,7 +53,7 @@ export async function GET() {
     const repos: Repo[] = await rRes.json();
 
     if (u?.message || !Array.isArray(repos)) {
-      // rate-limited or not found — fall back gracefully
+      // rate-limited or not found, so fall back gracefully
       return Response.json(mock());
     }
 

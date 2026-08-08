@@ -77,7 +77,7 @@ const TIERS = [
 
 type Tier = (typeof TIERS)[number];
 
-/** advance: 4 cols per glyph (3 + 1 spacer), 3 per space — matches the render loop below */
+/** advance: 4 cols per glyph (3 + 1 spacer), 3 per space; matches the render loop below */
 function colWidth(text: string): number {
   return text.split("").reduce((a, c) => a + (c === " " ? 3 : 4), 0) - 1;
 }

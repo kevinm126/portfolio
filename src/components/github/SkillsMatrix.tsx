@@ -3,7 +3,7 @@ import { skillGroups, projects } from "@/content/content";
 
 /**
  * Skills a recruiter can actually verify: grouped by category, with the
- * self-assessed level bar and — where a project proves the skill — links
+ * self-assessed level bar and, where a project proves the skill, links
  * straight to the evidence. Replaces the old flat 22-badge cloud.
  */
 export function SkillsMatrix() {

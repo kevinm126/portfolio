@@ -29,7 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem("theme", t);
     } catch {
-      /* private mode — ignore */
+      /* private mode, ignore */
     }
   }, []);
 

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 /**
  * The page to paste into applications: everything a screener needs in one
- * scroll — availability, contact, three projects with outcomes, the PDF.
+ * scroll: availability, contact, three projects with outcomes, the PDF.
  */
 export default function ResumePage() {
   const top = (
@@ -66,7 +66,7 @@ export default function ResumePage() {
           </a>
         </div>
 
-        {/* three projects, outcomes first — the fastest read on the site */}
+        {/* three projects, outcomes first: the fastest read on the site */}
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           {top.map((p) => (
             <a

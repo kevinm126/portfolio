@@ -11,7 +11,7 @@ export const RANKS = [8, 7, 6, 5, 4, 3, 2, 1] as const;
 
 type Piece = { color: Color; type: PieceSymbol } | null;
 
-// Solid glyphs for BOTH sides (colored via CSS) — uniform visual weight,
+// Solid glyphs for BOTH sides (colored via CSS): uniform visual weight,
 // unlike the hollow white-piece codepoints which render thin and wiry.
 // U+FE0E forces text presentation: without it, ♟ (U+265F) renders as a color
 // emoji on Apple platforms and ignores CSS color entirely.

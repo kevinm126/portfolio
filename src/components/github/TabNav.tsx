@@ -29,7 +29,7 @@ const TABS: Tab[] = [
 ];
 
 /** Tabs always visible; the rest collapse into "..." on small screens. The
- *  résumé tab stays visible everywhere — it's the one recruiters came for.
+ *  résumé tab stays visible everywhere; it's the one recruiters came for.
  *  The 960px cutoff is measured, not guessed: the seven-tab row needs 893px
  *  of content width plus ~67px of container padding, and at 240px "Research
  *  Recommendations" is more than twice the width of any other tab. Shorten

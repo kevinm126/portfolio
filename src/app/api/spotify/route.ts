@@ -64,7 +64,7 @@ export async function GET() {
       if (data?.item) return Response.json(fmt(data.item, Boolean(data.is_playing)));
     }
 
-    // Nothing playing — show the most recent track instead.
+    // Nothing playing, so show the most recent track instead.
     const recRes = await fetch(
       "https://api.spotify.com/v1/me/player/recently-played?limit=1",
       { headers: { Authorization: `Bearer ${access}` } }

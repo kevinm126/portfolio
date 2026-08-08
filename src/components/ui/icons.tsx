@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import type { Social } from "@/content/content";
 
-/* Brand icons (lucide v1 removed these) — hand-rolled, currentColor. */
+/* Brand icons (lucide v1 removed these): hand-rolled, currentColor. */
 
 export function GitHubIcon(props: LucideProps) {
   const { size = 24, ...rest } = props;

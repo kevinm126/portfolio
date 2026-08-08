@@ -1,8 +1,8 @@
 /**
  * Plain-text knowledge base for the "Ask my résumé" chatbot and the terminal's
- * `whoami` / `ask` commands. Keep it in natural prose — it gets passed to the
+ * `whoami` / `ask` commands. Keep it in natural prose; it gets passed to the
  * model as grounded context. The richer and more specific this is, the better
- * the answers. Content is assembled from content.ts — edit there.
+ * the answers. Content is assembled from content.ts; edit there.
  */
 
 import { profile, skillGroups, experience, projects, education, certifications } from "./content";

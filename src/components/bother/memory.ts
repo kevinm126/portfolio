@@ -1,8 +1,8 @@
 /**
- * Bother Kev — what he remembers about *you*, persisted in localStorage.
+ * Bother Kev: what he remembers about *you*, persisted in localStorage.
  *
  * The spine of every "he knows me" feature is one hidden scalar: `trust`
- * (-100..100). Nothing in the UI ever shows the number — the player only
+ * (-100..100). Nothing in the UI ever shows the number; the player only
  * ever sees its symptoms (greetings, flinches, the stare).
  */
 
@@ -18,7 +18,7 @@ export type KevMemory = {
   apologies: number;
   mugsBroken: number;
   cablePulls: number;
-  /** Spreadsheet progress — his life's work survives the tab closing. */
+  /** Spreadsheet progress: his life's work survives the tab closing. */
   rows: number;
   /** How many full sheets he has ever finished. Names the next one. */
   sheetsDone: number;
@@ -64,7 +64,7 @@ export function loadMemory(): KevMemory {
       rows: Math.min(Math.max(Math.round(Number(m.rows) || 0), 0), ROWS_TARGET),
     };
   } catch {
-    return fresh(); // private mode etc. — he just starts over, every time
+    return fresh(); // private mode etc.; he just starts over, every time
   }
 }
 
@@ -72,7 +72,7 @@ export function saveMemory(m: KevMemory) {
   try {
     localStorage.setItem(KEY, JSON.stringify(m));
   } catch {
-    /* nothing to be done — he won't remember */
+    /* nothing to be done; he won't remember */
   }
 }
 
@@ -103,7 +103,7 @@ export function greetingFor(m: KevMemory): { line: string | null; mood: "happy" 
   if (m.trust >= 30) return { line: "oh. it's you. good.", mood: "happy" };
   if (m.trust >= -20) return { line: "…you're back.", mood: null };
   if (m.trust >= -60) return { line: "you're back.", mood: "worried" };
-  return { line: null, mood: "worried" }; // beyond words — he just watches you arrive
+  return { line: null, mood: "worried" }; // beyond words; he just watches you arrive
 }
 
 /** Cursor-approach flinch thresholds. */

@@ -1,6 +1,6 @@
 import { WordGraph } from "@/components/features/WordGraph";
 
-// Inlined (not imported from the "use client" ContributionGraph module — a server
+// Inlined (not imported from the "use client" ContributionGraph module, because a server
 // component can only import component references across that boundary, not consts).
 const LEGEND = [
   "var(--bg-chart-empty)",

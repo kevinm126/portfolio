@@ -1,5 +1,5 @@
 /**
- * Bother Kev — constants, level geometry and physics for the office
+ * Bother Kev: constants, level geometry and physics for the office
  * mini-game. Rendering lives in draw.ts, the state machine + React glue
  * in BotherGame.tsx.
  */
@@ -51,7 +51,7 @@ export const MAX_THROW = 2400;
 /** How fast he trudges back to the chair. */
 export const WALK_SPEED = 205;
 export const STORM_SPEED = 300;
-/** Walk accel/decel — he eases up to speed and slows into the chair. */
+/** Walk accel/decel: he eases up to speed and slows into the chair. */
 export const WALK_ACCEL = 9;
 
 /** Beat lengths for the recovery chain: land → dazed → rising → walk → sitting. */
@@ -69,7 +69,7 @@ export const easeInOutQuad = (t: number) =>
 export const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
 /**
- * He snaps somewhere in this range — re-rolled after every meltdown. The
+ * He snaps somewhere in this range, re-rolled after every meltdown. The
  * pool is weighted toward 3–4: most players get two clear warnings and
  * then very little rope.
  */
@@ -105,13 +105,13 @@ export type Phase =
   | "sitting" // lowering into the chair
   | "typing" // furiously composing THE email
   | "sent" // slumped after sending; overlay is up
-  | "despair"; // the cable was pulled mid-email — head down on the desk
+  | "despair"; // the cable was pulled mid-email: head down on the desk
 
 export type Guy = {
   phase: Phase;
   phaseT: number; // seconds in current phase
   x: number;
-  y: number; // feet (or body center while flying — see draw.ts)
+  y: number; // feet (or body center while flying; see draw.ts)
   vx: number;
   vy: number;
   rot: number;
@@ -197,7 +197,7 @@ export function stepFlight(g: Guy, dt: number): { impacts: BounceEvent[]; atRest
     g.vx *= 0.85;
   }
 
-  // Floor. Damped harder than the walls so he settles promptly — waiting on a
+  // Floor. Damped harder than the walls so he settles promptly; waiting on a
   // long bounce-down reads as dead time, not physics.
   const floorSurface = FLOOR_Y - R + 8;
   if (g.y > floorSurface) {
@@ -290,7 +290,7 @@ export type PropState =
   | "held" // dangling from the pointer
   | "flying" // airborne
   | "resting" // came to rest somewhere that isn't its home
-  | "broken"; // mug only — gone until Kev tidies up
+  | "broken"; // mug only: gone until Kev tidies up
 
 export type Prop = {
   kind: PropKind;
@@ -478,7 +478,7 @@ export const PROP_MISS_LINES = [
   "I had that arranged.",
 ];
 
-/** A prop actually hit him. Counts as a bother — he is not calm about it. */
+/** A prop actually hit him. Counts as a bother, and he is not calm about it. */
 export const PROP_HIT_LINES: Record<PropKind, string[]> = {
   mug: ["you threw a MUG at me?", "that had coffee in it!", "the MUG? seriously?"],
   stapler: ["THE STAPLER? REALLY?", "that one has staples IN it.", "ow. of course. the stapler."],
@@ -487,7 +487,7 @@ export const PROP_HIT_LINES: Record<PropKind, string[]> = {
 /** The mug did not survive. This one hurts him personally. */
 export const MUG_BREAK_LINES = ["…that was my favorite mug.", "the mug. you broke the mug.", "no. not the mug."];
 
-/** Bonked while already composing the email — nothing left to escalate. */
+/** Bonked while already composing the email: nothing left to escalate. */
 export const TOO_LATE_LINE = "not. now.";
 
 /* ── the work (his rows are real, and they persist) ────────────────── */
@@ -521,7 +521,7 @@ export const WHY_CALLBACKS: Record<string, string[]> = {
 
 /* ── the cable (the choice) ────────────────────────────────────────── */
 
-/** Where the wall jack lives — on the wall, above the visual floor line. */
+/** Where the wall jack lives: on the wall, above the visual floor line. */
 export const CABLE_JACK = { x: 866, y: 408 } as const;
 /** Generous click target around the jack while the window is live. */
 export const CABLE_HIT = { x: CABLE_JACK.x - 34, y: CABLE_JACK.y - 30, w: 68, h: 60 } as const;

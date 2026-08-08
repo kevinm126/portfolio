@@ -22,7 +22,7 @@ const MAX_APOLOGIES_PER_DAY = 10;
 
 /**
  * Where Kev's outbursts land. Set BOTHER_EMAIL_TO to keep the game's mail out
- * of your main inbox — it's deliberately an env var rather than a literal so
+ * of your main inbox; it's deliberately an env var rather than a literal so
  * the address isn't published in this repo. Falls back to the contact address.
  */
 function recipient(): string {
@@ -61,7 +61,7 @@ async function sendEmail(subject: string, text: string): Promise<{ sent: boolean
     return { sent: true, demo: true };
   }
   // The shared onboarding@resend.dev sender delivers only to the address that
-  // owns the Resend account — which is free and needs no domain, provided the
+  // owns the Resend account, which is free and needs no domain, provided the
   // account was created with BOTHER_EMAIL_TO as its address. RESEND_FROM is
   // only needed to reach some *other* inbox, and requires a verified domain.
   const from = process.env.RESEND_FROM?.trim() || "Kev <onboarding@resend.dev>";
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
   const { global, ip: ledger } = ledgerFor(ip);
   const now = Date.now();
 
-  // "why did you do it?" — fixed choices only, lightly rate-limited
+  // "why did you do it?": fixed choices only, lightly rate-limited
   if (kind === "why") {
     const answer = String(data.answer) as keyof WhyCounts;
     if (!(answer in global.why)) {
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
     ledger.lastHurtAt = now;
     ledger.hurtsToday += 1;
     global.hurtsToday += 1;
-    // The player never learns what it said — the line and subject stay
+    // The player never learns what it said; the line and subject stay
     // server-side. Only Kevin reads them.
     return Response.json({ ok: true, demo });
   }

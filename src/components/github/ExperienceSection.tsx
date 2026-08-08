@@ -2,8 +2,8 @@ import { Briefcase, GraduationCap } from "lucide-react";
 import { certifications, education, experience } from "@/content/content";
 
 /**
- * The two facts recruiters scan for first — where has he worked, and when
- * does he graduate — rendered as a GitHub-style card with dates prominent.
+ * The two facts recruiters scan for first (where has he worked, and when
+ * does he graduate), rendered as a GitHub-style card with dates prominent.
  * This data previously existed only inside the chatbot's knowledge.
  */
 export function ExperienceSection() {

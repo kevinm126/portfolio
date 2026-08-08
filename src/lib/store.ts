@@ -1,7 +1,7 @@
 /**
  * Process-local in-memory store for the guestbook + view counter.
  * Good enough for local dev and a single-instance deploy. For durable,
- * multi-instance persistence on Vercel, swap to Upstash Redis or Postgres —
+ * multi-instance persistence on Vercel, swap to Upstash Redis or Postgres;
  * see SETUP.md ("Guestbook & views").
  */
 
@@ -38,7 +38,7 @@ export type BotherState = {
     string,
     { lastHurtAt: number; lastApologyAt: number; hurtsToday: number; lastWhyAt?: number }
   >;
-  /** Today's aggregate answers to "why did you do it?" — shown on the whiteboard. */
+  /** Today's aggregate answers to "why did you do it?", shown on the whiteboard. */
   why: WhyCounts;
 };
 

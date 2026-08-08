@@ -18,7 +18,7 @@ type Props = {
  * tilt that leans toward the cursor on hover. Motion is disabled for users
  * who prefer reduced motion (CSS via the global reset, JS via the guard).
  *
- * Uses a plain <img> on purpose — the asset is a small, fixed-size, pre-
+ * Uses a plain <img> on purpose: the asset is a small, fixed-size, pre-
  * optimized JPEG, so next/image's optimizer adds fragility with no payoff.
  */
 export function AnimatedAvatar({ src, alt, className, priority }: Props) {

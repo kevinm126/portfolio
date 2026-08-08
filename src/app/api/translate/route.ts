@@ -5,7 +5,7 @@ const MAX_WORD = 82;
 const LANGS = ["es", "en", "el", "fr", "zh"] as const;
 type Lang = (typeof LANGS)[number];
 
-// Real-time typing repeats words constantly — cache to spare the upstream APIs.
+// Real-time typing repeats words constantly, so cache to spare the upstream APIs.
 const cache = new Map<string, Record<Lang, string>>();
 const CACHE_CAP = 300;
 
@@ -81,13 +81,13 @@ export async function POST(req: Request) {
 
   // Demo mode: MyMemory's free API, no key needed, with source auto-detection.
   // The target matching the detected source returns a "distinct languages"
-  // error — the input already is that language, so echo it verbatim.
+  // error: the input already is that language, so echo it verbatim.
   try {
     const results = await Promise.all(
       LANGS.map(async (l) => {
         const target = l === "zh" ? "zh-CN" : l;
         // MyMemory's translation memory is case-sensitive and all-caps queries
-        // often hit junk identical-text entries — lowercase for better matches.
+        // often hit junk identical-text entries, so lowercase for better matches.
         const res = await fetch(
           `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word.toLowerCase())}&langpair=${encodeURIComponent(`Autodetect|${target}`)}`
         );

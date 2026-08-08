@@ -7,7 +7,7 @@
  *  file. Edit here and the whole site updates.
  *
  *  Content is real, pulled from Kevin's GitHub profile materials. A couple of
- *  spots are marked `CONFIRM:` — verify them when you get a sec.
+ *  spots are marked `CONFIRM:`; verify them when you get a sec.
  * ───────────────────────────────────────────────────────────────────────────
  */
 
@@ -20,7 +20,7 @@ export type Social = {
 export type Skill = {
   name: string;
   level?: number /* 0-100, optional */;
-  /** Project slugs that prove this skill — rendered as evidence links. */
+  /** Project slugs that prove this skill, rendered as evidence links. */
   provenBy?: string[];
 };
 export type SkillGroup = { category: string; items: Skill[] };
@@ -105,7 +105,7 @@ export const profile = {
   // it animated; the header avatar menu uses it static. Fallback at /avatar.svg.
   avatar: "/avatar-3d.jpg",
   githubUsername: "kevinm126",
-  wakatimeUsername: "", // optional — add to light up the WakaTime widget with real data
+  wakatimeUsername: "", // optional: add to light up the WakaTime widget with real data
   about: [
     "Hey, I'm Kevin, a Data Science student at Claremont McKenna College (Class of 2026). I like the whole arc of a problem: turning a vague question into a clean dataset, a model, and something a person can actually use.",
     "My flagship project, MetricPath, is an AI health CLI that runs a logistic mortality-risk model trained on NHANES data behind a conversational LLM intake, and it runs fully local for privacy. I also ship web apps and internal engineering tooling, and I'm currently sharpening my SQL and ML system design while prepping for interviews.",

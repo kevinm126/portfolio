@@ -1,13 +1,13 @@
 /**
- * Bother Kev — all canvas rendering. Flat vector art modeled on "The
+ * Bother Kev: all canvas rendering. Flat vector art modeled on "The
  * Introverted Attorney": an enormous bald egg head, huge heavy-lidded oval
  * eyes in a permanent exhausted deadpan, no nose, a tiny mouth, stick-thin
- * limbs — and one red tie. The office stays near-monochrome; the tie is the
+ * limbs, and one red tie. The office stays near-monochrome; the tie is the
  * only standing colour, and the meltdown's red screen/face-flush remains the
  * only other time colour enters the room.
  *
  * Poses are authored in "unit" coords (head radius 24) and drawn through
- * ctx.scale(K, K) — see engine.ts.
+ * ctx.scale(K, K); see engine.ts.
  */
 
 import {
@@ -47,7 +47,7 @@ export type RenderState = {
   rows: { done: number; target: number };
   /** Seconds remaining of the fourth-wall stare (0 = none). */
   stare: number;
-  /** 0..1 duck intensity — he's bracing away from your cursor. */
+  /** 0..1 duck intensity; he's bracing away from your cursor. */
   flinch: number;
   /** The ethernet cable's state during the meltdown window. */
   cable: { armed: boolean; pulled: boolean };
@@ -68,14 +68,14 @@ export type RenderState = {
   clockM: number;
 };
 
-/* ── palette: Introverted-Attorney pastels — cream wall, dusty-pink
+/* ── palette: Introverted-Attorney pastels: cream wall, dusty-pink
    floor, butter-yellow desk, gray hardware. The red tie and the meltdown
    are still the only saturated things in the room. ─────────────────── */
 const INK = "#15171c";
 const WALL = "#f2ecdf";
 const WALL_TOP = "#e8e1d0";
 const BASEBOARD = "#d9d0be";
-const FLOOR = "#dcdee2"; // back to the original gray — the pink didn't stick
+const FLOOR = "#dcdee2"; // back to the original gray; the pink didn't stick
 const DESK_TOP = "#f0e2a8";
 const DESK_FACE = "#e5d391";
 const DESK_DARK = "#474c54";
@@ -86,11 +86,11 @@ const SHIRT = "#ffffff";
 const SHADE = "#d8dbe0";
 const PANTS = "#2c3038";
 const SHOE = "#15171c";
-const ACCENT = "#d9483b"; // the tie — and the meltdown
+const ACCENT = "#d9483b"; // the tie, and the meltdown
 
 /**
  * Where the wall visually meets the floor. The physics ground (FLOOR_Y)
- * stays put — everything walks and lands well below this line, standing
+ * stays put; everything walks and lands well below this line, standing
  * on a visible floor plane, which is most of what makes the reference
  * rooms read as 3D.
  */
@@ -202,7 +202,7 @@ function eye(
     ctx.fillStyle = SKIN;
     ctx.fillRect(ex - rx - 2, ey - ry - 2, rx * 2 + 4, ry * 2 + 4);
   } else {
-    // pupil sits low — he is looking at nothing in particular
+    // pupil sits low; he is looking at nothing in particular
     ctx.fillStyle = INK;
     ctx.beginPath();
     ctx.arc(ex + pupilDx, ey + ry * 0.34, Math.min(rx, ry) * 0.3, 0, Math.PI * 2);
@@ -327,7 +327,7 @@ function head(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, 
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2.4 * k;
   if (f.tier === 3) {
-    // small gritted teeth — fury at deadpan scale
+    // small gritted teeth: fury at deadpan scale
     rr(ctx, cx - 7 * k + dx, mouthY - 3 * k, 14 * k, 6.5 * k, 1.5 * k);
     inked(ctx, PAPER, 1.8 * k);
     ctx.strokeStyle = INK;
@@ -430,7 +430,7 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
   h.near.y -= drop * 0.5;
   h.far.y -= drop * 0.5;
   if (staring) {
-    // hands come off the keys and rest at the desk edge — total stillness
+    // hands come off the keys and rest at the desk edge: total stillness
     h.near = { x: 40, y: -14 };
     h.far = { x: 30, y: -16 };
     h.fast = false;
@@ -488,7 +488,7 @@ export function drawSeated(ctx: CanvasRenderingContext2D, s: RenderState, settle
 }
 
 /**
- * The cable was pulled mid-email. He doesn't rage — he folds forward and
+ * The cable was pulled mid-email. He doesn't rage; he folds forward and
  * puts his head down on the desk. You only see the top of his head.
  */
 export function drawDespair(ctx: CanvasRenderingContext2D, s: RenderState) {
@@ -518,7 +518,7 @@ export function drawDespair(ctx: CanvasRenderingContext2D, s: RenderState) {
   curveLimb(ctx, 26, -24, 44, deskY - 8, 62, deskY - 7, 7, SHIRT);
   hand(ctx, 62, deskY - 7, 5.5);
 
-  // the bald egg, face-down on the arms — no face at all, just the crown
+  // the bald egg, face-down on the arms: no face at all, just the crown
   const hx = 46;
   const hy = deskY - 16 + Math.sin(s.t * 1.1) * 0.6; // slow, heavy breathing
   ctx.beginPath();
@@ -634,7 +634,7 @@ function drawLie(ctx: CanvasRenderingContext2D, s: RenderState) {
 }
 
 /**
- * Standing figure — walking, or peeling off the floor when `rise` < 1.
+ * Standing figure: walking, or peeling off the floor when `rise` < 1.
  * At rise 0 he is flat on his back; the pivot is his feet, so he swings up
  * onto them instead of teleporting upright.
  */
@@ -686,7 +686,7 @@ function drawWalk(
     hand(ctx, 12 + a2, -62, 5.8);
   }
 
-  // standing, the egg reads bigger — reference proportions are ~45% head
+  // standing, the egg reads bigger; reference proportions are ~45% head
   head(ctx, 2, -138, 28, {
     tier: storming ? 3 : s.tier,
     mood: s.face,
@@ -707,7 +707,7 @@ function drawRoom(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = WALL_TOP;
   ctx.fillRect(-PAD, -PAD, VIEW_W + PAD * 2, CEIL_Y - 14 + PAD);
 
-  // recessed ceiling panels — a hint of the ceiling as a plane
+  // recessed ceiling panels: a hint of the ceiling as a plane
   for (const px of [560, 742]) {
     ctx.beginPath();
     ctx.moveTo(px, 6);
@@ -746,7 +746,7 @@ function drawRoom(ctx: CanvasRenderingContext2D) {
   ctx.fillRect(-PAD, WALL_BASE, VIEW_W + PAD * 2, 7);
 }
 
-/** The printer he crashes out on. Pure decor — until something hits it. */
+/** The printer he crashes out on. Pure decor, until something hits it. */
 function drawPrinter(ctx: CanvasRenderingContext2D) {
   const x = 272,
     w = 96,
@@ -772,7 +772,7 @@ function drawPrinter(ctx: CanvasRenderingContext2D) {
   ctx.beginPath();
   ctx.arc(x + w - 12, top + 27, 2.2, 0, Math.PI * 2);
   ctx.fill();
-  // output slot, mid-print — a sheet forever stuck halfway
+  // output slot, mid-print: a sheet forever stuck halfway
   rr(ctx, x + 8, top + 40, w - 16, 7, 2);
   inked(ctx, "#8a9098", 1.8);
   rr(ctx, x + 18, top + 30, 42, 11, 1);
@@ -786,7 +786,7 @@ function drawPrinter(ctx: CanvasRenderingContext2D) {
 
 /**
  * Ambient defeat: paper cups and crumpled drafts nobody picks up. They sit
- * at varied floor depths — lower on screen is closer, and slightly larger.
+ * at varied floor depths; lower on screen is closer, and slightly larger.
  */
 function drawClutter(ctx: CanvasRenderingContext2D) {
   // cups: one behind the walk line, one well in front of the desk
@@ -1200,7 +1200,7 @@ function drawCable(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
 }
 
-/** The butter-yellow desk, in a mild oblique — its top face is visible. */
+/** The butter-yellow desk, in a mild oblique; its top face is visible. */
 function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   const { x, w, top } = DESK;
 
@@ -1217,7 +1217,7 @@ function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   }
   // Single-pedestal desk: no near leg, so his shins have clear room under it.
 
-  // the top face, receding up-right — what sells the slab as a surface
+  // the top face, receding up-right: what sells the slab as a surface
   ctx.beginPath();
   ctx.moveTo(x - 8, top);
   ctx.lineTo(x - 8 + 16, top - 10);
@@ -1232,7 +1232,7 @@ function drawDesk(ctx: CanvasRenderingContext2D, s: RenderState) {
   drawLaptop(ctx, s);
 }
 
-/* ── the desk props (live objects — see engine.ts) ─────────────────── */
+/* ── the desk props (live objects; see engine.ts) ─────────────────── */
 
 function drawMug(ctx: CanvasRenderingContext2D, p: Prop, t: number) {
   ctx.save();
@@ -1286,7 +1286,7 @@ function drawStapler(ctx: CanvasRenderingContext2D, p: Prop) {
 export function drawProps(ctx: CanvasRenderingContext2D, s: RenderState) {
   for (const p of s.props) {
     if (p.state === "broken") continue;
-    // grounding shadow — fades and shrinks with altitude while airborne
+    // grounding shadow: fades and shrinks with altitude while airborne
     if (p.state === "flying" || (p.state === "resting" && p.y > DESK.top + 30)) {
       const alt = Math.max(0, FLOOR_Y - p.y);
       const k = Math.max(0.35, 1 - alt / 520);
@@ -1301,7 +1301,7 @@ function drawLaptop(ctx: CanvasRenderingContext2D, s: RenderState) {
   const { x, y, w, h } = LAPTOP.screen;
   const top = DESK.top;
 
-  // base on the desk — his typing hands land on it
+  // base on the desk; his typing hands land on it
   rr(ctx, LAPTOP.base.x, top - 9, LAPTOP.base.w, 11, 3);
   inked(ctx, "#8a9098", 2.2);
   ctx.strokeStyle = METAL;
@@ -1363,13 +1363,13 @@ function drawLaptop(ctx: CanvasRenderingContext2D, s: RenderState) {
       ctx.lineWidth = 1.8;
       ctx.strokeRect(sx + 2, sy + 14 + (rows - 1) * 13, sw / 5 - 5, 11);
     }
-    // the quarter's real progress — his life's work, one thin bar
+    // the quarter's real progress: his life's work, one thin bar
     ctx.fillStyle = "#dfe2e6";
     ctx.fillRect(sx, sy + sh - 5, sw, 5);
     ctx.fillStyle = "#6b7178";
     ctx.fillRect(sx, sy + sh - 5, sw * Math.min(1, s.rows.done / s.rows.target), 5);
   } else if (s.screen.mode === "off") {
-    // the cable was pulled — dead glass
+    // the cable was pulled: dead glass
     ctx.fillStyle = "#101216";
     ctx.fillRect(sx, sy, sw, sh);
   } else if (s.screen.mode === "compose") {
@@ -1557,7 +1557,7 @@ export function render(ctx: CanvasRenderingContext2D, s: RenderState) {
   for (const pr of s.props)
     if (pr.state === "flying") drawStreaks(ctx, pr.x, pr.y, pr.vx, pr.vy);
 
-  // his shadow stays on the floor no matter where he is — the seated poses
+  // his shadow stays on the floor no matter where he is; the seated poses
   // inherit the chair's
   if (p === "grabbed" || p === "flying") {
     const alt = Math.max(0, FLOOR_Y - s.guy.y);
@@ -1591,7 +1591,7 @@ export function propHitBox(p: Prop): { x: number; y: number; w: number; h: numbe
 }
 
 /**
- * Hit test for grabbing him. The box is deliberately generous — on a phone
+ * Hit test for grabbing him. The box is deliberately generous; on a phone
  * the whole scene is ~343px wide, and a tight box would be an unusable touch
  * target. Kev wins over prop hit boxes wherever they overlap.
  */
@@ -1612,7 +1612,7 @@ export function guyHitBox(guy: Guy): { x: number; y: number; w: number; h: numbe
   ) {
     return grow(SEAT_HEAD_X - 46, SEAT_HEAD_Y - 34, 96, 150);
   }
-  // mid-rise he is still low and sprawled — keep the box floor-hugging
+  // mid-rise he is still low and sprawled, so keep the box floor-hugging
   if (guy.phase === "rising") {
     return grow(guy.x - 78, FLOOR_Y - 150, 156, 154);
   }
