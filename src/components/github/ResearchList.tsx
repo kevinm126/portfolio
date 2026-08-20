@@ -47,7 +47,8 @@ export function ResearchList() {
       </div>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         Papers (and one essay) I suggest to anyone getting into data science, across machine
-        learning, statistics, systems, and the occasional heresy. Titles link out to the source.
+        learning, statistics, systems, and the occasional heresy, plus whatever I am currently
+        reading for my own work. Titles link out to the source.
       </p>
       <div className="mt-1">
         {papers.map((p) => (

@@ -348,6 +348,47 @@ export type ResearchPaper = {
 
 export const papers: ResearchPaper[] = [
   {
+    slug: "model-or-harness-2026",
+    title: "Model or Harness? An Interaction-Centric Taxonomy for Localizing Agent Failures",
+    authors: "Raj et al.",
+    venue: "arXiv preprint",
+    year: "2026",
+    url: "https://arxiv.org/abs/2607.28802",
+    tags: ["LLM Agents", "Evaluation", "Failure Analysis"],
+    why: "Forty-one failure modes, each pinned to the interaction that produced it and the side responsible for fixing it. Turns 'the agent failed' into a repair assignment.",
+  },
+  {
+    slug: "deployment-decision-reliability-2026",
+    title:
+      "Deployment Decision Reliability: A Generalizability-Theory Framework for Sizing Long-Horizon Agent Evaluations",
+    authors: "Vasundra Srinivasan",
+    venue: "arXiv preprint",
+    year: "2026",
+    url: "https://arxiv.org/abs/2608.11323",
+    tags: ["Evaluation", "Statistics", "LLM Agents"],
+    why: "Across three agent benchmarks the agent itself explains under 3% of the variance, while agent-by-task interaction explains 7 to 23%. Leaderboards rank specialization, not capability.",
+  },
+  {
+    slug: "observation-reduction-web-agents-2026",
+    title: "Revisiting Observation Reduction for Web Agents",
+    authors: "Enomoto et al.",
+    venue: "arXiv preprint",
+    year: "2026",
+    url: "https://arxiv.org/abs/2605.29397",
+    tags: ["Web Agents", "Evaluation", "Efficiency"],
+    why: "232 hours of end-to-end benchmarking, replaced by a proxy metric that needs neither a browser nor a model and still predicts the outcome. The cheap measurement is the contribution.",
+  },
+  {
+    slug: "context-assembly-controlled-variable-2026",
+    title: "Context Assembly as the Controlled Variable",
+    authors: "Debjyoti Paul",
+    venue: "arXiv preprint",
+    year: "2026",
+    url: "https://arxiv.org/abs/2607.25408",
+    tags: ["LLM Agents", "Control Theory", "Systems"],
+    why: "Freeze the model and make prompt assembly the thing you tune. A control-theory case for why the scaffolding around the model is where the engineering actually lives.",
+  },
+  {
     slug: "llms-cant-jump-2026",
     title: "Position: LLMs can't jump",
     authors: "Tom Zahavy",
