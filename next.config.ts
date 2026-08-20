@@ -19,7 +19,11 @@ const isDev = process.env.NODE_ENV !== "production";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // 'wasm-unsafe-eval' lets the ML Lab compile the onnxruntime WebAssembly
+  // runtime. It gates only WebAssembly.compile/instantiate, not JS eval. Dev
+  // works without it (Turbopack's 'unsafe-eval' implies it), so dropping it
+  // would break production only; keep it unconditional.
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   // Local assets, plus the two origins the GitHub and Spotify panels serve
   // remote artwork from. blob:/data: cover canvas and inline SVG.
@@ -59,7 +63,18 @@ const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
 
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // Model files and the onnxruntime wasm are multi-megabyte static assets
+      // that public/ would otherwise serve with max-age=0. Their filenames are
+      // versioned (model-digits-v1.onnx, ort/<version>/...), so immutable is
+      // safe: a new model is a new URL. ":path+" (not "*") keeps the /ml HTML
+      // page itself out of this rule.
+      {
+        source: "/ml/:path+",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
   },
 };
 

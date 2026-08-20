@@ -11,6 +11,7 @@ import {
   MessageSquare,
   FileText,
   BookOpen,
+  Brain,
   Briefcase,
   type LucideIcon,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const ROUTES: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Research Recommendations", href: "/research", icon: BookOpen },
   { label: "Chess", href: "/chess", icon: MessageSquare },
   { label: "Bother Kev", href: "/bother", icon: Briefcase },
+  { label: "ML Lab", href: "/ml", icon: Brain },
   { label: "Get in Touch", href: "/contact", icon: Mail },
 ];
 

@@ -1,0 +1,453 @@
+{
+  "attribution": "Doodle model trained on the Quick, Draw! dataset by Google Creative Lab, licensed CC BY 4.0.",
+  "models": {
+    "digits": {
+      "modelVersion": "v1",
+      "modelFile": "/ml/model-digits-v1.onnx",
+      "curvesFile": "/ml/curves-digits-v1.png",
+      "confusionFile": "/ml/confusion-digits-v1.png",
+      "trainedAt": "2026-08-20",
+      "framework": "PyTorch 2.13.0",
+      "opset": 17,
+      "params": 421642,
+      "modelSizeBytes": 1689096,
+      "epochs": 12,
+      "bestEpoch": 10,
+      "testAccuracy": 0.9936,
+      "testLoss": 0.0177,
+      "normalization": {
+        "mean": 0.1307,
+        "std": 0.3081
+      },
+      "architecture": [
+        "Conv 3x3, 32 ch + ReLU + MaxPool 2x2",
+        "Conv 3x3, 64 ch + ReLU + MaxPool 2x2",
+        "Dropout 0.25",
+        "FC 3136 to 128 + ReLU",
+        "Dropout 0.5",
+        "FC 128 to 10 + Softmax (in graph)"
+      ],
+      "input": {
+        "shape": [
+          1,
+          1,
+          28,
+          28
+        ],
+        "range": "[0,1], ink = 1",
+        "normalization": "in graph"
+      },
+      "preprocess": {
+        "targetSide": 20,
+        "centering": "mass",
+        "inkThreshold": 0.05
+      },
+      "labels": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "perClass": [
+        {
+          "label": "0",
+          "precision": 0.9959,
+          "recall": 0.998,
+          "support": 980
+        },
+        {
+          "label": "1",
+          "precision": 0.9965,
+          "recall": 0.9982,
+          "support": 1135
+        },
+        {
+          "label": "2",
+          "precision": 0.9894,
+          "recall": 0.9961,
+          "support": 1032
+        },
+        {
+          "label": "3",
+          "precision": 0.9931,
+          "recall": 0.997,
+          "support": 1010
+        },
+        {
+          "label": "4",
+          "precision": 0.9919,
+          "recall": 0.9949,
+          "support": 982
+        },
+        {
+          "label": "5",
+          "precision": 0.9911,
+          "recall": 0.9933,
+          "support": 892
+        },
+        {
+          "label": "6",
+          "precision": 0.9948,
+          "recall": 0.9937,
+          "support": 958
+        },
+        {
+          "label": "7",
+          "precision": 0.9932,
+          "recall": 0.9893,
+          "support": 1028
+        },
+        {
+          "label": "8",
+          "precision": 0.9948,
+          "recall": 0.9897,
+          "support": 974
+        },
+        {
+          "label": "9",
+          "precision": 0.995,
+          "recall": 0.9851,
+          "support": 1009
+        }
+      ],
+      "repoUrl": "https://github.com/kevinm126/sketch-lab",
+      "notebookUrl": "https://github.com/kevinm126/sketch-lab/blob/main/notebooks/mnist_cnn.ipynb",
+      "canvasSimAccuracy": 0.9917
+    },
+    "doodles": {
+      "modelVersion": "v1",
+      "modelFile": "/ml/model-doodles-v1.onnx",
+      "curvesFile": "/ml/curves-doodles-v1.png",
+      "confusionFile": "/ml/confusion-doodles-v1.png",
+      "trainedAt": "2026-08-20",
+      "framework": "PyTorch 2.13.0",
+      "opset": 17,
+      "params": 832168,
+      "modelSizeBytes": 3331207,
+      "epochs": 8,
+      "bestEpoch": 8,
+      "testAccuracy": 0.9031,
+      "testLoss": 0.3706,
+      "normalization": {
+        "mean": 0.1618,
+        "std": 0.3206
+      },
+      "architecture": [
+        "Conv 3x3, 32 ch + ReLU + MaxPool 2x2",
+        "Conv 3x3, 64 ch + ReLU + MaxPool 2x2",
+        "Dropout 0.25",
+        "FC 3136 to 256 + ReLU",
+        "Dropout 0.5",
+        "FC 256 to 40 + Softmax (in graph)"
+      ],
+      "input": {
+        "shape": [
+          1,
+          1,
+          28,
+          28
+        ],
+        "range": "[0,1], ink = 1",
+        "normalization": "in graph"
+      },
+      "preprocess": {
+        "targetSide": 24,
+        "centering": "box",
+        "inkThreshold": 0.05
+      },
+      "labels": [
+        "apple",
+        "banana",
+        "bicycle",
+        "bird",
+        "book",
+        "butterfly",
+        "car",
+        "cat",
+        "chair",
+        "clock",
+        "cloud",
+        "cup",
+        "dog",
+        "donut",
+        "door",
+        "eyeglasses",
+        "fish",
+        "flower",
+        "guitar",
+        "hat",
+        "house",
+        "ice cream",
+        "key",
+        "ladder",
+        "light bulb",
+        "lightning",
+        "moon",
+        "mountain",
+        "mushroom",
+        "pants",
+        "pizza",
+        "rainbow",
+        "scissors",
+        "smiley face",
+        "snowman",
+        "star",
+        "sun",
+        "t-shirt",
+        "tree",
+        "umbrella"
+      ],
+      "perClass": [
+        {
+          "label": "apple",
+          "precision": 0.9643,
+          "recall": 0.9553,
+          "support": 1500
+        },
+        {
+          "label": "banana",
+          "precision": 0.8773,
+          "recall": 0.8533,
+          "support": 1500
+        },
+        {
+          "label": "bicycle",
+          "precision": 0.9007,
+          "recall": 0.9613,
+          "support": 1500
+        },
+        {
+          "label": "bird",
+          "precision": 0.7727,
+          "recall": 0.7433,
+          "support": 1500
+        },
+        {
+          "label": "book",
+          "precision": 0.9055,
+          "recall": 0.9453,
+          "support": 1500
+        },
+        {
+          "label": "butterfly",
+          "precision": 0.9529,
+          "recall": 0.9447,
+          "support": 1500
+        },
+        {
+          "label": "car",
+          "precision": 0.9289,
+          "recall": 0.9413,
+          "support": 1500
+        },
+        {
+          "label": "cat",
+          "precision": 0.8177,
+          "recall": 0.8013,
+          "support": 1500
+        },
+        {
+          "label": "chair",
+          "precision": 0.9386,
+          "recall": 0.9167,
+          "support": 1500
+        },
+        {
+          "label": "clock",
+          "precision": 0.9411,
+          "recall": 0.9373,
+          "support": 1500
+        },
+        {
+          "label": "cloud",
+          "precision": 0.9589,
+          "recall": 0.8707,
+          "support": 1500
+        },
+        {
+          "label": "cup",
+          "precision": 0.9259,
+          "recall": 0.858,
+          "support": 1500
+        },
+        {
+          "label": "dog",
+          "precision": 0.7031,
+          "recall": 0.7453,
+          "support": 1500
+        },
+        {
+          "label": "donut",
+          "precision": 0.9073,
+          "recall": 0.9593,
+          "support": 1500
+        },
+        {
+          "label": "door",
+          "precision": 0.9491,
+          "recall": 0.9207,
+          "support": 1500
+        },
+        {
+          "label": "eyeglasses",
+          "precision": 0.8937,
+          "recall": 0.902,
+          "support": 1500
+        },
+        {
+          "label": "fish",
+          "precision": 0.9158,
+          "recall": 0.8993,
+          "support": 1500
+        },
+        {
+          "label": "flower",
+          "precision": 0.8904,
+          "recall": 0.91,
+          "support": 1500
+        },
+        {
+          "label": "guitar",
+          "precision": 0.8683,
+          "recall": 0.932,
+          "support": 1500
+        },
+        {
+          "label": "hat",
+          "precision": 0.8773,
+          "recall": 0.882,
+          "support": 1500
+        },
+        {
+          "label": "house",
+          "precision": 0.9595,
+          "recall": 0.9633,
+          "support": 1500
+        },
+        {
+          "label": "ice cream",
+          "precision": 0.9566,
+          "recall": 0.956,
+          "support": 1500
+        },
+        {
+          "label": "key",
+          "precision": 0.8381,
+          "recall": 0.832,
+          "support": 1500
+        },
+        {
+          "label": "ladder",
+          "precision": 0.9484,
+          "recall": 0.9433,
+          "support": 1500
+        },
+        {
+          "label": "light bulb",
+          "precision": 0.9473,
+          "recall": 0.8873,
+          "support": 1500
+        },
+        {
+          "label": "lightning",
+          "precision": 0.8844,
+          "recall": 0.852,
+          "support": 1500
+        },
+        {
+          "label": "moon",
+          "precision": 0.7911,
+          "recall": 0.7347,
+          "support": 1500
+        },
+        {
+          "label": "mountain",
+          "precision": 0.9228,
+          "recall": 0.94,
+          "support": 1500
+        },
+        {
+          "label": "mushroom",
+          "precision": 0.894,
+          "recall": 0.8827,
+          "support": 1500
+        },
+        {
+          "label": "pants",
+          "precision": 0.9665,
+          "recall": 0.9413,
+          "support": 1500
+        },
+        {
+          "label": "pizza",
+          "precision": 0.8426,
+          "recall": 0.9133,
+          "support": 1500
+        },
+        {
+          "label": "rainbow",
+          "precision": 0.9315,
+          "recall": 0.97,
+          "support": 1500
+        },
+        {
+          "label": "scissors",
+          "precision": 0.8631,
+          "recall": 0.8953,
+          "support": 1500
+        },
+        {
+          "label": "smiley face",
+          "precision": 0.9348,
+          "recall": 0.9173,
+          "support": 1500
+        },
+        {
+          "label": "snowman",
+          "precision": 0.9358,
+          "recall": 0.9333,
+          "support": 1500
+        },
+        {
+          "label": "star",
+          "precision": 0.9033,
+          "recall": 0.934,
+          "support": 1500
+        },
+        {
+          "label": "sun",
+          "precision": 0.9273,
+          "recall": 0.952,
+          "support": 1500
+        },
+        {
+          "label": "t-shirt",
+          "precision": 0.9697,
+          "recall": 0.9607,
+          "support": 1500
+        },
+        {
+          "label": "tree",
+          "precision": 0.8923,
+          "recall": 0.9007,
+          "support": 1500
+        },
+        {
+          "label": "umbrella",
+          "precision": 0.9421,
+          "recall": 0.9333,
+          "support": 1500
+        }
+      ],
+      "repoUrl": "https://github.com/kevinm126/sketch-lab",
+      "notebookUrl": "https://github.com/kevinm126/sketch-lab/blob/main/notebooks/quickdraw_cnn.ipynb",
+      "canvasSimAccuracy": 0.8783
+    }
+  }
+}

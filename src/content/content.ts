@@ -210,6 +210,23 @@ export const education: EducationItem[] = [
 
 export const projects: Project[] = [
   {
+    slug: "sketch-lab",
+    title: "Sketch Lab",
+    blurb:
+      "Two CNNs I trained in PyTorch (MNIST digits + 40-class Quick, Draw! doodles), exported to ONNX and running live in the browser: play Pictionary against the doodle model on the ML Lab tab.",
+    description:
+      "The training side of this site's ML Lab. A shared conv trunk powers two models: a digit recognizer (99.4% MNIST test accuracy) and a 40-class doodle classifier trained on 540k Quick, Draw! sketches. Normalization and softmax are baked into the ONNX graphs, the browser preprocessing reproduces MNIST's own crop/scale/center construction, and a canvas-simulation test gates every export so mouse drawings actually classify well. Inference runs client-side via onnxruntime-web (WebAssembly): nothing you draw leaves the page.",
+    tags: ["Python", "PyTorch", "ONNX", "CNN", "Computer Vision"],
+    repoUrl: "https://github.com/kevinm126/sketch-lab",
+    demoUrl: "/ml",
+    featured: true,
+    metrics: [
+      { value: "99.4%", label: "MNIST test accuracy" },
+      { value: "40", label: "doodle classes" },
+      { value: "in-browser", label: "ONNX inference" },
+    ],
+  },
+  {
     slug: "metricpath",
     title: "MetricPath",
     blurb:

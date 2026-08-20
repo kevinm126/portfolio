@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/research`, lastModified: now, priority: 0.7 },
     { url: `${BASE}/chess`, lastModified: now, priority: 0.6 },
     { url: `${BASE}/bother`, lastModified: now, priority: 0.6 },
+    { url: `${BASE}/ml`, lastModified: now, priority: 0.6 },
     { url: `${BASE}/contact`, lastModified: now, priority: 0.7 },
     { url: `${BASE}/terminal`, lastModified: now, priority: 0.4 },
     ...projects

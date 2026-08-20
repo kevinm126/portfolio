@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Home, Code2, Mail, BookOpen, Briefcase, FileText, MoreHorizontal, type LucideProps } from "lucide-react";
+import { Home, Code2, Mail, BookOpen, Brain, Briefcase, FileText, MoreHorizontal, type LucideProps } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TabId = "welcome" | "portfolio" | "resume" | "research" | "chess" | "bother" | "contact";
+export type TabId =
+  | "welcome"
+  | "portfolio"
+  | "resume"
+  | "research"
+  | "chess"
+  | "bother"
+  | "ml"
+  | "contact";
 
 function PawnIcon(props: LucideProps) {
   const { size = 16, ...rest } = props;
@@ -25,15 +33,17 @@ const TABS: Tab[] = [
   { id: "research", label: "Research Recommendations", href: "/research", Icon: BookOpen },
   { id: "chess", label: "Chess", href: "/chess", Icon: PawnIcon },
   { id: "bother", label: "Bother Kev", href: "/bother", Icon: Briefcase },
+  { id: "ml", label: "ML Lab", href: "/ml", Icon: Brain },
   { id: "contact", label: "Get in Touch", href: "/contact", Icon: Mail },
 ];
 
 /** Tabs always visible; the rest collapse into "..." on small screens. The
  *  résumé tab stays visible everywhere; it's the one recruiters came for.
- *  The 960px cutoff is measured, not guessed: the seven-tab row needs 893px
- *  of content width plus ~67px of container padding, and at 240px "Research
- *  Recommendations" is more than twice the width of any other tab. Shorten
- *  that label and the cutoff can come back down (it was 808px). */
+ *  The 1056px cutoff is measured, not guessed: the eight-tab row needs 974px
+ *  of content width plus 56px of container padding (re-measure the <nav> in
+ *  devtools after any label change). At 240px "Research Recommendations" is
+ *  still more than twice the width of any other tab; shorten that label and
+ *  the cutoff can come down. */
 const ALWAYS_VISIBLE = 3;
 
 export function TabNav({ active }: { active: TabId }) {
@@ -95,7 +105,7 @@ export function TabNav({ active }: { active: TabId }) {
           href={t.href}
           className={cn(
             "relative shrink-0 items-center gap-2 whitespace-nowrap px-3 pb-3 pt-1 text-sm transition-colors",
-            i >= ALWAYS_VISIBLE ? "hidden min-[960px]:flex" : "flex",
+            i >= ALWAYS_VISIBLE ? "hidden min-[1056px]:flex" : "flex",
             active === t.id ? "font-semibold text-fg" : "text-muted hover:text-fg"
           )}
         >
@@ -108,7 +118,7 @@ export function TabNav({ active }: { active: TabId }) {
       ))}
 
       {/* overflow menu (small screens) */}
-      <div ref={ref} className="relative flex min-[960px]:hidden">
+      <div ref={ref} className="relative flex min-[1056px]:hidden">
         <button
           ref={triggerRef}
           type="button"

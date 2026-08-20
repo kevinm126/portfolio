@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/sync-ort-assets.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/sync-ort-assets.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -17,6 +19,7 @@
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
+    "onnxruntime-web": "1.27.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "three": "^0.184.0"

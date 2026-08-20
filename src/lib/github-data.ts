@@ -20,10 +20,11 @@ const SLUG_LANGUAGE: Record<string, string> = {
   redditbot: "Python",
   "flask-on-docker": "Python",
   "this-portfolio": "TypeScript",
+  "sketch-lab": "Python",
 };
 
-/** Pinned = the 5 strongest, in display order. */
-const PINNED = ["metricpath", "pagerank", "13th-care", "redditbot", "flask-on-docker"];
+/** Pinned = the strongest, in display order. */
+const PINNED = ["sketch-lab", "metricpath", "pagerank", "13th-care", "redditbot", "flask-on-docker"];
 
 export type Repo = {
   slug: string;

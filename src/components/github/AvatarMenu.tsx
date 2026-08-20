@@ -14,6 +14,7 @@ const ITEMS = [
   { label: "Research Recommendations", href: "/research" },
   { label: "Chess", href: "/chess" },
   { label: "Bother Kev", href: "/bother" },
+  { label: "ML Lab", href: "/ml" },
   { label: "Get in Touch", href: "/contact" },
 ];
 
