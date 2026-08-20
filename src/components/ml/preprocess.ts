@@ -89,8 +89,17 @@ export function resampleArea(
 
 /** Full pipeline: stroke-buffer ImageData -> 784 floats in [0, 1], or null if blank. */
 export function preprocess(img: ImageData, params: PreprocessParams): Float32Array | null {
-  const ink = inkFromImageData(img);
-  const box = boundingBox(ink, img.width, img.height, params.inkThreshold);
+  return preprocessInk(inkFromImageData(img), img.width, img.height, params);
+}
+
+/** Same pipeline starting from a raw ink array (used per segment by segment.ts). */
+export function preprocessInk(
+  ink: Float32Array,
+  width: number,
+  height: number,
+  params: PreprocessParams,
+): Float32Array | null {
+  const box = boundingBox(ink, width, height, params.inkThreshold);
   if (!box) return null;
 
   const bw = box.x1 - box.x0 + 1;
@@ -98,7 +107,7 @@ export function preprocess(img: ImageData, params: PreprocessParams): Float32Arr
   const crop = new Float32Array(bw * bh);
   for (let y = 0; y < bh; y++) {
     for (let x = 0; x < bw; x++) {
-      crop[y * bw + x] = ink[(box.y0 + y) * img.width + (box.x0 + x)];
+      crop[y * bw + x] = ink[(box.y0 + y) * width + (box.x0 + x)];
     }
   }
 

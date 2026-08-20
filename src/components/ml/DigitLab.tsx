@@ -6,21 +6,42 @@ import { InputPreview } from "./InputPreview";
 import { ProbabilityBars } from "./ProbabilityBars";
 import { DIGITS } from "./metrics";
 import { occlusionMap, type SaliencyResult } from "./saliency";
-import { useLivePrediction } from "./useLivePrediction";
+import { useDigitReading } from "./useDigitReading";
 import { useModel } from "./useModel";
 import { BTN_PRIMARY, BTN_SECONDARY } from "./ui";
+import { cn } from "@/lib/utils";
 
 export function DigitLab() {
   const { status, model, retry } = useModel("digits");
   const canvasRef = useRef<DigitCanvasHandle | null>(null);
-  const { probs, field, onDirty, onSettle } = useLivePrediction(canvasRef, model, DIGITS.preprocess);
+  const { digits, onDirty, onSettle } = useDigitReading(canvasRef, model, DIGITS.preprocess);
 
   const [heat, setHeat] = useState<SaliencyResult | null>(null);
   const [sweep, setSweep] = useState<{ done: number; total: number } | null>(null);
   const [announce, setAnnounce] = useState("");
+  const [pickedIdx, setPickedIdx] = useState<number | null>(null);
 
-  const top = probs
-    ? probs.reduce((best, v, i) => (v > probs[best] ? i : best), 0)
+  // The focused digit drives the bars, the big preview, and saliency.
+  // Default focus: the least confident digit (the interesting one).
+  let focus = -1;
+  if (digits && digits.length) {
+    if (pickedIdx !== null && pickedIdx < digits.length) {
+      focus = pickedIdx;
+    } else {
+      focus = 0;
+      for (let i = 1; i < digits.length; i++) {
+        const a = digits[i];
+        const b = digits[focus];
+        if (a.probs && b.probs && a.top !== null && b.top !== null && a.probs[a.top] < b.probs[b.top]) {
+          focus = i;
+        }
+      }
+    }
+  }
+  const focused = focus >= 0 && digits ? digits[focus] : null;
+
+  const reading = digits
+    ? digits.map((d) => (d.top === null ? "?" : DIGITS.labels[d.top])).join("")
     : null;
 
   const onStrokeEnd = useCallback(() => {
@@ -29,32 +50,39 @@ export function DigitLab() {
   }, [onSettle]);
 
   const onDirtyWrapped = useCallback(() => {
-    if (heat) setHeat(null);
+    setHeat((h) => (h ? null : h));
+    setPickedIdx(null);
     onDirty();
-  }, [heat, onDirty]);
+  }, [onDirty]);
 
   // Screen readers get one calm, debounced announcement, not the live stream.
   useEffect(() => {
     const t = setTimeout(() => {
-      setAnnounce(
-        probs && top !== null
-          ? `Prediction: ${DIGITS.labels[top]}, ${(probs[top] * 100).toFixed(0)} percent`
-          : "",
-      );
+      if (!digits || !reading || reading.includes("?")) {
+        setAnnounce("");
+        return;
+      }
+      if (digits.length === 1) {
+        const d = digits[0];
+        setAnnounce(`Prediction: ${reading}, ${d.probs && d.top !== null ? (d.probs[d.top] * 100).toFixed(0) : 0} percent`);
+      } else {
+        setAnnounce(`Reading: ${reading}, ${digits.length} digits`);
+      }
     }, 400);
     return () => clearTimeout(t);
-  }, [probs, top]);
+  }, [digits, reading]);
 
   const runSaliency = useCallback(async () => {
-    if (!model || !field) return;
+    if (!model || !focused) return;
+    const target = focused.field;
     setSweep({ done: 0, total: 1 });
     try {
-      const result = await occlusionMap(model, field, (done, total) => setSweep({ done, total }));
+      const result = await occlusionMap(model, target, (done, total) => setSweep({ done, total }));
       setHeat(result);
     } finally {
       setSweep(null);
     }
-  }, [model, field]);
+  }, [model, focused]);
 
   return (
     <section aria-labelledby="digit-lab-heading" className="mt-10">
@@ -62,8 +90,9 @@ export function DigitLab() {
         Digit lab
       </h2>
       <p className="mb-4 max-w-2xl text-sm text-muted">
-        The classic: draw a digit from 0 to 9 and watch the CNN score all ten classes on every
-        stroke. The small grid shows exactly what the model receives after cropping, scaling, and
+        The classic: draw a digit, or a whole number like 42, and watch the CNN score every stroke.
+        Multi-digit numbers are split into per-digit images (leave a little space between digits),
+        and the small grid shows exactly what the model receives after cropping, scaling, and
         centering, the same construction MNIST itself used. Trained on MNIST, so plain 1s and
         uncrossed 7s work best.
       </p>
@@ -84,7 +113,7 @@ export function DigitLab() {
             onDirty={onDirtyWrapped}
             onStrokeEnd={onStrokeEnd}
             disabled={status !== "ready"}
-            ariaLabel="Drawing canvas: draw a digit from 0 to 9"
+            ariaLabel="Drawing canvas: draw a digit or a multi-digit number"
           />
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" className={BTN_SECONDARY} onClick={() => canvasRef.current?.clear()}>
@@ -97,7 +126,7 @@ export function DigitLab() {
               type="button"
               className={BTN_PRIMARY}
               onClick={runSaliency}
-              disabled={!field || !model || sweep !== null}
+              disabled={!focused || !model || sweep !== null}
             >
               {sweep ? `Explaining... ${Math.round((sweep.done / sweep.total) * 100)}%` : "Explain this prediction"}
             </button>
@@ -110,20 +139,59 @@ export function DigitLab() {
         <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
           <div className="min-w-0 flex-1">
             <h3 className="mb-2 text-sm font-semibold text-fg">
-              {top !== null && probs ? (
-                <>
-                  Looks like a <span className="text-green">{DIGITS.labels[top]}</span>
-                </>
+              {reading && focused ? (
+                digits!.length === 1 ? (
+                  <>
+                    Looks like a <span className="text-green">{reading}</span>
+                  </>
+                ) : (
+                  <>
+                    Looks like <span className="text-green">{reading}</span>
+                  </>
+                )
               ) : (
                 "Waiting for ink"
               )}
             </h3>
-            <ProbabilityBars probs={probs} labels={DIGITS.labels} />
+
+            {digits && digits.length > 1 && (
+              <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="Digits, left to right">
+                {digits.map((d, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setPickedIdx(i)}
+                    aria-pressed={i === focus}
+                    aria-label={`Digit ${i + 1} of ${digits.length}: ${
+                      d.top !== null ? DIGITS.labels[d.top] : "unknown"
+                    }${d.probs && d.top !== null ? `, ${(d.probs[d.top] * 100).toFixed(0)} percent` : ""}`}
+                    className={cn(
+                      "flex flex-col items-center gap-1 rounded-md border p-1.5",
+                      i === focus ? "border-green bg-btn" : "border-border hover:bg-btn",
+                    )}
+                  >
+                    <InputPreview field={d.field} className="h-[56px] w-[56px] rounded-sm" />
+                    <span className="text-xs tabular-nums text-muted">
+                      <span className="font-semibold text-fg">{d.top !== null ? DIGITS.labels[d.top] : "?"}</span>
+                      {d.probs && d.top !== null ? ` ${(d.probs[d.top] * 100).toFixed(0)}%` : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <ProbabilityBars probs={focused?.probs ?? null} labels={DIGITS.labels} />
+            {digits && digits.length > 1 && (
+              <p className="mt-2 text-xs text-muted">
+                Bars, preview, and the explainer follow the highlighted digit; click another to
+                inspect it.
+              </p>
+            )}
           </div>
           <div className="shrink-0">
             <h3 className="mb-2 text-sm font-semibold text-fg">What the model sees</h3>
             <InputPreview
-              field={field}
+              field={focused?.field ?? null}
               heat={heat ? { values: heat.heat, gridSize: heat.gridSize } : null}
               className="h-[140px] w-[140px] rounded-md border border-border"
             />
