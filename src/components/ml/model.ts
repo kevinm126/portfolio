@@ -16,6 +16,11 @@ import { ORT_VERSION } from "./ort-version";
 export type SketchModel = {
   /** Run a batch: input is batch*784 floats in [0, 1]; returns batch*numClasses probs. */
   run(input: Float32Array, batch: number): Promise<Float32Array>;
+  /**
+   * Graphs exported with a "features" output (digits v2+) also return the
+   * batch*featDim penultimate activations; null on graphs without one.
+   */
+  runFeatures: ((input: Float32Array, batch: number) => Promise<{ probs: Float32Array; features: Float32Array }>) | null;
   numClasses: number;
 };
 
@@ -54,20 +59,35 @@ async function createModel(url: string, numClasses: number): Promise<SketchModel
   });
 
   let inFlight: Promise<unknown> = Promise.resolve();
-  const run = (input: Float32Array, batch: number): Promise<Float32Array> => {
-    const next = inFlight.then(async () => {
-      const tensor = new ort.Tensor("float32", input, [batch, 1, 28, 28]);
-      const out = await session.run({ input: tensor });
-      return out.probs.data as Float32Array;
-    });
+  const exec = <T>(job: () => Promise<T>): Promise<T> => {
+    const next = inFlight.then(job);
     // Keep the chain alive even when a run fails; callers still see the error.
     inFlight = next.catch(() => undefined);
     return next;
   };
+  const run = (input: Float32Array, batch: number): Promise<Float32Array> =>
+    exec(async () => {
+      const tensor = new ort.Tensor("float32", input, [batch, 1, 28, 28]);
+      const out = await session.run({ input: tensor });
+      return out.probs.data as Float32Array;
+    });
+
+  const hasFeatures = session.outputNames.includes("features");
+  const runFeatures = hasFeatures
+    ? (input: Float32Array, batch: number) =>
+        exec(async () => {
+          const tensor = new ort.Tensor("float32", input, [batch, 1, 28, 28]);
+          const out = await session.run({ input: tensor });
+          return {
+            probs: out.probs.data as Float32Array,
+            features: out.features.data as Float32Array,
+          };
+        })
+    : null;
 
   // Warmup: the first run compiles kernels and would otherwise lag mid-stroke.
   await run(new Float32Array(784), 1);
-  return { run, numClasses };
+  return { run, runFeatures, numClasses };
 }
 
 /** Cached loader; a failed load is evicted so Retry can work. */

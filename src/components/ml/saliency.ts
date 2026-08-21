@@ -23,11 +23,14 @@ export async function occlusionMap(
   model: SketchModel,
   base: Float32Array,
   onProgress?: (done: number, total: number) => void,
+  /** Optional prob scorer (e.g. features + personal head); defaults to the graph. */
+  score?: (batch: Float32Array, n: number) => Promise<Float32Array>,
 ): Promise<SaliencyResult> {
   const grid = Math.floor((FIELD - OCCLUSION_PATCH) / OCCLUSION_STRIDE) + 1;
   const total = grid * grid;
+  const runBatch = score ?? model.run;
 
-  const baseProbs = await model.run(base, 1);
+  const baseProbs = await runBatch(base, 1);
   let classIndex = 0;
   for (let i = 1; i < baseProbs.length; i++) {
     if (baseProbs[i] > baseProbs[classIndex]) classIndex = i;
@@ -51,7 +54,7 @@ export async function occlusionMap(
         }
       }
     }
-    const probs = await model.run(batch, count);
+    const probs = await runBatch(batch, count);
     for (let b = 0; b < count; b++) {
       const drop = baseProb - probs[b * model.numClasses + classIndex];
       heat[start + b] = drop > 0 ? drop : 0;
