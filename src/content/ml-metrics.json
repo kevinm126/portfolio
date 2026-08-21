@@ -2,15 +2,15 @@
   "attribution": "Doodle model trained on the Quick, Draw! dataset by Google Creative Lab, licensed CC BY 4.0.",
   "models": {
     "digits": {
-      "modelVersion": "v1",
-      "modelFile": "/ml/model-digits-v1.onnx",
-      "curvesFile": "/ml/curves-digits-v1.png",
-      "confusionFile": "/ml/confusion-digits-v1.png",
-      "trainedAt": "2026-08-20",
+      "modelVersion": "v2",
+      "modelFile": "/ml/model-digits-v2.onnx",
+      "curvesFile": "/ml/curves-digits-v2.png",
+      "confusionFile": "/ml/confusion-digits-v2.png",
+      "trainedAt": "2026-08-21",
       "framework": "PyTorch 2.13.0",
       "opset": 17,
       "params": 421642,
-      "modelSizeBytes": 1689096,
+      "modelSizeBytes": 1688838,
       "epochs": 12,
       "bestEpoch": 10,
       "testAccuracy": 0.9936,
@@ -118,25 +118,27 @@
       ],
       "repoUrl": "https://github.com/kevinm126/sketch-lab",
       "notebookUrl": "https://github.com/kevinm126/sketch-lab/blob/main/notebooks/mnist_cnn.ipynb",
+      "headFile": "/ml/head-digits-v2.json",
+      "featDim": 128,
       "canvasSimAccuracy": 0.9917
     },
     "doodles": {
-      "modelVersion": "v1",
-      "modelFile": "/ml/model-doodles-v1.onnx",
-      "curvesFile": "/ml/curves-doodles-v1.png",
-      "confusionFile": "/ml/confusion-doodles-v1.png",
-      "trainedAt": "2026-08-20",
+      "modelVersion": "v2",
+      "modelFile": "/ml/model-doodles-v2.onnx",
+      "curvesFile": "/ml/curves-doodles-v2.png",
+      "confusionFile": "/ml/confusion-doodles-v2.png",
+      "trainedAt": "2026-08-21",
       "framework": "PyTorch 2.13.0",
       "opset": 17,
-      "params": 832168,
-      "modelSizeBytes": 3331207,
+      "params": 841163,
+      "modelSizeBytes": 3367187,
       "epochs": 8,
       "bestEpoch": 8,
-      "testAccuracy": 0.9031,
-      "testLoss": 0.3706,
+      "testAccuracy": 0.8529,
+      "testLoss": 0.5835,
       "normalization": {
-        "mean": 0.1618,
-        "std": 0.3206
+        "mean": 0.1655,
+        "std": 0.3241
       },
       "architecture": [
         "Conv 3x3, 32 ch + ReLU + MaxPool 2x2",
@@ -144,7 +146,7 @@
         "Dropout 0.25",
         "FC 3136 to 256 + ReLU",
         "Dropout 0.5",
-        "FC 256 to 40 + Softmax (in graph)"
+        "FC 256 to 75 + Softmax (in graph)"
       ],
       "input": {
         "shape": [
@@ -201,253 +203,914 @@
         "sun",
         "t-shirt",
         "tree",
-        "umbrella"
+        "umbrella",
+        "anvil",
+        "axe",
+        "bathtub",
+        "bed",
+        "bee",
+        "bench",
+        "birthday cake",
+        "bowtie",
+        "broom",
+        "bucket",
+        "bus",
+        "cactus",
+        "calculator",
+        "camera",
+        "campfire",
+        "candle",
+        "carrot",
+        "castle",
+        "chandelier",
+        "crab",
+        "crocodile",
+        "crown",
+        "diamond",
+        "drums",
+        "ear",
+        "elephant",
+        "envelope",
+        "helicopter",
+        "hot air balloon",
+        "octopus",
+        "sailboat",
+        "snake",
+        "spider",
+        "traffic light",
+        "windmill"
       ],
       "perClass": [
         {
           "label": "apple",
-          "precision": 0.9643,
-          "recall": 0.9553,
-          "support": 1500
-        },
-        {
-          "label": "banana",
-          "precision": 0.8773,
-          "recall": 0.8533,
-          "support": 1500
-        },
-        {
-          "label": "bicycle",
-          "precision": 0.9007,
-          "recall": 0.9613,
-          "support": 1500
-        },
-        {
-          "label": "bird",
-          "precision": 0.7727,
-          "recall": 0.7433,
-          "support": 1500
-        },
-        {
-          "label": "book",
-          "precision": 0.9055,
-          "recall": 0.9453,
-          "support": 1500
-        },
-        {
-          "label": "butterfly",
-          "precision": 0.9529,
-          "recall": 0.9447,
-          "support": 1500
-        },
-        {
-          "label": "car",
-          "precision": 0.9289,
-          "recall": 0.9413,
-          "support": 1500
-        },
-        {
-          "label": "cat",
-          "precision": 0.8177,
-          "recall": 0.8013,
-          "support": 1500
-        },
-        {
-          "label": "chair",
-          "precision": 0.9386,
-          "recall": 0.9167,
-          "support": 1500
-        },
-        {
-          "label": "clock",
-          "precision": 0.9411,
-          "recall": 0.9373,
-          "support": 1500
-        },
-        {
-          "label": "cloud",
-          "precision": 0.9589,
-          "recall": 0.8707,
-          "support": 1500
-        },
-        {
-          "label": "cup",
-          "precision": 0.9259,
-          "recall": 0.858,
-          "support": 1500
-        },
-        {
-          "label": "dog",
-          "precision": 0.7031,
-          "recall": 0.7453,
-          "support": 1500
-        },
-        {
-          "label": "donut",
-          "precision": 0.9073,
-          "recall": 0.9593,
-          "support": 1500
-        },
-        {
-          "label": "door",
-          "precision": 0.9491,
-          "recall": 0.9207,
-          "support": 1500
-        },
-        {
-          "label": "eyeglasses",
-          "precision": 0.8937,
-          "recall": 0.902,
-          "support": 1500
-        },
-        {
-          "label": "fish",
-          "precision": 0.9158,
-          "recall": 0.8993,
-          "support": 1500
-        },
-        {
-          "label": "flower",
-          "precision": 0.8904,
-          "recall": 0.91,
-          "support": 1500
-        },
-        {
-          "label": "guitar",
-          "precision": 0.8683,
-          "recall": 0.932,
-          "support": 1500
-        },
-        {
-          "label": "hat",
-          "precision": 0.8773,
-          "recall": 0.882,
-          "support": 1500
-        },
-        {
-          "label": "house",
-          "precision": 0.9595,
-          "recall": 0.9633,
-          "support": 1500
-        },
-        {
-          "label": "ice cream",
-          "precision": 0.9566,
-          "recall": 0.956,
-          "support": 1500
-        },
-        {
-          "label": "key",
-          "precision": 0.8381,
-          "recall": 0.832,
-          "support": 1500
-        },
-        {
-          "label": "ladder",
-          "precision": 0.9484,
-          "recall": 0.9433,
-          "support": 1500
-        },
-        {
-          "label": "light bulb",
-          "precision": 0.9473,
-          "recall": 0.8873,
-          "support": 1500
-        },
-        {
-          "label": "lightning",
-          "precision": 0.8844,
-          "recall": 0.852,
-          "support": 1500
-        },
-        {
-          "label": "moon",
-          "precision": 0.7911,
-          "recall": 0.7347,
-          "support": 1500
-        },
-        {
-          "label": "mountain",
-          "precision": 0.9228,
+          "precision": 0.9369,
           "recall": 0.94,
           "support": 1500
         },
         {
-          "label": "mushroom",
-          "precision": 0.894,
-          "recall": 0.8827,
+          "label": "banana",
+          "precision": 0.8437,
+          "recall": 0.806,
           "support": 1500
         },
         {
-          "label": "pants",
-          "precision": 0.9665,
-          "recall": 0.9413,
+          "label": "bicycle",
+          "precision": 0.8558,
+          "recall": 0.9533,
           "support": 1500
         },
         {
-          "label": "pizza",
-          "precision": 0.8426,
-          "recall": 0.9133,
+          "label": "bird",
+          "precision": 0.7535,
+          "recall": 0.6113,
           "support": 1500
         },
         {
-          "label": "rainbow",
-          "precision": 0.9315,
-          "recall": 0.97,
-          "support": 1500
-        },
-        {
-          "label": "scissors",
-          "precision": 0.8631,
+          "label": "book",
+          "precision": 0.8743,
           "recall": 0.8953,
           "support": 1500
         },
         {
-          "label": "smiley face",
-          "precision": 0.9348,
-          "recall": 0.9173,
+          "label": "butterfly",
+          "precision": 0.8949,
+          "recall": 0.914,
           "support": 1500
         },
         {
-          "label": "snowman",
-          "precision": 0.9358,
-          "recall": 0.9333,
+          "label": "car",
+          "precision": 0.8802,
+          "recall": 0.8667,
           "support": 1500
         },
         {
-          "label": "star",
-          "precision": 0.9033,
-          "recall": 0.934,
+          "label": "cat",
+          "precision": 0.8385,
+          "recall": 0.7167,
           "support": 1500
         },
         {
-          "label": "sun",
-          "precision": 0.9273,
-          "recall": 0.952,
+          "label": "chair",
+          "precision": 0.8963,
+          "recall": 0.8813,
           "support": 1500
         },
         {
-          "label": "t-shirt",
-          "precision": 0.9697,
+          "label": "clock",
+          "precision": 0.9218,
+          "recall": 0.9267,
+          "support": 1500
+        },
+        {
+          "label": "cloud",
+          "precision": 0.9168,
+          "recall": 0.8667,
+          "support": 1500
+        },
+        {
+          "label": "cup",
+          "precision": 0.851,
+          "recall": 0.708,
+          "support": 1500
+        },
+        {
+          "label": "dog",
+          "precision": 0.6178,
+          "recall": 0.5873,
+          "support": 1500
+        },
+        {
+          "label": "donut",
+          "precision": 0.8705,
+          "recall": 0.95,
+          "support": 1500
+        },
+        {
+          "label": "door",
+          "precision": 0.9336,
+          "recall": 0.8813,
+          "support": 1500
+        },
+        {
+          "label": "eyeglasses",
+          "precision": 0.856,
+          "recall": 0.872,
+          "support": 1500
+        },
+        {
+          "label": "fish",
+          "precision": 0.8889,
+          "recall": 0.864,
+          "support": 1500
+        },
+        {
+          "label": "flower",
+          "precision": 0.8395,
+          "recall": 0.868,
+          "support": 1500
+        },
+        {
+          "label": "guitar",
+          "precision": 0.8254,
+          "recall": 0.9013,
+          "support": 1500
+        },
+        {
+          "label": "hat",
+          "precision": 0.8699,
+          "recall": 0.838,
+          "support": 1500
+        },
+        {
+          "label": "house",
+          "precision": 0.9125,
+          "recall": 0.9387,
+          "support": 1500
+        },
+        {
+          "label": "ice cream",
+          "precision": 0.9021,
+          "recall": 0.8967,
+          "support": 1500
+        },
+        {
+          "label": "key",
+          "precision": 0.7922,
+          "recall": 0.7627,
+          "support": 1500
+        },
+        {
+          "label": "ladder",
+          "precision": 0.9306,
+          "recall": 0.9213,
+          "support": 1500
+        },
+        {
+          "label": "light bulb",
+          "precision": 0.7716,
+          "recall": 0.7027,
+          "support": 1500
+        },
+        {
+          "label": "lightning",
+          "precision": 0.8623,
+          "recall": 0.8013,
+          "support": 1500
+        },
+        {
+          "label": "moon",
+          "precision": 0.7153,
+          "recall": 0.712,
+          "support": 1500
+        },
+        {
+          "label": "mountain",
+          "precision": 0.9075,
+          "recall": 0.9153,
+          "support": 1500
+        },
+        {
+          "label": "mushroom",
+          "precision": 0.8549,
+          "recall": 0.856,
+          "support": 1500
+        },
+        {
+          "label": "pants",
+          "precision": 0.9595,
+          "recall": 0.9327,
+          "support": 1500
+        },
+        {
+          "label": "pizza",
+          "precision": 0.801,
+          "recall": 0.8907,
+          "support": 1500
+        },
+        {
+          "label": "rainbow",
+          "precision": 0.912,
           "recall": 0.9607,
           "support": 1500
         },
         {
+          "label": "scissors",
+          "precision": 0.8157,
+          "recall": 0.832,
+          "support": 1500
+        },
+        {
+          "label": "smiley face",
+          "precision": 0.9133,
+          "recall": 0.906,
+          "support": 1500
+        },
+        {
+          "label": "snowman",
+          "precision": 0.8971,
+          "recall": 0.918,
+          "support": 1500
+        },
+        {
+          "label": "star",
+          "precision": 0.8811,
+          "recall": 0.924,
+          "support": 1500
+        },
+        {
+          "label": "sun",
+          "precision": 0.8571,
+          "recall": 0.9,
+          "support": 1500
+        },
+        {
+          "label": "t-shirt",
+          "precision": 0.9463,
+          "recall": 0.9407,
+          "support": 1500
+        },
+        {
           "label": "tree",
-          "precision": 0.8923,
-          "recall": 0.9007,
+          "precision": 0.8795,
+          "recall": 0.866,
           "support": 1500
         },
         {
           "label": "umbrella",
-          "precision": 0.9421,
-          "recall": 0.9333,
+          "precision": 0.9251,
+          "recall": 0.9227,
+          "support": 1500
+        },
+        {
+          "label": "anvil",
+          "precision": 0.8884,
+          "recall": 0.87,
+          "support": 1500
+        },
+        {
+          "label": "axe",
+          "precision": 0.872,
+          "recall": 0.854,
+          "support": 1500
+        },
+        {
+          "label": "bathtub",
+          "precision": 0.8671,
+          "recall": 0.796,
+          "support": 1500
+        },
+        {
+          "label": "bed",
+          "precision": 0.8079,
+          "recall": 0.788,
+          "support": 1500
+        },
+        {
+          "label": "bee",
+          "precision": 0.7485,
+          "recall": 0.8173,
+          "support": 1500
+        },
+        {
+          "label": "bench",
+          "precision": 0.8149,
+          "recall": 0.7893,
+          "support": 1500
+        },
+        {
+          "label": "birthday cake",
+          "precision": 0.8872,
+          "recall": 0.876,
+          "support": 1500
+        },
+        {
+          "label": "bowtie",
+          "precision": 0.9272,
+          "recall": 0.866,
+          "support": 1500
+        },
+        {
+          "label": "broom",
+          "precision": 0.8688,
+          "recall": 0.9047,
+          "support": 1500
+        },
+        {
+          "label": "bucket",
+          "precision": 0.8569,
+          "recall": 0.874,
+          "support": 1500
+        },
+        {
+          "label": "bus",
+          "precision": 0.839,
+          "recall": 0.9273,
+          "support": 1500
+        },
+        {
+          "label": "cactus",
+          "precision": 0.8792,
+          "recall": 0.8153,
+          "support": 1500
+        },
+        {
+          "label": "calculator",
+          "precision": 0.8722,
+          "recall": 0.942,
+          "support": 1500
+        },
+        {
+          "label": "camera",
+          "precision": 0.9457,
+          "recall": 0.9407,
+          "support": 1500
+        },
+        {
+          "label": "campfire",
+          "precision": 0.7738,
+          "recall": 0.844,
+          "support": 1500
+        },
+        {
+          "label": "candle",
+          "precision": 0.9203,
+          "recall": 0.916,
+          "support": 1500
+        },
+        {
+          "label": "carrot",
+          "precision": 0.8939,
+          "recall": 0.8593,
+          "support": 1500
+        },
+        {
+          "label": "castle",
+          "precision": 0.8026,
+          "recall": 0.8373,
+          "support": 1500
+        },
+        {
+          "label": "chandelier",
+          "precision": 0.841,
+          "recall": 0.744,
+          "support": 1500
+        },
+        {
+          "label": "crab",
+          "precision": 0.7414,
+          "recall": 0.7053,
+          "support": 1500
+        },
+        {
+          "label": "crocodile",
+          "precision": 0.6876,
+          "recall": 0.7807,
+          "support": 1500
+        },
+        {
+          "label": "crown",
+          "precision": 0.9031,
+          "recall": 0.9007,
+          "support": 1500
+        },
+        {
+          "label": "diamond",
+          "precision": 0.9067,
+          "recall": 0.914,
+          "support": 1500
+        },
+        {
+          "label": "drums",
+          "precision": 0.7291,
+          "recall": 0.7553,
+          "support": 1500
+        },
+        {
+          "label": "ear",
+          "precision": 0.9077,
+          "recall": 0.8327,
+          "support": 1500
+        },
+        {
+          "label": "elephant",
+          "precision": 0.6895,
+          "recall": 0.7047,
+          "support": 1500
+        },
+        {
+          "label": "envelope",
+          "precision": 0.97,
+          "recall": 0.9493,
+          "support": 1500
+        },
+        {
+          "label": "helicopter",
+          "precision": 0.7682,
+          "recall": 0.886,
+          "support": 1500
+        },
+        {
+          "label": "hot air balloon",
+          "precision": 0.786,
+          "recall": 0.764,
+          "support": 1500
+        },
+        {
+          "label": "octopus",
+          "precision": 0.8459,
+          "recall": 0.882,
+          "support": 1500
+        },
+        {
+          "label": "sailboat",
+          "precision": 0.9132,
+          "recall": 0.9113,
+          "support": 1500
+        },
+        {
+          "label": "snake",
+          "precision": 0.8241,
+          "recall": 0.79,
+          "support": 1500
+        },
+        {
+          "label": "spider",
+          "precision": 0.7188,
+          "recall": 0.806,
+          "support": 1500
+        },
+        {
+          "label": "traffic light",
+          "precision": 0.9005,
+          "recall": 0.8993,
+          "support": 1500
+        },
+        {
+          "label": "windmill",
+          "precision": 0.8275,
+          "recall": 0.8793,
           "support": 1500
         }
       ],
       "repoUrl": "https://github.com/kevinm126/sketch-lab",
       "notebookUrl": "https://github.com/kevinm126/sketch-lab/blob/main/notebooks/quickdraw_cnn.ipynb",
-      "canvasSimAccuracy": 0.8783
+      "canvasSimAccuracy": 0.8363,
+      "canvasPerClass": [
+        {
+          "label": "apple",
+          "recall": 0.973,
+          "n": 74
+        },
+        {
+          "label": "banana",
+          "recall": 0.789,
+          "n": 76
+        },
+        {
+          "label": "bicycle",
+          "recall": 0.987,
+          "n": 79
+        },
+        {
+          "label": "bird",
+          "recall": 0.557,
+          "n": 79
+        },
+        {
+          "label": "book",
+          "recall": 0.864,
+          "n": 81
+        },
+        {
+          "label": "butterfly",
+          "recall": 0.924,
+          "n": 79
+        },
+        {
+          "label": "car",
+          "recall": 0.849,
+          "n": 73
+        },
+        {
+          "label": "cat",
+          "recall": 0.655,
+          "n": 84
+        },
+        {
+          "label": "chair",
+          "recall": 0.788,
+          "n": 66
+        },
+        {
+          "label": "clock",
+          "recall": 0.92,
+          "n": 88
+        },
+        {
+          "label": "cloud",
+          "recall": 0.771,
+          "n": 83
+        },
+        {
+          "label": "cup",
+          "recall": 0.7,
+          "n": 90
+        },
+        {
+          "label": "dog",
+          "recall": 0.513,
+          "n": 78
+        },
+        {
+          "label": "donut",
+          "recall": 0.962,
+          "n": 79
+        },
+        {
+          "label": "door",
+          "recall": 0.828,
+          "n": 93
+        },
+        {
+          "label": "eyeglasses",
+          "recall": 0.827,
+          "n": 75
+        },
+        {
+          "label": "fish",
+          "recall": 0.833,
+          "n": 72
+        },
+        {
+          "label": "flower",
+          "recall": 0.873,
+          "n": 79
+        },
+        {
+          "label": "guitar",
+          "recall": 0.867,
+          "n": 90
+        },
+        {
+          "label": "hat",
+          "recall": 0.848,
+          "n": 92
+        },
+        {
+          "label": "house",
+          "recall": 0.939,
+          "n": 66
+        },
+        {
+          "label": "ice cream",
+          "recall": 0.912,
+          "n": 80
+        },
+        {
+          "label": "key",
+          "recall": 0.78,
+          "n": 82
+        },
+        {
+          "label": "ladder",
+          "recall": 0.889,
+          "n": 90
+        },
+        {
+          "label": "light bulb",
+          "recall": 0.671,
+          "n": 73
+        },
+        {
+          "label": "lightning",
+          "recall": 0.833,
+          "n": 78
+        },
+        {
+          "label": "moon",
+          "recall": 0.629,
+          "n": 89
+        },
+        {
+          "label": "mountain",
+          "recall": 0.914,
+          "n": 70
+        },
+        {
+          "label": "mushroom",
+          "recall": 0.798,
+          "n": 89
+        },
+        {
+          "label": "pants",
+          "recall": 0.947,
+          "n": 76
+        },
+        {
+          "label": "pizza",
+          "recall": 0.876,
+          "n": 89
+        },
+        {
+          "label": "rainbow",
+          "recall": 0.963,
+          "n": 82
+        },
+        {
+          "label": "scissors",
+          "recall": 0.797,
+          "n": 74
+        },
+        {
+          "label": "smiley face",
+          "recall": 0.839,
+          "n": 87
+        },
+        {
+          "label": "snowman",
+          "recall": 0.875,
+          "n": 72
+        },
+        {
+          "label": "star",
+          "recall": 0.905,
+          "n": 84
+        },
+        {
+          "label": "sun",
+          "recall": 0.849,
+          "n": 86
+        },
+        {
+          "label": "t-shirt",
+          "recall": 0.912,
+          "n": 68
+        },
+        {
+          "label": "tree",
+          "recall": 0.906,
+          "n": 85
+        },
+        {
+          "label": "umbrella",
+          "recall": 0.932,
+          "n": 73
+        },
+        {
+          "label": "anvil",
+          "recall": 0.868,
+          "n": 91
+        },
+        {
+          "label": "axe",
+          "recall": 0.846,
+          "n": 91
+        },
+        {
+          "label": "bathtub",
+          "recall": 0.753,
+          "n": 85
+        },
+        {
+          "label": "bed",
+          "recall": 0.784,
+          "n": 88
+        },
+        {
+          "label": "bee",
+          "recall": 0.803,
+          "n": 76
+        },
+        {
+          "label": "bench",
+          "recall": 0.723,
+          "n": 83
+        },
+        {
+          "label": "birthday cake",
+          "recall": 0.885,
+          "n": 78
+        },
+        {
+          "label": "bowtie",
+          "recall": 0.897,
+          "n": 87
+        },
+        {
+          "label": "broom",
+          "recall": 0.917,
+          "n": 84
+        },
+        {
+          "label": "bucket",
+          "recall": 0.875,
+          "n": 72
+        },
+        {
+          "label": "bus",
+          "recall": 0.929,
+          "n": 84
+        },
+        {
+          "label": "cactus",
+          "recall": 0.808,
+          "n": 73
+        },
+        {
+          "label": "calculator",
+          "recall": 0.972,
+          "n": 72
+        },
+        {
+          "label": "camera",
+          "recall": 0.957,
+          "n": 94
+        },
+        {
+          "label": "campfire",
+          "recall": 0.823,
+          "n": 79
+        },
+        {
+          "label": "candle",
+          "recall": 0.855,
+          "n": 69
+        },
+        {
+          "label": "carrot",
+          "recall": 0.875,
+          "n": 80
+        },
+        {
+          "label": "castle",
+          "recall": 0.772,
+          "n": 92
+        },
+        {
+          "label": "chandelier",
+          "recall": 0.838,
+          "n": 80
+        },
+        {
+          "label": "crab",
+          "recall": 0.649,
+          "n": 77
+        },
+        {
+          "label": "crocodile",
+          "recall": 0.73,
+          "n": 89
+        },
+        {
+          "label": "crown",
+          "recall": 0.824,
+          "n": 74
+        },
+        {
+          "label": "diamond",
+          "recall": 0.862,
+          "n": 94
+        },
+        {
+          "label": "drums",
+          "recall": 0.7,
+          "n": 80
+        },
+        {
+          "label": "ear",
+          "recall": 0.829,
+          "n": 76
+        },
+        {
+          "label": "elephant",
+          "recall": 0.621,
+          "n": 58
+        },
+        {
+          "label": "envelope",
+          "recall": 0.94,
+          "n": 83
+        },
+        {
+          "label": "helicopter",
+          "recall": 0.89,
+          "n": 91
+        },
+        {
+          "label": "hot air balloon",
+          "recall": 0.82,
+          "n": 61
+        },
+        {
+          "label": "octopus",
+          "recall": 0.863,
+          "n": 73
+        },
+        {
+          "label": "sailboat",
+          "recall": 0.897,
+          "n": 58
+        },
+        {
+          "label": "snake",
+          "recall": 0.847,
+          "n": 72
+        },
+        {
+          "label": "spider",
+          "recall": 0.812,
+          "n": 85
+        },
+        {
+          "label": "traffic light",
+          "recall": 0.884,
+          "n": 86
+        },
+        {
+          "label": "windmill",
+          "recall": 0.878,
+          "n": 82
+        }
+      ],
+      "promptPool": [
+        "apple",
+        "bicycle",
+        "book",
+        "butterfly",
+        "clock",
+        "donut",
+        "flower",
+        "guitar",
+        "house",
+        "ice cream",
+        "ladder",
+        "mountain",
+        "pants",
+        "pizza",
+        "rainbow",
+        "snowman",
+        "star",
+        "t-shirt",
+        "tree",
+        "umbrella",
+        "anvil",
+        "birthday cake",
+        "bowtie",
+        "broom",
+        "bucket",
+        "bus",
+        "calculator",
+        "camera",
+        "candle",
+        "carrot",
+        "diamond",
+        "envelope",
+        "helicopter",
+        "octopus",
+        "sailboat",
+        "traffic light",
+        "windmill"
+      ]
     }
   }
 }

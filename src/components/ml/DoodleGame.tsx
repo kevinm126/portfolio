@@ -45,7 +45,13 @@ export function DoodleGame() {
 
   const startGame = useCallback(() => {
     canvasRef.current?.clear();
-    setPrompts(samplePrompts(DOODLES.labels, ROUNDS_PER_GAME));
+    // Prompt only from the measured pool (per-class canvas-sim recall gate in
+    // sketch-lab); free draw still guesses across the full vocabulary.
+    const pool =
+      DOODLES.promptPool && DOODLES.promptPool.length >= ROUNDS_PER_GAME
+        ? DOODLES.promptPool.map((l) => DOODLES.labels.indexOf(l)).filter((i) => i >= 0)
+        : DOODLES.labels.map((_, i) => i);
+    setPrompts(samplePrompts(pool, ROUNDS_PER_GAME));
     setResults([]);
     setRound(0);
     setSecondsLeft(ROUND_SECONDS);
@@ -195,7 +201,7 @@ export function DoodleGame() {
             ariaLabel={
               mode === "game"
                 ? "Drawing canvas for the current prompt"
-                : "Drawing canvas: draw any of the 40 objects"
+                : `Drawing canvas: draw any of the ${DOODLES.labels.length} objects`
             }
           />
 
@@ -332,9 +338,10 @@ export function DoodleGame() {
                 </button>
               </div>
               <p className="max-w-md text-sm text-muted">
-                The model was trained on 540,000 human doodles across 40 everyday objects. It sees
-                the same 28x28 image pipeline as the digit lab below, roughly 40 times a second
-                while you draw.
+                The model was trained on over a million human doodles across{" "}
+                {DOODLES.labels.length} everyday objects, and the game only prompts the ones it
+                proved most reliable at. It sees the same 28x28 image pipeline as the digit lab
+                below, roughly 40 times a second while you draw.
               </p>
             </>
           ) : (
@@ -351,7 +358,9 @@ export function DoodleGame() {
                     </li>
                   ))
                 ) : (
-                  <li className="text-muted">Draw any of the 40 objects and the guesses appear here.</li>
+                  <li className="text-muted">
+                    Draw any of the {DOODLES.labels.length} objects and the guesses appear here.
+                  </li>
                 )}
               </ol>
               <div className="flex gap-2">

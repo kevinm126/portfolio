@@ -18,14 +18,14 @@ export type RoundRecord = {
   secondsLeft: number;
 };
 
-/** n distinct prompts for one game. */
-export function samplePrompts(labels: string[], n: number, random: () => number = Math.random): number[] {
-  const pool = labels.map((_, i) => i);
-  for (let i = pool.length - 1; i > 0; i--) {
+/** n distinct prompts for one game, drawn from a pool of label indices. */
+export function samplePrompts(pool: number[], n: number, random: () => number = Math.random): number[] {
+  const deck = [...pool];
+  for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-  return pool.slice(0, n);
+  return deck.slice(0, n);
 }
 
 export function topIndices(probs: Float32Array, k: number): number[] {

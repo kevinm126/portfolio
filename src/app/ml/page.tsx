@@ -8,7 +8,7 @@ import { ModelCards } from "@/components/ml/ModelCards";
 export const metadata: Metadata = {
   title: "ML Lab",
   description:
-    "Draw against two CNNs I trained myself: a Pictionary-style doodle duel over 40 objects and a classic digit recognizer with a live saliency explainer. Everything runs in your browser via ONNX.",
+    "Draw against two CNNs I trained myself: a Pictionary-style doodle duel over 75 everyday objects and a digit recognizer that reads whole numbers, with a live saliency explainer. Everything runs in your browser via ONNX.",
 };
 
 export default function MLLabPage() {

@@ -94,7 +94,7 @@ export function ModelCards() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card
           title="Doodle model"
-          sub="40 everyday objects, 540k training sketches from the Quick, Draw! dataset."
+          sub={`${DOODLES.labels.length} everyday objects, 13,500 training sketches each from the Quick, Draw! dataset. The game only prompts the ${DOODLES.promptPool?.length ?? DOODLES.labels.length} categories with the strongest measured robustness to real drawings; the rest are free-draw only.`}
           m={DOODLES}
         />
         <Card

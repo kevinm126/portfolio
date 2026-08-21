@@ -30,6 +30,14 @@ export type ModelMetrics = {
   preprocess: PreprocessParams;
   labels: string[];
   perClass: PerClassStat[];
+  /** Doodles only: per-class recall on the canvas-simulation round trip. */
+  canvasPerClass?: { label: string; recall: number; n: number }[];
+  /** Doodles only: the measured subset of labels the game may prompt. */
+  promptPool?: string[];
+  /** Digits v2+: the base final-layer weights for in-browser personalization. */
+  headFile?: string;
+  /** Digits v2+: penultimate feature dimension exposed by the graph. */
+  featDim?: number;
   repoUrl: string;
   notebookUrl: string;
 };
